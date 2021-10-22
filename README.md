@@ -68,8 +68,8 @@ bool _menuVisible = false;
 @override
 Widget build(BuildContext context) {
   return PieCanvas(
-    onMenuToggle: (displaying) {
-      setState(() => _menuVisible = displaying);
+    onMenuToggle: (menuVisible) {
+      setState(() => _menuVisible = menuVisible);
     },
     ...
   );
@@ -93,7 +93,7 @@ ListView(
 
 ### Interactive Widgets
 
-Again using the `_menuVisible` variable, you can assign a null function to the default behavior of your interactive widget. For example, if your widget detects taps using a `GestureDetector`, you can nullify the `onTap` callback if a `PieMenu` is visible.
+Again using the `_menuVisible` variable, you can disable the default behavior of your interactive widget. For example, if your widget detects taps using a `GestureDetector`, you can nullify the `onTap` callback when a `PieMenu` is visible.
 
 ```dart
 GestureDetector(
@@ -104,7 +104,7 @@ GestureDetector(
 
 ## Customization
 
-You can customize the appearance and the behavior of menus using `PieTheme`.
+You can customize the appearance and behavior of menus using `PieTheme`.
 
 Using the `theme` attribute of `PieCanvas` widget, you can specify a theme for all the `PieMenu`s that inherit it.
 
