@@ -1,3 +1,7 @@
+## 0.0.2
+
+* Fixed README.md images
+
 ## 0.0.1
 
-A Flutter library that provides a circular context menu similar to Pinterest's
+Initial version
