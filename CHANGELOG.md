@@ -1,3 +1,3 @@
 ## 0.0.1
 
-* TODO: Describe initial release.
+A Flutter library that provides a circular context menu similar to Pinterest's
