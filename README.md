@@ -52,6 +52,56 @@ PieCanvas(
 ),
 ```
 
+## Using with Scrollable and Interactive Widgets
+
+> ⚠️ If you want to use `PieMenu` inside a scrollable view like a `ListView`, or your widget is already interactive (e.g. it is clickable), you may need to **pay attention to this section.**
+
+`PieCanvas` has a functional callback named `onMenuToggle` which is triggered when a `PieMenu` that inherits the respective canvas is opened and closed. Using this callback, you can prevent your scrollable or interactive widget's default behavior in order to give the control to the `PieMenu`.
+
+If you can think of a better implementation to handle this automatically, feel free to create a new issue on this package's repository and express your opinion.
+
+Using the `menuVisible` parameter of the `onMenuToggle` callback, store a `bool` variable in your `StatefulWidget` state.
+
+```dart
+bool _menuVisible = false;
+
+@override
+Widget build(BuildContext context) {
+  return PieCanvas(
+    onMenuToggle: (displaying) {
+      setState(() => _menuVisible = displaying);
+    },
+    ...
+  );
+}
+```
+
+### Scrollable Widgets
+
+Using the `_menuVisible` variable, you can decide whether scrolling should be enabled or not.
+
+
+```dart
+ListView(
+  // Disable scrolling if a 'PieMenu' is visible
+  physics: _menuVisible
+      ? NeverScrollableScrollPhysics()
+      : ScrollPhysics(), // Or your own scroll physics
+  ...
+);
+```
+
+### Interactive Widgets
+
+Again using the `_menuVisible` variable, you can assign a null function to the default behavior of your interactive widget. For example, if your widget detects taps using a `GestureDetector`, you can nullify the `onTap` callback if a `PieMenu` is visible.
+
+```dart
+GestureDetector(
+  onTap: _menuVisible
+      ? null
+      : () => print('Tap'),
+```
+
 ## Customization
 
 You can customize the appearance and the behavior of menus using `PieTheme`.
