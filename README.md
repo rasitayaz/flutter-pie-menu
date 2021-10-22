@@ -100,6 +100,7 @@ GestureDetector(
   onTap: _menuVisible
       ? null
       : () => print('Tap'),
+),
 ```
 
 ## Customization
