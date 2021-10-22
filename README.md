@@ -1,39 +1,91 @@
-<!-- 
+<!--
 This README describes the package. If you publish this package to pub.dev,
 this README's contents appear on the landing page for your package.
 
 For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
+[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
 
 For general information about developing packages, see the Dart guide for
 [creating packages](https://dart.dev/guides/libraries/create-library-packages)
 and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages). 
+[developing packages and plugins](https://flutter.dev/developing-packages).
 -->
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+# Flutter Pie Menu 🥧
 
-## Features
+A Flutter library that provides a circular context menu similar to Pinterest's.
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+|Screenshot|Easily Customizable|Works with Scrollables|
+|:-:|:-:|:-:|
+|<img src="showcase/screenshot.png" width=800 />|<img src="showcase/example-1.gif" width=800 />|<img src="showcase/example-2.gif" width=800 />|
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
+Wrap the widget that will react to gestures with `PieMenu` widget, and give the menu a list of `PieAction`s to display as menu buttons.
 
 ```dart
-const like = 'sample';
+PieMenu(
+  actions [
+    PieAction(
+      tooltip: 'Like',
+      iconData: Icons.favorite,
+      onSelect: () => print('Like action selected.'),
+    ),
+  ],
+  child: YourWidget(),
+),
 ```
 
-## Additional information
+Note that you can only use `PieMenu` in the sub-hierarchy of a `PieCanvas` widget. Wrap the parent widget of your page (or any other widget you want to draw the canvas on) with `PieCanvas` widget.
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+For example, if you want the menu to be displayed at the forefront, you can wrap your `Scaffold` with a `PieCanvas` like following:
+
+```dart
+PieCanvas(
+  child: Scaffold(
+    body: YourScaffoldBody(
+      ...
+        PieMenu(),
+      ...
+    ),
+  ),
+),
+```
+
+## Customization
+
+You can customize the appearance and the behavior of menus using `PieTheme`.
+
+Using the `theme` attribute of `PieCanvas` widget, you can specify a theme for all the `PieMenu`s that inherit it.
+
+```dart
+PieCanvas(
+  theme: PieTheme(),
+  ...
+    PieMenu(), // Uses the canvas theme
+  ...
+    PieMenu(), // Uses the canvas theme
+  ...
+),
+```
+
+But if you want to specify menu specific themes, you can also use the `theme` attribute of `PieMenu` widget.
+
+```dart
+PieMenu(
+  theme: PieTheme(), // Overrides the canvas theme
+),
+```
+
+Buttons' background and icon colors are defined by theme's `buttonTheme` and `hoveredButtonTheme` properties. You can create a custom `PieButtonTheme` instances for your theme.
+
+```dart
+PieTheme(
+  buttonTheme: PieButtonTheme(),
+
+  // Using 'hovered' constructor is not necessary
+  hoveredButtonTheme: PieButtonTheme.hovered(),
+),
+```
+
+If you want to use a custom widget instead of an icon for the action button, you can use the `customWidget` and `customHoveredWidget` properties of the respective `PieAction`.
