@@ -15,7 +15,7 @@ and the Flutter guide for
 
 A customizable Flutter library that provides a circular context menu similar to Pinterest's.
 
-|<img src="https://github.com/RasitAyaz/flutter-pie-menu/blob/master/showcase/screenshot.png" width=800 />|<img src="https://github.com/RasitAyaz/flutter-pie-menu/blob/master/showcase/example-1.gif" width=800 />|<img src="https://github.com/RasitAyaz/flutter-pie-menu/blob/master/showcase/example-2.gif" width=800 />|
+|![](https://raw.githubusercontent.com/RasitAyaz/flutter-pie-menu/master/showcase/screenshot-1.jpg)|![](https://raw.githubusercontent.com/RasitAyaz/flutter-pie-menu/master/showcase/example-1.gif)|![](https://raw.githubusercontent.com/RasitAyaz/flutter-pie-menu/master/showcase/example-2.gif)|
 |:-:|:-:|:-:|
 
 ## Usage
