@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pie_menu/src/button.dart';
 import 'package:pie_menu/src/canvas.dart';
 import 'package:pie_menu/src/menu.dart';
+import 'package:pie_menu/src/theme.dart';
 
 /// Action class to create different [PieButton]s for the [PieMenu].
 class PieAction {
@@ -13,10 +14,8 @@ class PieAction {
     this.padding = EdgeInsets.zero,
     this.customWidget,
     this.customHoveredWidget,
-    this.color,
-    this.iconColor,
-    this.hoveredColor,
-    this.hoveredIconColor,
+    this.buttonTheme,
+    this.hoveredButtonTheme,
   });
 
   /// * [PieButton] refers to the button this [PieAction] belongs to.
@@ -46,19 +45,11 @@ class PieAction {
   /// when the button is hovered.
   final Widget? customHoveredWidget;
 
-  /// Background color of the [PieButton] to override the theme color.
-  final Color? color;
+  /// Theme of the [PieButton].
+  final PieButtonTheme? buttonTheme;
 
-  /// Icon color of the [PieButton] to override the theme color.
-  final Color? iconColor;
-
-  /// Background color of the [PieButton] to override the theme color
-  /// when it is hovered by the user.
-  final Color? hoveredColor;
-
-  /// Icon color of the [PieButton] to override the theme color
-  /// when it is hovered by the user.
-  final Color? hoveredIconColor;
+  /// Theme of the [PieButton] when it is hovered.
+  final PieButtonTheme? hoveredButtonTheme;
 
   /// Display angle of the [PieButton] in radians.
   ///

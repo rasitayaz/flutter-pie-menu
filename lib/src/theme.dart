@@ -112,20 +112,20 @@ class PieTheme {
 }
 
 class PieButtonTheme {
-  /// Background color of the [PieButton].
-  final Color? actionColor;
-
-  /// Icon color of the [PieButton].
-  final Color? iconColor;
-
   const PieButtonTheme({
-    this.actionColor = Colors.blue,
+    this.backgroundColor = Colors.blue,
     this.iconColor = Colors.white,
   });
 
   /// Creates a [PieButtonTheme] with the hovered style defaults.
   const PieButtonTheme.hovered({
-    this.actionColor = Colors.lime,
+    this.backgroundColor = Colors.lime,
     this.iconColor = Colors.black,
   });
+
+  /// Background color of the [PieButton].
+  final Color? backgroundColor;
+
+  /// Icon color of the [PieButton].
+  final Color? iconColor;
 }

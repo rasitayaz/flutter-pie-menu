@@ -96,9 +96,9 @@ class StylingPage extends StatelessWidget {
     return Expanded(
       child: PieMenu(
         theme: _pageTheme.copyWith(
-          buttonTheme: const PieButtonTheme(actionColor: Colors.deepOrange),
+          buttonTheme: const PieButtonTheme(backgroundColor: Colors.deepOrange),
           hoveredButtonTheme: const PieButtonTheme.hovered(
-            actionColor: Colors.orange,
+            backgroundColor: Colors.orange,
           ),
           brightness: Brightness.dark,
         ),
@@ -153,9 +153,9 @@ class StylingPage extends StatelessWidget {
         theme: _pageTheme.copyWith(
           brightness: Brightness.dark,
           overlayColor: Colors.green.withOpacity(0.7),
-          buttonTheme: const PieButtonTheme(actionColor: Colors.red),
+          buttonTheme: const PieButtonTheme(backgroundColor: Colors.red),
           hoveredButtonTheme: const PieButtonTheme.hovered(
-            actionColor: Colors.white,
+            backgroundColor: Colors.white,
           ),
           buttonSize: 84,
         ),
@@ -171,13 +171,13 @@ class StylingPage extends StatelessWidget {
             // Custom icon size
             iconSize: 32,
             // Custom background color
-            color: Colors.red[700],
+            buttonTheme: PieButtonTheme(backgroundColor: Colors.red[700]),
             onSelect: () {},
           ),
           PieAction(
             tooltip: 'Leave a feedback',
             iconData: CupertinoIcons.chat_bubble_text_fill,
-            color: Colors.red[900],
+            buttonTheme: PieButtonTheme(backgroundColor: Colors.red[900]),
             onSelect: () {},
           ),
         ],

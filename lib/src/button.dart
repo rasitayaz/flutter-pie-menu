@@ -52,8 +52,13 @@ class _PieButtonState extends State<PieButton>
   /// Wether the [PieButton] is visible.
   bool visible = false;
 
-  PieButtonTheme get buttonTheme => widget.theme.buttonTheme;
-  PieButtonTheme get hoveredButtonTheme => widget.theme.hoveredButtonTheme;
+  PieButtonTheme get buttonTheme {
+    return widget.action.buttonTheme ?? widget.theme.buttonTheme;
+  }
+
+  PieButtonTheme get hoveredButtonTheme {
+    return widget.action.hoveredButtonTheme ?? widget.theme.hoveredButtonTheme;
+  }
 
   @override
   void initState() {
@@ -114,9 +119,8 @@ class _PieButtonState extends State<PieButton>
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: widget.hovered
-                        ? (widget.action.hoveredColor ??
-                            hoveredButtonTheme.actionColor)
-                        : (widget.action.color ?? buttonTheme.actionColor),
+                        ? hoveredButtonTheme.backgroundColor
+                        : buttonTheme.backgroundColor,
                   ),
                   child: Center(
                     child: Padding(
@@ -129,10 +133,8 @@ class _PieButtonState extends State<PieButton>
                             widget.action.iconData,
                             size: widget.action.iconSize,
                             color: widget.hovered
-                                ? (widget.action.hoveredIconColor ??
-                                    hoveredButtonTheme.iconColor)
-                                : (widget.action.iconColor ??
-                                    buttonTheme.iconColor),
+                                ? hoveredButtonTheme.iconColor
+                                : buttonTheme.iconColor,
                           ),
                     ),
                   ),

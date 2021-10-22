@@ -11,9 +11,9 @@ class AboutPage extends StatelessWidget {
     return PieCanvas(
       theme: PieTheme(
         delayDuration: Duration.zero,
-        buttonTheme: const PieButtonTheme(actionColor: Colors.black),
+        buttonTheme: const PieButtonTheme(backgroundColor: Colors.black),
         hoveredButtonTheme: PieButtonTheme.hovered(
-          actionColor: Colors.lime[200],
+          backgroundColor: Colors.lime[200],
         ),
         overlayColor: Colors.blue[200]!.withOpacity(0.5),
       ),
