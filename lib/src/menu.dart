@@ -12,6 +12,7 @@ class PieMenu extends StatefulWidget {
     this.theme,
     required this.child,
     this.actions = const [],
+    this.onMenuToggle,
   }) : super(key: key);
 
   /// Theme to use for this menu, overrides [PieCanvas] theme.
@@ -22,6 +23,10 @@ class PieMenu extends StatefulWidget {
 
   /// Child widget to recognize pointer events.
   final Widget child;
+
+  /// Functional callback that is triggered when
+  /// this [PieMenu] is opened and closed.
+  final Function(bool menuVisible)? onMenuToggle;
 
   @override
   State<PieMenu> createState() => _PieMenuState();
@@ -53,6 +58,7 @@ class _PieMenuState extends State<PieMenu> {
           pressedOffset: event.position,
           actions: widget.actions,
           theme: widget.theme,
+          onMenuToggle: widget.onMenuToggle,
         );
       },
       onPointerMove: (event) {

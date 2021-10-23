@@ -17,7 +17,7 @@ class InheritedCanvas extends InheritedWidget {
     Key? key,
     required Widget child,
     required PieTheme theme,
-    Function(bool displaying)? onMenuToggle,
+    Function(bool menuVisible)? onMenuToggle,
     required this.canvasKey,
   }) : super(
           key: key,
@@ -45,7 +45,7 @@ class InheritedCanvas extends InheritedWidget {
 class DisplayedCanvas extends StatefulWidget {
   final Widget child;
   final PieTheme theme;
-  final Function(bool displaying)? onMenuToggle;
+  final Function(bool menuVisible)? onMenuToggle;
 
   const DisplayedCanvas({
     Key? key,
@@ -107,6 +107,10 @@ class DisplayedCanvasState extends State<DisplayedCanvas>
 
   /// Tooltip text for the hovered [PieButton].
   String? _hoveredTooltip;
+
+  /// Functional callback that is triggered when
+  /// the active [PieMenu] is opened and closed.
+  Function(bool menuVisible)? _onActiveMenuToggle;
 
   RenderBox? get _renderBox {
     RenderObject? renderObject = context.findRenderObject();
@@ -336,10 +340,13 @@ class DisplayedCanvasState extends State<DisplayedCanvas>
     return textPainter.size.height;
   }
 
-  void toggleMenu(bool displaying) {
+  void toggleMenu(bool menuVisible) {
     if (widget.onMenuToggle != null) {
-      widget.onMenuToggle!(displaying);
-      if (displaying) {
+      if (_onActiveMenuToggle != null) {
+        _onActiveMenuToggle!(menuVisible);
+      }
+      widget.onMenuToggle!(menuVisible);
+      if (menuVisible) {
         WidgetsBinding.instance!.addPostFrameCallback((duration) {
           /// This rebuild prevents menu child being displayed
           /// in the wrong offset when the scrollable swiped fast.
@@ -354,9 +361,11 @@ class DisplayedCanvasState extends State<DisplayedCanvas>
     required RenderBox renderBox,
     required Offset pressedOffset,
     required List<PieAction> actions,
+    Function(bool menuVisible)? onMenuToggle,
     PieTheme? theme,
   }) {
     if (!_pressed) {
+      _onActiveMenuToggle = onMenuToggle;
       _theme = theme ?? widget.theme;
       _actions = actions;
       _pressed = true;

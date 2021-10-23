@@ -55,7 +55,7 @@ PieCanvas(
 
 > ⚠️ If you want to use `PieMenu` inside a scrollable view like a `ListView`, or your widget is already interactive (e.g. it is clickable), you may need to **pay attention to this section.**
 
-`PieCanvas` has a functional callback named `onMenuToggle` which is triggered when a `PieMenu` that inherits the respective canvas is opened and closed. Using this callback, you can prevent your scrollable or interactive widget's default behavior in order to give the control to the `PieMenu`.
+`PieCanvas` and `PieMenu` widgets have a functional callback named `onMenuToggle` which is triggered when a `PieMenu` that inherits the respective canvas is opened and closed. Using this callback, you can prevent your scrollable or interactive widget's default behavior in order to give the control to the `PieMenu`.
 
 If you can think of a better implementation to handle this automatically, feel free to create a new issue on this package's repository and express your opinion.
 

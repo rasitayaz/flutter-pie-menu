@@ -1,3 +1,7 @@
+## 0.0.4
+
+* `onMenuToggle` callback at the `PieCanvas` also added for the `PieMenu`.
+
 ## 0.0.3
 
 * Updated README.md showcase images.
