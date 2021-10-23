@@ -1,6 +1,10 @@
+## 0.0.5
+
+* Fixed `onMenuToggle` callback of `PieMenu` is not being called when the canvas callback is null.
+
 ## 0.0.4
 
-* `onMenuToggle` callback at the `PieCanvas` also added for the `PieMenu`.
+* `onMenuToggle` callback at `PieCanvas` also added for `PieMenu`.
 
 ## 0.0.3
 

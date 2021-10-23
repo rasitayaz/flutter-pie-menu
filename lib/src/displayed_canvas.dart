@@ -341,18 +341,18 @@ class DisplayedCanvasState extends State<DisplayedCanvas>
   }
 
   void toggleMenu(bool menuVisible) {
+    if (_onActiveMenuToggle != null) {
+      _onActiveMenuToggle!(menuVisible);
+    }
     if (widget.onMenuToggle != null) {
-      if (_onActiveMenuToggle != null) {
-        _onActiveMenuToggle!(menuVisible);
-      }
       widget.onMenuToggle!(menuVisible);
-      if (menuVisible) {
-        WidgetsBinding.instance!.addPostFrameCallback((duration) {
-          /// This rebuild prevents menu child being displayed
-          /// in the wrong offset when the scrollable swiped fast.
-          setState(() {});
-        });
-      }
+    }
+    if (menuVisible) {
+      WidgetsBinding.instance!.addPostFrameCallback((duration) {
+        /// This rebuild prevents menu child being displayed
+        /// in the wrong offset when the scrollable swiped fast.
+        setState(() {});
+      });
     }
   }
 
