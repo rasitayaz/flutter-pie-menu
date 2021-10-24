@@ -52,12 +52,15 @@ class _PieButtonState extends State<PieButton>
   /// Wether the [PieButton] is visible.
   bool visible = false;
 
+  PieAction get action => widget.action;
+  PieTheme get theme => widget.theme;
+
   PieButtonTheme get buttonTheme {
-    return widget.action.buttonTheme ?? widget.theme.buttonTheme;
+    return action.buttonTheme ?? theme.buttonTheme;
   }
 
   PieButtonTheme get hoveredButtonTheme {
-    return widget.action.hoveredButtonTheme ?? widget.theme.hoveredButtonTheme;
+    return action.hoveredButtonTheme ?? theme.hoveredButtonTheme;
   }
 
   @override
@@ -90,8 +93,8 @@ class _PieButtonState extends State<PieButton>
     }
 
     return OverflowBox(
-      maxHeight: widget.theme.buttonSize * 2,
-      maxWidth: widget.theme.buttonSize * 2,
+      maxHeight: theme.buttonSize * 2,
+      maxWidth: theme.buttonSize * 2,
       child: AnimatedScale(
         scale: widget.hovered ? 1.2 : 1,
         duration: widget.hoverDuration,
@@ -104,18 +107,16 @@ class _PieButtonState extends State<PieButton>
                 duration: widget.hoverDuration,
                 curve: Curves.ease,
                 top: widget.hovered
-                    ? widget.theme.buttonSize / 2 -
-                        sin(widget.action.angle) *
-                            widget.theme.hoverDisplacement
-                    : widget.theme.buttonSize / 2,
+                    ? theme.buttonSize / 2 -
+                        sin(action.angle) * theme.hoverDisplacement
+                    : theme.buttonSize / 2,
                 right: widget.hovered
-                    ? widget.theme.buttonSize / 2 -
-                        cos(widget.action.angle) *
-                            widget.theme.hoverDisplacement
-                    : widget.theme.buttonSize / 2,
+                    ? theme.buttonSize / 2 -
+                        cos(action.angle) * theme.hoverDisplacement
+                    : theme.buttonSize / 2,
                 child: Container(
-                  height: widget.theme.buttonSize,
-                  width: widget.theme.buttonSize,
+                  height: theme.buttonSize,
+                  width: theme.buttonSize,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: widget.hovered
@@ -124,14 +125,14 @@ class _PieButtonState extends State<PieButton>
                   ),
                   child: Center(
                     child: Padding(
-                      padding: widget.action.padding,
+                      padding: action.padding,
                       child: (widget.hovered
-                              ? (widget.action.customHoveredWidget ??
-                                  widget.action.customWidget)
-                              : widget.action.customWidget) ??
+                              ? (action.customHoveredWidget ??
+                                  action.customWidget)
+                              : action.customWidget) ??
                           Icon(
-                            widget.action.iconData,
-                            size: widget.action.iconSize,
+                            action.iconData,
+                            size: action.iconSize ?? theme.iconSize,
                             color: widget.hovered
                                 ? hoveredButtonTheme.iconColor
                                 : buttonTheme.iconColor,

@@ -1,3 +1,5 @@
+* Added `iconSize` property for `PieTheme`.
+
 ## 0.0.5
 
 * Fixed `onMenuToggle` callback of `PieMenu` is not being called when the canvas callback is null.
