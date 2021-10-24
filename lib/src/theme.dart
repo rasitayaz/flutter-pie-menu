@@ -13,6 +13,7 @@ class PieTheme {
     this.pointerColor,
     this.buttonTheme = const PieButtonTheme(),
     this.hoveredButtonTheme = const PieButtonTheme.hovered(),
+    this.iconSize,
     this.distance = 96,
     this.buttonSize = 56,
     this.pointerSize = 42,
@@ -40,6 +41,9 @@ class PieTheme {
 
   /// Theme of the [PieButton] when it is hovered.
   final PieButtonTheme hoveredButtonTheme;
+
+  /// Size of the icon to be displayed on the [PieButton].
+  final double? iconSize;
 
   /// Distance between the [PieButton] and the center of the [PieMenu].
   final double distance;

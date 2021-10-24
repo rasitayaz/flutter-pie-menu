@@ -1,3 +1,8 @@
+## 0.0.6
+
+* Added `iconSize` property for `PieTheme`.
+* Fixed selected action is becoming non-hovered before the menu fades out.
+
 ## 0.0.5
 
 * Fixed `onMenuToggle` callback of `PieMenu` is not being called when the canvas callback is null.
