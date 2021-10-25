@@ -117,12 +117,15 @@ class _PieButtonState extends State<PieButton>
                 child: Container(
                   height: theme.buttonSize,
                   width: theme.buttonSize,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: widget.hovered
-                        ? hoveredButtonTheme.backgroundColor
-                        : buttonTheme.backgroundColor,
-                  ),
+                  decoration: (widget.hovered
+                          ? hoveredButtonTheme.decoration
+                          : buttonTheme.decoration) ??
+                      BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: widget.hovered
+                            ? hoveredButtonTheme.backgroundColor
+                            : buttonTheme.backgroundColor,
+                      ),
                   child: Center(
                     child: Padding(
                       padding: action.padding,
