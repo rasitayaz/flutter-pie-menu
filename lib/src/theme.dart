@@ -120,12 +120,14 @@ class PieButtonTheme {
   const PieButtonTheme({
     this.backgroundColor = Colors.blue,
     this.iconColor = Colors.white,
+    this.decoration,
   });
 
   /// Creates a [PieButtonTheme] with the hovered style defaults.
   const PieButtonTheme.hovered({
     this.backgroundColor = Colors.lime,
     this.iconColor = Colors.black,
+    this.decoration,
   });
 
   /// Background color of the [PieButton].
@@ -133,4 +135,9 @@ class PieButtonTheme {
 
   /// Icon color of the [PieButton].
   final Color? iconColor;
+
+  /// Container decoration of the [PieButton].
+  ///
+  /// Note that a custom decoration ignores [backgroundColor].
+  final Decoration? decoration;
 }
