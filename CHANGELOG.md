@@ -1,3 +1,7 @@
+## 0.0.7
+
+* Custom container decoration can now be specified using `decoration` property of `PieButtonTheme`.
+
 ## 0.0.6
 
 * Added `iconSize` property for `PieTheme`.
