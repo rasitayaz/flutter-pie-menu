@@ -13,6 +13,8 @@ and the Flutter guide for
 
 # Flutter Pie Menu 🥧
 
+[![Pub](https://img.shields.io/pub/v/pie_menu.svg?style=popout)](https://pub.dartlang.org/packages/pie_menu)
+
 A Flutter library that provides a customizable circular context menu similar to Pinterest's.
 
 |![](https://raw.githubusercontent.com/RasitAyaz/flutter-pie-menu/master/showcase/screenshot-1.jpg)|![](https://raw.githubusercontent.com/RasitAyaz/flutter-pie-menu/master/showcase/example-1.gif)|![](https://raw.githubusercontent.com/RasitAyaz/flutter-pie-menu/master/showcase/example-2.gif)|
