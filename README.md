@@ -26,7 +26,7 @@ Wrap the widget that will react to gestures with `PieMenu` widget, and give the 
 
 ```dart
 PieMenu(
-  actions [
+  actions: [
     PieAction(
       tooltip: 'Like',
       iconData: Icons.favorite,
