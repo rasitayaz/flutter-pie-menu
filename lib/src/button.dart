@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pie_menu/src/action.dart';
 import 'package:pie_menu/src/canvas.dart';
 import 'package:pie_menu/src/menu.dart';
@@ -133,7 +134,7 @@ class _PieButtonState extends State<PieButton>
                               ? (action.customHoveredWidget ??
                                   action.customWidget)
                               : action.customWidget) ??
-                          Icon(
+                          FaIcon(
                             action.iconData,
                             size: action.iconSize ?? theme.iconSize,
                             color: widget.hovered
