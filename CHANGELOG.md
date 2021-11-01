@@ -1,3 +1,7 @@
+## 0.1.0
+
+* Font Awesome Icons can now be used with `font_awesome_flutter` package.
+
 ## 0.0.7
 
 * Custom container decoration can now be specified using `decoration` property of `PieButtonTheme`.
