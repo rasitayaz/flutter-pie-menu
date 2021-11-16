@@ -1,3 +1,8 @@
+## 0.1.1
+
+* Fixed last selected action label becoming visible for a short time after reopening the menu.
+* Using `PieMenu` without `PieCanvas` now deactivates the menu and just displays the child.
+
 ## 0.1.0
 
 * Font Awesome Icons can now be used with `font_awesome_flutter` package.

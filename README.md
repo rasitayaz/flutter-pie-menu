@@ -15,7 +15,7 @@ and the Flutter guide for
 
 [![Pub](https://img.shields.io/pub/v/pie_menu.svg?style=popout)](https://pub.dartlang.org/packages/pie_menu)
 
-A Flutter library that provides a customizable circular context menu similar to Pinterest's.
+A Flutter library that provides a customizable circular/radial context menu similar to Pinterest's.
 
 |![](https://raw.githubusercontent.com/RasitAyaz/flutter-pie-menu/master/showcase/screenshot-1.jpg)|![](https://raw.githubusercontent.com/RasitAyaz/flutter-pie-menu/master/showcase/example-1.gif)|![](https://raw.githubusercontent.com/RasitAyaz/flutter-pie-menu/master/showcase/example-2.gif)|
 |:-:|:-:|:-:|
@@ -37,7 +37,9 @@ PieMenu(
 ),
 ```
 
-Note that you can only use `PieMenu` in the sub-hierarchy of a `PieCanvas` widget. Wrap the parent widget of your page (or any other widget you want to draw the canvas on) with `PieCanvas` widget.
+Note that you can only use `PieMenu` in the sub-hierarchy of a `PieCanvas` widget. Menu will not be functional if it does not have a canvas ancestor.
+
+Wrap the parent widget of your page (or any other widget you want to draw the canvas on) with `PieCanvas` widget.
 
 For example, if you want the menu to be displayed at the forefront, you can wrap your `Scaffold` with a `PieCanvas` like following:
 
