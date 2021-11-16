@@ -40,34 +40,31 @@ class _PieMenuState extends State<PieMenu> {
   Widget build(BuildContext context) {
     try {
       _canvasState = InheritedCanvas.of(context)!.canvasKey.currentState!;
-    } catch (e) {
-      throw Exception(
-        'Use [PieMenu] widget only in the sub-hierarchy of a'
-        ' [PieCanvas] widget.',
+
+      return Listener(
+        behavior: HitTestBehavior.translucent,
+        onPointerDown: (event) {
+          _renderBox = context.findRenderObject() as RenderBox;
+
+          _canvasState.pointerDown(
+            child: widget.child,
+            renderBox: _renderBox!,
+            pressedOffset: event.position,
+            actions: widget.actions,
+            theme: widget.theme,
+            onMenuToggle: widget.onMenuToggle,
+          );
+        },
+        onPointerMove: (event) {
+          _canvasState.pointerMove(event.position);
+        },
+        onPointerUp: (event) {
+          _canvasState.pointerUp();
+        },
+        child: widget.child,
       );
+    } catch (e) {
+      return widget.child;
     }
-
-    return Listener(
-      behavior: HitTestBehavior.translucent,
-      onPointerDown: (event) {
-        _renderBox = context.findRenderObject() as RenderBox;
-
-        _canvasState.pointerDown(
-          child: widget.child,
-          renderBox: _renderBox!,
-          pressedOffset: event.position,
-          actions: widget.actions,
-          theme: widget.theme,
-          onMenuToggle: widget.onMenuToggle,
-        );
-      },
-      onPointerMove: (event) {
-        _canvasState.pointerMove(event.position);
-      },
-      onPointerUp: (event) {
-        _canvasState.pointerUp();
-      },
-      child: widget.child,
-    );
   }
 }
