@@ -37,7 +37,9 @@ PieMenu(
 ),
 ```
 
-Note that you can only use `PieMenu` in the sub-hierarchy of a `PieCanvas` widget. Wrap the parent widget of your page (or any other widget you want to draw the canvas on) with `PieCanvas` widget.
+Note that you can only use `PieMenu` in the sub-hierarchy of a `PieCanvas` widget. Menu will not be functional if it does not have a canvas ancestor.
+
+Wrap the parent widget of your page (or any other widget you want to draw the canvas on) with `PieCanvas` widget.
 
 For example, if you want the menu to be displayed at the forefront, you can wrap your `Scaffold` with a `PieCanvas` like following:
 
