@@ -392,6 +392,9 @@ class DisplayedCanvasState extends State<DisplayedCanvas>
     if (_visible) {
       if (_hoveredAction >= 0) {
         _actions[_hoveredAction].onSelect();
+        Future.delayed(_theme.fadeDuration, () {
+          _hoveredTooltip = null;
+        });
       }
 
       _visible = false;
