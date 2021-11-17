@@ -4,7 +4,7 @@ import 'package:pie_menu/src/canvas.dart';
 import 'package:pie_menu/src/menu.dart';
 import 'package:pie_menu/src/theme.dart';
 
-/// Action class to create different [PieButton]s for the [PieMenu].
+/// Defines an action to display on the circular buttons of the [PieMenu].
 class PieAction {
   PieAction({
     required this.tooltip,

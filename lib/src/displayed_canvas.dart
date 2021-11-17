@@ -43,16 +43,16 @@ class InheritedCanvas extends InheritedWidget {
 
 /// Canvas widget that is actually displayed on the screen.
 class DisplayedCanvas extends StatefulWidget {
-  final Widget child;
-  final PieTheme theme;
-  final Function(bool menuVisible)? onMenuToggle;
-
   const DisplayedCanvas({
     Key? key,
     required this.theme,
     required this.child,
     this.onMenuToggle,
   }) : super(key: key);
+
+  final Widget child;
+  final PieTheme theme;
+  final Function(bool menuVisible)? onMenuToggle;
 
   @override
   DisplayedCanvasState createState() => DisplayedCanvasState();

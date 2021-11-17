@@ -115,7 +115,7 @@ class PieTheme {
   }
 }
 
-/// Defines the appearance of the [PieButton]s.
+/// Defines the appearance of the circular buttons.
 class PieButtonTheme {
   const PieButtonTheme({
     this.backgroundColor = Colors.blue,

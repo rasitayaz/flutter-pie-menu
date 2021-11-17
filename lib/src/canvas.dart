@@ -3,8 +3,8 @@ import 'package:pie_menu/src/displayed_canvas.dart';
 import 'package:pie_menu/src/menu.dart';
 import 'package:pie_menu/src/theme.dart';
 
-/// An abstract widget to create a global [DisplayedCanvasState] key
-/// and to pass it through the [InheritedCanvas].
+/// An overlay widget that displays the [PieMenu]s physically
+/// and highlights the child widgets of the menus.
 class PieCanvas extends StatefulWidget {
   const PieCanvas({
     Key? key,

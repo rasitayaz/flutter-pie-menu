@@ -5,7 +5,7 @@ import 'package:pie_menu/src/canvas.dart';
 import 'package:pie_menu/src/displayed_canvas.dart';
 import 'package:pie_menu/src/theme.dart';
 
-/// Widget to display menu with multiple [PieAction]s for its child.
+/// Widget that displays [PieAction]s as circular buttons for its child.
 class PieMenu extends StatefulWidget {
   const PieMenu({
     Key? key,
