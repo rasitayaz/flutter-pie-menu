@@ -114,7 +114,7 @@ GestureDetector(
 
 You can customize the appearance and behavior of menus using `PieTheme`.
 
-Using the `theme` attribute of `PieCanvas` widget, you can specify a theme for all the `PieMenu`s that inherit it.
+Using the `theme` attribute of `PieCanvas` widget, you can specify a theme for all the `PieMenu`s that inherit the canvas.
 
 ```dart
 PieCanvas(
