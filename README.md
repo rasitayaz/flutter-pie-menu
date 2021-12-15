@@ -14,6 +14,7 @@ and the Flutter guide for
 # Flutter Pie Menu 🥧
 
 [![Pub](https://img.shields.io/pub/v/pie_menu.svg?style=popout)](https://pub.dartlang.org/packages/pie_menu)
+[![APK](https://img.shields.io/badge/APK-Demo-brightgreen.svg)](https://github.com/RasitAyaz/flutter-pie-menu/raw/master/example/demo.apk)
 <span class="badge-buymeacoffee">
 <a href="https://www.buymeacoffee.com/RasitAyaz" title="Donate to this project by buying me a coffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg" alt="Buy Me a Coffee donate button" /></a>
 </span>
