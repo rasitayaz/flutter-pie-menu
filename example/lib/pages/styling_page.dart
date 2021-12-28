@@ -22,9 +22,9 @@ class StylingPage extends StatelessWidget {
               Expanded(
                 child: Column(
                   children: [
-                    buildBasicUsage(context),
+                    _buildBasicUsage(context),
                     const SizedBox(height: spacing),
-                    buildDarkMode(context),
+                    _buildDarkMode(context),
                   ],
                 ),
               ),
@@ -32,7 +32,7 @@ class StylingPage extends StatelessWidget {
               Expanded(
                 child: Column(
                   children: [
-                    buildLargeActions(context),
+                    _buildLargeActions(context),
                   ],
                 ),
               ),
@@ -43,7 +43,7 @@ class StylingPage extends StatelessWidget {
     );
   }
 
-  Widget buildCard({
+  Widget _buildCard({
     Color? color,
     required IconData iconData,
   }) {
@@ -62,7 +62,7 @@ class StylingPage extends StatelessWidget {
     );
   }
 
-  Widget buildBasicUsage(BuildContext context) {
+  Widget _buildBasicUsage(BuildContext context) {
     return Expanded(
       child: PieMenu(
         actions: [
@@ -84,7 +84,7 @@ class StylingPage extends StatelessWidget {
             onSelect: () => showSnackBar('Share', context),
           ),
         ],
-        child: buildCard(
+        child: _buildCard(
           color: Colors.deepOrangeAccent,
           iconData: CupertinoIcons.video_camera_solid,
         ),
@@ -92,7 +92,7 @@ class StylingPage extends StatelessWidget {
     );
   }
 
-  Widget buildDarkMode(BuildContext context) {
+  Widget _buildDarkMode(BuildContext context) {
     return Expanded(
       child: PieMenu(
         theme: _pageTheme.copyWith(
@@ -106,29 +106,29 @@ class StylingPage extends StatelessWidget {
           PieAction(
             tooltip: 'how',
             onSelect: () => showSnackBar('1', context),
-            customWidget: buildTextButton('1', false),
-            customHoveredWidget: buildTextButton('1', true),
+            customWidget: _buildTextButton('1', false),
+            customHoveredWidget: _buildTextButton('1', true),
           ),
           PieAction(
             tooltip: 'cool',
             onSelect: () => showSnackBar('2', context),
-            customWidget: buildTextButton('2', false),
-            customHoveredWidget: buildTextButton('2', true),
+            customWidget: _buildTextButton('2', false),
+            customHoveredWidget: _buildTextButton('2', true),
           ),
           PieAction(
             tooltip: 'is',
             onSelect: () => showSnackBar('3', context),
-            customWidget: buildTextButton('3', false),
-            customHoveredWidget: buildTextButton('3', true),
+            customWidget: _buildTextButton('3', false),
+            customHoveredWidget: _buildTextButton('3', true),
           ),
           PieAction(
             tooltip: 'this?!',
             onSelect: () => showSnackBar('Pretty cool :)', context),
-            customWidget: buildTextButton('4', false),
-            customHoveredWidget: buildTextButton('4', true),
+            customWidget: _buildTextButton('4', false),
+            customHoveredWidget: _buildTextButton('4', true),
           ),
         ],
-        child: buildCard(
+        child: _buildCard(
           color: Colors.deepPurple,
           iconData: CupertinoIcons.moon_fill,
         ),
@@ -136,7 +136,7 @@ class StylingPage extends StatelessWidget {
     );
   }
 
-  Widget buildTextButton(String text, bool hovered) {
+  Widget _buildTextButton(String text, bool hovered) {
     return Text(
       text,
       style: TextStyle(
@@ -147,7 +147,7 @@ class StylingPage extends StatelessWidget {
     );
   }
 
-  Widget buildLargeActions(BuildContext context) {
+  Widget _buildLargeActions(BuildContext context) {
     return Expanded(
       child: PieMenu(
         theme: _pageTheme.copyWith(
@@ -181,7 +181,7 @@ class StylingPage extends StatelessWidget {
             onSelect: () {},
           ),
         ],
-        child: buildCard(
+        child: _buildCard(
           color: Colors.blue,
           iconData: CupertinoIcons.zoom_in,
         ),

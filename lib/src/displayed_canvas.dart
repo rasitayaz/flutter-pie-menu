@@ -220,7 +220,7 @@ class DisplayedCanvasState extends State<DisplayedCanvas>
                         ),
                       ),
                     ),
-                  buildTooltipText(),
+                  _buildTooltipText(),
                   Flow(
                     delegate: PieDelegate(
                       bounceAnimation: _bounceAnimation,
@@ -260,7 +260,7 @@ class DisplayedCanvasState extends State<DisplayedCanvas>
     );
   }
 
-  Widget buildTooltipText() {
+  Widget _buildTooltipText() {
     double top;
     double dx = _pressedOffset.dx - _canvasOffset.dx;
     double dy = _pressedOffset.dy - _canvasOffset.dy;
