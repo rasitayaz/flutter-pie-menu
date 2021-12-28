@@ -403,7 +403,6 @@ class DisplayedCanvasState extends State<DisplayedCanvas>
 
     if (_visible && isOutsideOfPointerArea(offset)) {
       if (_hoveredAction >= 0) {
-        print('go');
         _actions[_hoveredAction].onSelect();
         Future.delayed(_theme.fadeDuration, () {
           _hoveredTooltip = null;
