@@ -45,7 +45,6 @@ class _PieMenuState extends State<PieMenu> {
         behavior: HitTestBehavior.translucent,
         onPointerDown: (event) {
           _renderBox = context.findRenderObject() as RenderBox;
-
           _canvasState.pointerDown(
             child: widget.child,
             renderBox: _renderBox!,
@@ -55,12 +54,8 @@ class _PieMenuState extends State<PieMenu> {
             onMenuToggle: widget.onMenuToggle,
           );
         },
-        onPointerMove: (event) {
-          _canvasState.pointerMove(event.position);
-        },
-        onPointerUp: (event) {
-          _canvasState.pointerUp(event.position);
-        },
+        onPointerMove: (event) => _canvasState.pointerMove(event.position),
+        onPointerUp: (event) => _canvasState.pointerUp(event.position),
         child: widget.child,
       );
     } catch (e) {

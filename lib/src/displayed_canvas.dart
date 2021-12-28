@@ -192,7 +192,13 @@ class DisplayedCanvasState extends State<DisplayedCanvas>
       type: MaterialType.transparency,
       child: Stack(
         children: [
-          widget.child,
+          Listener(
+            behavior: HitTestBehavior.translucent,
+            onPointerDown: (event) => pointerMove(event.position),
+            onPointerMove: (event) => pointerMove(event.position),
+            onPointerUp: (event) => pointerUp(event.position),
+            child: widget.child,
+          ),
           IgnorePointer(
             child: AnimatedOpacity(
               duration: _theme.fadeDuration,
@@ -397,6 +403,7 @@ class DisplayedCanvasState extends State<DisplayedCanvas>
 
     if (_visible && isOutsideOfPointerArea(offset)) {
       if (_hoveredAction >= 0) {
+        print('go');
         _actions[_hoveredAction].onSelect();
         Future.delayed(_theme.fadeDuration, () {
           _hoveredTooltip = null;
