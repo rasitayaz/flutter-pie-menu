@@ -49,7 +49,7 @@ class _PieMenuState extends State<PieMenu> {
           _canvasState.pointerDown(
             child: widget.child,
             renderBox: _renderBox!,
-            pressedOffset: event.position,
+            offset: event.position,
             actions: widget.actions,
             theme: widget.theme,
             onMenuToggle: widget.onMenuToggle,
@@ -59,7 +59,7 @@ class _PieMenuState extends State<PieMenu> {
           _canvasState.pointerMove(event.position);
         },
         onPointerUp: (event) {
-          _canvasState.pointerUp();
+          _canvasState.pointerUp(event.position);
         },
         child: widget.child,
       );

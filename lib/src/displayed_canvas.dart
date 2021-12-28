@@ -356,20 +356,26 @@ class DisplayedCanvasState extends State<DisplayedCanvas>
     }
   }
 
+  bool isOutsideOfPointerArea(Offset offset) {
+    return (_pressedOffset - offset).distance > _theme.pointerSize / 2;
+  }
+
   void pointerDown({
     required Widget child,
     required RenderBox renderBox,
-    required Offset pressedOffset,
+    required Offset offset,
     required List<PieAction> actions,
     Function(bool menuVisible)? onMenuToggle,
     PieTheme? theme,
   }) {
-    if (!_pressed) {
+    if (_visible) {
+      pointerMove(offset);
+    } else if (!_pressed) {
       _onActiveMenuToggle = onMenuToggle;
       _theme = theme ?? widget.theme;
       _actions = actions;
       _pressed = true;
-      _pressedOffset = pressedOffset;
+      _pressedOffset = offset;
       _pointerDownTimer = Timer(_theme.delayDuration, () {
         _controller.forward(from: 0);
         setState(() {
@@ -383,13 +389,13 @@ class DisplayedCanvasState extends State<DisplayedCanvas>
     }
   }
 
-  void pointerUp() {
+  void pointerUp(Offset offset) {
     _pressed = false;
     if (_pointerDownTimer != null) {
       _pointerDownTimer!.cancel();
     }
 
-    if (_visible) {
+    if (_visible && isOutsideOfPointerArea(offset)) {
       if (_hoveredAction >= 0) {
         _actions[_hoveredAction].onSelect();
         Future.delayed(_theme.fadeDuration, () {
@@ -422,9 +428,8 @@ class DisplayedCanvasState extends State<DisplayedCanvas>
       if (_hoveredAction != -1) {
         setState(() => _hoveredAction = -1);
       }
-    } else if (_pressed &&
-        (offset - _pressedOffset).distance > _theme.pointerSize / 2) {
-      pointerUp();
+    } else if (_pressed && isOutsideOfPointerArea(offset)) {
+      pointerUp(offset);
     }
   }
 
