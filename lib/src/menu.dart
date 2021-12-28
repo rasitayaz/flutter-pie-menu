@@ -13,6 +13,7 @@ class PieMenu extends StatefulWidget {
     required this.child,
     this.actions = const [],
     this.onMenuToggle,
+    this.visibleMenuChild,
   }) : super(key: key);
 
   /// Theme to use for this menu, overrides [PieCanvas] theme.
@@ -21,8 +22,11 @@ class PieMenu extends StatefulWidget {
   /// Actions to display as [PieButton]s on the [PieCanvas].
   final List<PieAction> actions;
 
-  /// Child widget to recognize pointer events.
+  /// Widget to be displayed when the menu is hidden.
   final Widget child;
+
+  /// Widget to be displayed when the menu is visible.
+  final Widget? visibleMenuChild;
 
   /// Functional callback that is triggered when
   /// this [PieMenu] is opened and closed.
@@ -45,22 +49,17 @@ class _PieMenuState extends State<PieMenu> {
         behavior: HitTestBehavior.translucent,
         onPointerDown: (event) {
           _renderBox = context.findRenderObject() as RenderBox;
-
           _canvasState.pointerDown(
-            child: widget.child,
+            child: widget.visibleMenuChild ?? widget.child,
             renderBox: _renderBox!,
-            pressedOffset: event.position,
+            offset: event.position,
             actions: widget.actions,
             theme: widget.theme,
             onMenuToggle: widget.onMenuToggle,
           );
         },
-        onPointerMove: (event) {
-          _canvasState.pointerMove(event.position);
-        },
-        onPointerUp: (event) {
-          _canvasState.pointerUp();
-        },
+        onPointerMove: (event) => _canvasState.pointerMove(event.position),
+        onPointerUp: (event) => _canvasState.pointerUp(event.position),
         child: widget.child,
       );
     } catch (e) {

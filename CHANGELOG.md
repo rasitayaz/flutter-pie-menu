@@ -1,3 +1,9 @@
+## 0.2.0
+
+* Menu now stays open when the pointer is released over the pressed area.
+* Fixed listener class over the menu not responding to some pointer events outside of menus.
+* Added custom menu child to display when the menu is visible.
+
 ## 0.1.1
 
 * Fixed last selected action label becoming visible for a short time after reopening the menu.
