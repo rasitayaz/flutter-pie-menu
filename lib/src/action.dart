@@ -9,13 +9,11 @@ class PieAction {
   PieAction({
     required this.tooltip,
     required this.onSelect,
-    this.iconData,
-    this.iconSize,
+    required this.child,
     this.padding = EdgeInsets.zero,
-    this.customWidget,
-    this.customHoveredWidget,
+    this.childHovered,
     this.buttonTheme,
-    this.hoveredButtonTheme,
+    this.buttonThemeHovered,
   });
 
   /// * [PieButton] refers to the button this [PieAction] belongs to.
@@ -26,30 +24,23 @@ class PieAction {
   /// Function to trigger when the [PieButton] is selected.
   final Function() onSelect;
 
-  /// Data for the icon to be displayed on the [PieButton].
-  final IconData? iconData;
-
-  /// Size of the icon to be displayed on the [PieButton].
-  final double? iconSize;
-
   /// Padding for the icon (or for the custom widget)
   /// to be displayed on the [PieButton].
   ///
   /// Can be used for optical correction.
   final EdgeInsets padding;
 
-  /// Custom widget to display on the [PieButton] instead of the icon.
-  final Widget? customWidget;
+  /// Widget to display inside the [PieButton], usually an icon
+  final Widget child;
 
-  /// Custom widget to display on the [PieButton] instead of the icon
-  /// when the button is hovered.
-  final Widget? customHoveredWidget;
+  /// Widget to display inside the [PieButton] when the button is hovered.
+  final Widget? childHovered;
 
   /// Theme of the [PieButton].
   final PieButtonTheme? buttonTheme;
 
   /// Theme of the [PieButton] when it is hovered.
-  final PieButtonTheme? hoveredButtonTheme;
+  final PieButtonTheme? buttonThemeHovered;
 
   /// Display angle of the [PieButton] in radians.
   ///

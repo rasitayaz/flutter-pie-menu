@@ -3,7 +3,7 @@ import 'package:pie_menu/pie_menu.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutPage extends StatelessWidget {
-  const AboutPage({Key? key}) : super(key: key);
+  const AboutPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +11,7 @@ class AboutPage extends StatelessWidget {
       theme: PieTheme(
         delayDuration: Duration.zero,
         buttonTheme: const PieButtonTheme(backgroundColor: Colors.black),
-        hoveredButtonTheme: PieButtonTheme.hovered(
+        buttonThemeHovered: PieButtonTheme.hovered(
           backgroundColor: Colors.lime[200],
         ),
         overlayColor: Colors.blue[200]!.withOpacity(0.5),
@@ -24,14 +24,14 @@ class AboutPage extends StatelessWidget {
               actions: [
                 PieAction(
                   tooltip: 'GitHub',
-                  iconData: Icons.language,
+                  child: const Icon(Icons.language),
                   onSelect: () {
-                    openLink('https://github.com/RasitAyaz');
+                    openLink('https://github.com/rasitayaz');
                   },
                 ),
                 PieAction(
                   tooltip: 'LinkedIn',
-                  customWidget: const Text(
+                  child: const Text(
                     'in',
                     style: TextStyle(
                       color: Colors.white,
@@ -39,7 +39,7 @@ class AboutPage extends StatelessWidget {
                       fontWeight: FontWeight.w900,
                     ),
                   ),
-                  customHoveredWidget: const Text(
+                  childHovered: const Text(
                     'in',
                     style: TextStyle(
                       color: Colors.black,
@@ -52,10 +52,10 @@ class AboutPage extends StatelessWidget {
                   },
                 ),
                 PieAction(
-                  tooltip: 'rasitayaz1358@gmail.com',
-                  iconData: Icons.mail_rounded,
+                  tooltip: 'mrasitayaz@gmail.com',
+                  child: const Icon(Icons.mail_rounded),
                   onSelect: () {
-                    openLink('mailto:rasitayaz1358@gmail.com');
+                    openLink('mailto:mrasitayaz@gmail.com');
                   },
                 ),
               ],

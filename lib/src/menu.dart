@@ -8,13 +8,13 @@ import 'package:pie_menu/src/theme.dart';
 /// Widget that displays [PieAction]s as circular buttons for its child.
 class PieMenu extends StatefulWidget {
   const PieMenu({
-    Key? key,
+    super.key,
     this.theme,
     required this.child,
     this.actions = const [],
     this.onMenuToggle,
     this.visibleMenuChild,
-  }) : super(key: key);
+  });
 
   /// Theme to use for this menu, overrides [PieCanvas] theme.
   final PieTheme? theme;
