@@ -1,3 +1,10 @@
+## 1.0.0
+
+* Migrated to Flutter 3
+* Updated `PieAction` properties, now `child` and `childHovered` should be used instead of iconData, customWidget, customHoveredWidget.
+* No longer depends on the `font_awesome_flutter` package, because icons can be specified as widgets.
+* Some property names are updated. Check out documentation for more info.
+
 ## 0.2.0
 
 * Menu now stays open when the pointer is released over the pressed area.

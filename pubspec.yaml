@@ -1,6 +1,6 @@
 name: pie_menu
 description: A Flutter package that provides a customizable circular/radial context menu
-version: 0.2.0
+version: 1.0.0
 homepage: https://github.com/rasitayaz/flutter-pie-menu
 
 environment:

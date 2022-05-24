@@ -15,6 +15,7 @@ and the Flutter guide for
 
 [![Pub](https://img.shields.io/pub/v/pie_menu.svg?style=popout)](https://pub.dartlang.org/packages/pie_menu)
 [![APK](https://img.shields.io/badge/APK-Demo-brightgreen.svg)](https://github.com/rasitayaz/flutter-pie-menu/raw/master/example/demo.apk)
+[![APK](https://img.shields.io/badge/EXE-Windows&nbsp;Demo-blueviolet)](https://github.com/rasitayaz/flutter-pie-menu/raw/master/example/demo-windows.zip)
 [![](https://img.shields.io/badge/github-rasitayaz-red)](https://github.com/rasitayaz)
 [![](https://img.shields.io/badge/buy&nbsp;me&nbsp;a&nbsp;coffee-donate-blue)](https://www.buymeacoffee.com/RasitAyaz)
 

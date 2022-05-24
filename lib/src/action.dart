@@ -10,8 +10,8 @@ class PieAction {
     required this.tooltip,
     required this.onSelect,
     required this.child,
-    this.padding = EdgeInsets.zero,
     this.childHovered,
+    this.padding = EdgeInsets.zero,
     this.buttonTheme,
     this.buttonThemeHovered,
   });
