@@ -7,11 +7,11 @@ import 'package:pie_menu/src/theme.dart';
 /// and highlights the child widgets of the menus.
 class PieCanvas extends StatefulWidget {
   const PieCanvas({
-    Key? key,
+    super.key,
     required this.child,
     this.theme = const PieTheme(),
     this.onMenuToggle,
-  }) : super(key: key);
+  });
 
   /// Widget to display behind the canvas.
   final Widget child;
@@ -40,9 +40,9 @@ class _PieCanvasState extends State<PieCanvas> {
   Widget build(BuildContext context) {
     return InheritedCanvas(
       canvasKey: _canvasKey,
-      child: widget.child,
       theme: widget.theme,
       onMenuToggle: widget.onMenuToggle,
+      child: widget.child,
     );
   }
 }

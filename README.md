@@ -14,14 +14,14 @@ and the Flutter guide for
 # Flutter Pie Menu 🥧
 
 [![Pub](https://img.shields.io/pub/v/pie_menu.svg?style=popout)](https://pub.dartlang.org/packages/pie_menu)
-[![APK](https://img.shields.io/badge/APK-Demo-brightgreen.svg)](https://github.com/RasitAyaz/flutter-pie-menu/raw/master/example/demo.apk)
-<span class="badge-buymeacoffee">
-<a href="https://www.buymeacoffee.com/RasitAyaz" title="Donate to this project by buying me a coffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg" alt="Buy Me a Coffee donate button" /></a>
-</span>
+[![APK](https://img.shields.io/badge/APK-Demo-brightgreen.svg)](https://github.com/rasitayaz/flutter-pie-menu/raw/master/example/demo.apk)
+[![APK](https://img.shields.io/badge/EXE-Windows&nbsp;Demo-blueviolet)](https://github.com/rasitayaz/flutter-pie-menu/raw/master/example/demo-windows.zip)
+[![](https://img.shields.io/badge/github-rasitayaz-red)](https://github.com/rasitayaz)
+[![](https://img.shields.io/badge/buy&nbsp;me&nbsp;a&nbsp;coffee-donate-blue)](https://www.buymeacoffee.com/RasitAyaz)
 
-A Flutter library that provides a customizable circular/radial context menu similar to Pinterest's.
+A Flutter package that provides a customizable circular/radial context menu similar to Pinterest's
 
-|![](https://raw.githubusercontent.com/RasitAyaz/flutter-pie-menu/master/showcase/screenshot-1.jpg)|![](https://raw.githubusercontent.com/RasitAyaz/flutter-pie-menu/master/showcase/example-1.gif)|![](https://raw.githubusercontent.com/RasitAyaz/flutter-pie-menu/master/showcase/example-2.gif)|
+|![](https://raw.githubusercontent.com/rasitayaz/flutter-pie-menu/master/showcase/screenshot-1.jpg)|![](https://raw.githubusercontent.com/rasitayaz/flutter-pie-menu/master/showcase/example-1.gif)|![](https://raw.githubusercontent.com/rasitayaz/flutter-pie-menu/master/showcase/example-2.gif)|
 |:-:|:-:|:-:|
 
 ## Usage
@@ -33,8 +33,8 @@ PieMenu(
   actions: [
     PieAction(
       tooltip: 'Like',
-      iconData: Icons.favorite,
       onSelect: () => print('Like action selected.'),
+      child: const Icon(Icons.favorite), // Not necessarily an icon widget
     ),
   ],
   child: YourWidget(),
@@ -93,7 +93,7 @@ ListView(
   // Disable scrolling if a 'PieMenu' is visible
   physics: _menuVisible
       ? NeverScrollableScrollPhysics()
-      : ScrollPhysics(), // Or your own scroll physics
+      : ScrollPhysics(), // Or your default scroll physics
   ...
 );
 ```
@@ -135,15 +135,13 @@ PieMenu(
 ),
 ```
 
-Buttons' background and icon colors are defined by theme's `buttonTheme` and `hoveredButtonTheme` properties. You can create a custom `PieButtonTheme` instances for your theme.
+Buttons' background and icon colors are defined by theme's `buttonTheme` and `buttonThemeHovered` properties. You can create a custom `PieButtonTheme` instances for your theme.
 
 ```dart
 PieTheme(
   buttonTheme: PieButtonTheme(),
 
   // Using 'hovered' constructor is not necessary
-  hoveredButtonTheme: PieButtonTheme.hovered(),
+  buttonThemeHovered: PieButtonTheme.hovered(),
 ),
 ```
-
-If you want to use a custom widget instead of an icon for the action button, you can use the `customWidget` and `customHoveredWidget` properties of the respective `PieAction`.

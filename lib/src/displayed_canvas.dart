@@ -14,13 +14,12 @@ import 'package:vector_math/vector_math.dart' hide Colors;
 /// for the [PieMenu]s that inherit a [PieCanvas].
 class InheritedCanvas extends InheritedWidget {
   InheritedCanvas({
-    Key? key,
+    super.key,
     required Widget child,
     required PieTheme theme,
     Function(bool menuVisible)? onMenuToggle,
     required this.canvasKey,
   }) : super(
-          key: key,
           child: DisplayedCanvas(
             key: canvasKey,
             theme: theme,
@@ -44,11 +43,11 @@ class InheritedCanvas extends InheritedWidget {
 /// Canvas widget that is actually displayed on the screen.
 class DisplayedCanvas extends StatefulWidget {
   const DisplayedCanvas({
-    Key? key,
+    super.key,
     required this.theme,
     required this.child,
     this.onMenuToggle,
-  }) : super(key: key);
+  });
 
   final Widget child;
   final PieTheme theme;
@@ -354,7 +353,7 @@ class DisplayedCanvasState extends State<DisplayedCanvas>
       widget.onMenuToggle!(menuVisible);
     }
     if (menuVisible) {
-      WidgetsBinding.instance!.addPostFrameCallback((duration) {
+      WidgetsBinding.instance.addPostFrameCallback((duration) {
         /// This rebuild prevents menu child being displayed
         /// in the wrong offset when the scrollable swiped fast.
         setState(() {});

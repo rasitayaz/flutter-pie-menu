@@ -9,7 +9,7 @@ void main() {
 }
 
 class SandboxApp extends StatelessWidget {
-  const SandboxApp({Key? key}) : super(key: key);
+  const SandboxApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class SandboxApp extends StatelessWidget {
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();

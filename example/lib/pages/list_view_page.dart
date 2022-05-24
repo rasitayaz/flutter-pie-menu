@@ -1,11 +1,9 @@
-import 'package:pie_menu/pie_menu.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pie_menu/pie_menu.dart';
 
 class ListViewPage extends StatefulWidget {
-  const ListViewPage({
-    Key? key,
-  }) : super(key: key);
+  const ListViewPage({super.key});
 
   @override
   State<ListViewPage> createState() => _ListViewPageState();
@@ -41,22 +39,22 @@ class _ListViewPageState extends State<ListViewPage> {
               actions: [
                 PieAction(
                   tooltip: 'Like',
-                  iconData: CupertinoIcons.heart_fill,
+                  child: const Icon(CupertinoIcons.heart_fill),
                   onSelect: () => showSnackBar('Like #$index', context),
                 ),
                 PieAction(
                   tooltip: 'Comment',
-                  iconData: CupertinoIcons.chat_bubble_fill,
+                  child: const Icon(CupertinoIcons.chat_bubble_fill),
                   onSelect: () => showSnackBar('Comment #$index', context),
                 ),
                 PieAction(
                   tooltip: 'Save',
-                  iconData: CupertinoIcons.bookmark_fill,
+                  child: const Icon(CupertinoIcons.bookmark_fill),
                   onSelect: () => showSnackBar('Save #$index', context),
                 ),
                 PieAction(
                   tooltip: 'Share',
-                  iconData: Icons.share,
+                  child: const Icon(Icons.share),
                   onSelect: () => showSnackBar('Share #$index', context),
                 ),
               ],

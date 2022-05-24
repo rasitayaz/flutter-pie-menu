@@ -1,9 +1,9 @@
-import 'package:pie_menu/pie_menu.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pie_menu/pie_menu.dart';
 
 class StylingPage extends StatelessWidget {
-  const StylingPage({Key? key}) : super(key: key);
+  const StylingPage({super.key});
 
   static const double spacing = 20;
   final _pageTheme = const PieTheme(
@@ -68,19 +68,19 @@ class StylingPage extends StatelessWidget {
         actions: [
           PieAction(
             tooltip: 'Play',
-            iconData: CupertinoIcons.play_fill,
+            child: const Icon(CupertinoIcons.play_fill),
             onSelect: () => showSnackBar('Play', context),
-            // For optical correction purposes
+            // Optical correction
             padding: const EdgeInsets.only(left: 4),
           ),
           PieAction(
             tooltip: 'Download',
-            iconData: CupertinoIcons.floppy_disk,
+            child: const Icon(CupertinoIcons.floppy_disk),
             onSelect: () => showSnackBar('Download', context),
           ),
           PieAction(
             tooltip: 'Share',
-            iconData: Icons.share,
+            child: const Icon(Icons.share),
             onSelect: () => showSnackBar('Share', context),
           ),
         ],
@@ -97,7 +97,7 @@ class StylingPage extends StatelessWidget {
       child: PieMenu(
         theme: _pageTheme.copyWith(
           buttonTheme: const PieButtonTheme(backgroundColor: Colors.deepOrange),
-          hoveredButtonTheme: const PieButtonTheme.hovered(
+          buttonThemeHovered: const PieButtonTheme.hovered(
             backgroundColor: Colors.orange,
           ),
           brightness: Brightness.dark,
@@ -106,26 +106,26 @@ class StylingPage extends StatelessWidget {
           PieAction(
             tooltip: 'how',
             onSelect: () => showSnackBar('1', context),
-            customWidget: _buildTextButton('1', false),
-            customHoveredWidget: _buildTextButton('1', true),
+            child: _buildTextButton('1', false),
+            childHovered: _buildTextButton('1', true),
           ),
           PieAction(
             tooltip: 'cool',
             onSelect: () => showSnackBar('2', context),
-            customWidget: _buildTextButton('2', false),
-            customHoveredWidget: _buildTextButton('2', true),
+            child: _buildTextButton('2', false),
+            childHovered: _buildTextButton('2', true),
           ),
           PieAction(
             tooltip: 'is',
             onSelect: () => showSnackBar('3', context),
-            customWidget: _buildTextButton('3', false),
-            customHoveredWidget: _buildTextButton('3', true),
+            child: _buildTextButton('3', false),
+            childHovered: _buildTextButton('3', true),
           ),
           PieAction(
             tooltip: 'this?!',
             onSelect: () => showSnackBar('Pretty cool :)', context),
-            customWidget: _buildTextButton('4', false),
-            customHoveredWidget: _buildTextButton('4', true),
+            child: _buildTextButton('4', false),
+            childHovered: _buildTextButton('4', true),
           ),
         ],
         child: _buildCard(
@@ -154,7 +154,7 @@ class StylingPage extends StatelessWidget {
           brightness: Brightness.dark,
           overlayColor: Colors.green.withOpacity(0.7),
           buttonTheme: const PieButtonTheme(backgroundColor: Colors.red),
-          hoveredButtonTheme: const PieButtonTheme.hovered(
+          buttonThemeHovered: const PieButtonTheme.hovered(
             backgroundColor: Colors.white,
           ),
           buttonSize: 84,
@@ -162,21 +162,20 @@ class StylingPage extends StatelessWidget {
         actions: [
           PieAction(
             tooltip: 'Like the package',
-            iconData: Icons.thumb_up,
             onSelect: () {},
+            child: const Icon(Icons.thumb_up),
           ),
           PieAction(
             tooltip: 'Import to your app',
-            iconData: Icons.scatter_plot,
             // Custom icon size
-            iconSize: 32,
+            child: const Icon(Icons.scatter_plot, size: 32),
             // Custom background color
             buttonTheme: PieButtonTheme(backgroundColor: Colors.red[700]),
             onSelect: () {},
           ),
           PieAction(
             tooltip: 'Leave a feedback',
-            iconData: CupertinoIcons.chat_bubble_text_fill,
+            child: const Icon(CupertinoIcons.chat_bubble_text_fill),
             buttonTheme: PieButtonTheme(backgroundColor: Colors.red[900]),
             onSelect: () {},
           ),

@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pie_menu/src/action.dart';
 import 'package:pie_menu/src/canvas.dart';
 import 'package:pie_menu/src/menu.dart';
@@ -11,14 +10,14 @@ import 'package:pie_menu/src/theme.dart';
 class PieButton extends StatefulWidget {
   /// Creates a [PieButton] that is specialized for a [PieAction].
   const PieButton({
-    Key? key,
+    super.key,
     required this.action,
     required this.menuOpen,
     required this.hovered,
     required this.theme,
     required this.fadeDuration,
     required this.hoverDuration,
-  }) : super(key: key);
+  });
 
   /// Action to display.
   final PieAction action;
@@ -39,7 +38,7 @@ class PieButton extends StatefulWidget {
   final Duration hoverDuration;
 
   @override
-  _PieButtonState createState() => _PieButtonState();
+  State<PieButton> createState() => _PieButtonState();
 }
 
 class _PieButtonState extends State<PieButton>
@@ -60,8 +59,8 @@ class _PieButtonState extends State<PieButton>
     return action.buttonTheme ?? theme.buttonTheme;
   }
 
-  PieButtonTheme get hoveredButtonTheme {
-    return action.hoveredButtonTheme ?? theme.hoveredButtonTheme;
+  PieButtonTheme get buttonThemeHovered {
+    return action.buttonThemeHovered ?? theme.buttonThemeHovered;
   }
 
   @override
@@ -119,28 +118,30 @@ class _PieButtonState extends State<PieButton>
                   height: theme.buttonSize,
                   width: theme.buttonSize,
                   decoration: (widget.hovered
-                          ? hoveredButtonTheme.decoration
+                          ? buttonThemeHovered.decoration
                           : buttonTheme.decoration) ??
                       BoxDecoration(
                         shape: BoxShape.circle,
                         color: widget.hovered
-                            ? hoveredButtonTheme.backgroundColor
+                            ? buttonThemeHovered.backgroundColor
                             : buttonTheme.backgroundColor,
                       ),
                   child: Center(
                     child: Padding(
                       padding: action.padding,
-                      child: (widget.hovered
-                              ? (action.customHoveredWidget ??
-                                  action.customWidget)
-                              : action.customWidget) ??
-                          FaIcon(
-                            action.iconData,
-                            size: action.iconSize ?? theme.iconSize,
+                      child: Theme(
+                        data: Theme.of(context).copyWith(
+                          iconTheme: IconThemeData(
                             color: widget.hovered
-                                ? hoveredButtonTheme.iconColor
+                                ? buttonThemeHovered.iconColor
                                 : buttonTheme.iconColor,
+                            size: theme.iconSize,
                           ),
+                        ),
+                        child: widget.hovered
+                            ? (action.childHovered ?? action.child)
+                            : action.child,
+                      ),
                     ),
                   ),
                 ),

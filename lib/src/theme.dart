@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pie_menu/src/button.dart';
 import 'package:pie_menu/src/canvas.dart';
 import 'package:pie_menu/src/menu.dart';
-import 'package:pie_menu/src/button.dart';
 
 /// Defines the behavior and the appearance
 /// of the [PieCanvas] and [PieMenu] widgets.
@@ -12,7 +12,7 @@ class PieTheme {
     this.overlayColor,
     this.pointerColor,
     this.buttonTheme = const PieButtonTheme(),
-    this.hoveredButtonTheme = const PieButtonTheme.hovered(),
+    this.buttonThemeHovered = const PieButtonTheme.hovered(),
     this.iconSize,
     this.distance = 96,
     this.buttonSize = 56,
@@ -22,7 +22,7 @@ class PieTheme {
     this.bounceDuration = const Duration(seconds: 1),
     this.fadeDuration = const Duration(milliseconds: 250),
     this.hoverDuration = const Duration(milliseconds: 250),
-    this.delayDuration = const Duration(milliseconds: 500),
+    this.delayDuration = const Duration(milliseconds: 400),
   });
 
   /// How the background and tooltip texts should be displayed
@@ -40,7 +40,7 @@ class PieTheme {
   final PieButtonTheme buttonTheme;
 
   /// Theme of the [PieButton] when it is hovered.
-  final PieButtonTheme hoveredButtonTheme;
+  final PieButtonTheme buttonThemeHovered;
 
   /// Size of the icon to be displayed on the [PieButton].
   final double? iconSize;
@@ -85,7 +85,7 @@ class PieTheme {
     Color? overlayColor,
     Color? pointerColor,
     PieButtonTheme? buttonTheme,
-    PieButtonTheme? hoveredButtonTheme,
+    PieButtonTheme? buttonThemeHovered,
     double? distance,
     double? buttonSize,
     double? pointerSize,
@@ -101,7 +101,7 @@ class PieTheme {
       overlayColor: overlayColor ?? this.overlayColor,
       pointerColor: pointerColor ?? this.pointerColor,
       buttonTheme: buttonTheme ?? this.buttonTheme,
-      hoveredButtonTheme: hoveredButtonTheme ?? this.hoveredButtonTheme,
+      buttonThemeHovered: buttonThemeHovered ?? this.buttonThemeHovered,
       distance: distance ?? this.distance,
       buttonSize: buttonSize ?? this.buttonSize,
       pointerSize: pointerSize ?? this.pointerSize,
