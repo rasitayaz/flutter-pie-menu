@@ -140,8 +140,6 @@ Buttons' background and icon colors are defined by theme's `buttonTheme` and `bu
 ```dart
 PieTheme(
   buttonTheme: PieButtonTheme(),
-
-  // Using 'hovered' constructor is not necessary
-  buttonThemeHovered: PieButtonTheme.hovered(),
+  buttonThemeHovered: PieButtonTheme(),
 ),
 ```
