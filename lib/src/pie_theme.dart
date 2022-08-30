@@ -11,18 +11,24 @@ class PieTheme {
     this.brightness = Brightness.light,
     this.overlayColor,
     this.pointerColor,
-    this.buttonTheme = const PieButtonTheme(),
-    this.buttonThemeHovered = const PieButtonTheme.hovered(),
+    this.buttonTheme = const PieButtonTheme(
+      backgroundColor: Colors.blue,
+      iconColor: Colors.white,
+    ),
+    this.buttonThemeHovered = const PieButtonTheme(
+      backgroundColor: Colors.lime,
+      iconColor: Colors.black,
+    ),
     this.iconSize,
     this.distance = 96,
     this.buttonSize = 56,
     this.pointerSize = 42,
-    this.tooltipPadding = 32,
+    this.tooltipPadding = const EdgeInsets.symmetric(horizontal: 32),
     this.tooltipStyle,
     this.bounceDuration = const Duration(seconds: 1),
     this.fadeDuration = const Duration(milliseconds: 250),
     this.hoverDuration = const Duration(milliseconds: 250),
-    this.delayDuration = const Duration(milliseconds: 400),
+    this.delayDuration = const Duration(milliseconds: 250),
   });
 
   /// How the background and tooltip texts should be displayed
@@ -55,7 +61,7 @@ class PieTheme {
   final double pointerSize;
 
   /// Padding value of the tooltip at the edges of the [PieCanvas].
-  final double tooltipPadding;
+  final EdgeInsets tooltipPadding;
 
   /// Style of the tooltip text.
   final TextStyle? tooltipStyle;
@@ -89,7 +95,7 @@ class PieTheme {
     double? distance,
     double? buttonSize,
     double? pointerSize,
-    double? tooltipPadding,
+    EdgeInsets? tooltipPadding,
     TextStyle? tooltipStyle,
     Duration? bounceDuration,
     Duration? fadeDuration,
@@ -118,15 +124,8 @@ class PieTheme {
 /// Defines the appearance of the circular buttons.
 class PieButtonTheme {
   const PieButtonTheme({
-    this.backgroundColor = Colors.blue,
-    this.iconColor = Colors.white,
-    this.decoration,
-  });
-
-  /// Creates a [PieButtonTheme] with the hovered style defaults.
-  const PieButtonTheme.hovered({
-    this.backgroundColor = Colors.lime,
-    this.iconColor = Colors.black,
+    required this.backgroundColor,
+    required this.iconColor,
     this.decoration,
   });
 

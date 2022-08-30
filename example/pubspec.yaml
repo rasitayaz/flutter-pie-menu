@@ -15,6 +15,7 @@ dependencies:
 
   url_launcher: ^6.1.5
   font_awesome_flutter: ^10.1.0
+  flutter_bounceable: ^1.0.3
 
 dev_dependencies:
   flutter_test:

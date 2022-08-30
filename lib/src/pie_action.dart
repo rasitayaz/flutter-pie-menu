@@ -9,11 +9,11 @@ class PieAction {
   PieAction({
     required this.tooltip,
     required this.onSelect,
-    required this.child,
-    this.childHovered,
     this.padding = EdgeInsets.zero,
     this.buttonTheme,
     this.buttonThemeHovered,
+    this.childHovered,
+    required this.child,
   });
 
   /// * [PieButton] refers to the button this [PieAction] belongs to.

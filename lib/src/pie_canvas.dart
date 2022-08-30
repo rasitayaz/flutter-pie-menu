@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pie_menu/src/displayed_canvas.dart';
+import 'package:pie_menu/src/pie_canvas_overlay.dart';
+import 'package:pie_menu/src/pie_canvas_provider.dart';
 import 'package:pie_menu/src/pie_menu.dart';
 import 'package:pie_menu/src/pie_theme.dart';
 
@@ -8,9 +9,9 @@ import 'package:pie_menu/src/pie_theme.dart';
 class PieCanvas extends StatefulWidget {
   const PieCanvas({
     super.key,
-    required this.child,
     this.theme = const PieTheme(),
     this.onMenuToggle,
+    required this.child,
   });
 
   /// Widget to display behind the canvas.
@@ -34,11 +35,11 @@ class PieCanvas extends StatefulWidget {
 }
 
 class _PieCanvasState extends State<PieCanvas> {
-  final _canvasKey = GlobalKey<DisplayedCanvasState>();
+  final _canvasKey = GlobalKey<PieCanvasOverlayState>();
 
   @override
   Widget build(BuildContext context) {
-    return InheritedCanvas(
+    return PieCanvasProvider(
       canvasKey: _canvasKey,
       theme: widget.theme,
       onMenuToggle: widget.onMenuToggle,

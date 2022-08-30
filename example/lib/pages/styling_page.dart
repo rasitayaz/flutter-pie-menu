@@ -1,12 +1,13 @@
+import 'package:example/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pie_menu/pie_menu.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class StylingPage extends StatelessWidget {
   const StylingPage({super.key});
 
   static const double spacing = 20;
+
   final _pageTheme = const PieTheme(
     delayDuration: Duration.zero,
   );
@@ -70,19 +71,19 @@ class StylingPage extends StatelessWidget {
           PieAction(
             tooltip: 'Play',
             child: const FaIcon(FontAwesomeIcons.play),
-            onSelect: () => showSnackBar('Play', context),
+            onSelect: () => context.showSnackBar('Play'),
             // Optical correction
             padding: const EdgeInsets.only(left: 4),
           ),
           PieAction(
             tooltip: 'Download',
             child: const FaIcon(FontAwesomeIcons.download),
-            onSelect: () => showSnackBar('Download', context),
+            onSelect: () => context.showSnackBar('Download'),
           ),
           PieAction(
             tooltip: 'Share',
             child: const FaIcon(FontAwesomeIcons.share),
-            onSelect: () => showSnackBar('Share', context),
+            onSelect: () => context.showSnackBar('Share'),
           ),
         ],
         child: _buildCard(
@@ -97,34 +98,38 @@ class StylingPage extends StatelessWidget {
     return Expanded(
       child: PieMenu(
         theme: _pageTheme.copyWith(
-          buttonTheme: const PieButtonTheme(backgroundColor: Colors.deepOrange),
-          buttonThemeHovered: const PieButtonTheme.hovered(
+          buttonTheme: const PieButtonTheme(
+            backgroundColor: Colors.deepOrange,
+            iconColor: Colors.white,
+          ),
+          buttonThemeHovered: const PieButtonTheme(
             backgroundColor: Colors.orange,
+            iconColor: Colors.black,
           ),
           brightness: Brightness.dark,
         ),
         actions: [
           PieAction(
             tooltip: 'how',
-            onSelect: () => showSnackBar('1', context),
+            onSelect: () => context.showSnackBar('1'),
             child: _buildTextButton('1', false),
             childHovered: _buildTextButton('1', true),
           ),
           PieAction(
             tooltip: 'cool',
-            onSelect: () => showSnackBar('2', context),
+            onSelect: () => context.showSnackBar('2'),
             child: _buildTextButton('2', false),
             childHovered: _buildTextButton('2', true),
           ),
           PieAction(
             tooltip: 'is',
-            onSelect: () => showSnackBar('3', context),
+            onSelect: () => context.showSnackBar('3'),
             child: _buildTextButton('3', false),
             childHovered: _buildTextButton('3', true),
           ),
           PieAction(
             tooltip: 'this?!',
-            onSelect: () => showSnackBar('Pretty cool :)', context),
+            onSelect: () => context.showSnackBar('Pretty cool :)'),
             child: _buildTextButton('4', false),
             childHovered: _buildTextButton('4', true),
           ),
@@ -156,9 +161,11 @@ class StylingPage extends StatelessWidget {
           overlayColor: Colors.green.withOpacity(0.7),
           buttonTheme: const PieButtonTheme(
             backgroundColor: Colors.red,
+            iconColor: Colors.white,
           ),
-          buttonThemeHovered: const PieButtonTheme.hovered(
+          buttonThemeHovered: const PieButtonTheme(
             backgroundColor: Colors.white,
+            iconColor: Colors.black,
           ),
           buttonSize: 84,
         ),
@@ -166,7 +173,7 @@ class StylingPage extends StatelessWidget {
           PieAction(
             tooltip: 'Like the package',
             onSelect: () {
-              launchUrl(Uri.parse('https://pub.dev/packages/pie_menu'));
+              launchUrlExternally('https://pub.dev/packages/pie_menu');
             },
             child: const FaIcon(FontAwesomeIcons.solidThumbsUp),
           ),
@@ -177,9 +184,10 @@ class StylingPage extends StatelessWidget {
             // Custom background color
             buttonTheme: const PieButtonTheme(
               backgroundColor: Colors.deepOrange,
+              iconColor: Colors.white,
             ),
             onSelect: () {
-              launchUrl(Uri.parse('https://pub.dev/packages/pie_menu'));
+              launchUrlExternally('https://pub.dev/packages/pie_menu');
             },
           ),
           PieAction(
@@ -187,9 +195,10 @@ class StylingPage extends StatelessWidget {
             child: const FaIcon(FontAwesomeIcons.share),
             buttonTheme: const PieButtonTheme(
               backgroundColor: Colors.orange,
+              iconColor: Colors.white,
             ),
             onSelect: () {
-              launchUrl(Uri.parse('https://pub.dev/packages/pie_menu'));
+              launchUrlExternally('https://pub.dev/packages/pie_menu');
             },
           ),
         ],
@@ -197,16 +206,6 @@ class StylingPage extends StatelessWidget {
           color: Colors.blue,
           iconData: FontAwesomeIcons.magnifyingGlassPlus,
         ),
-      ),
-    );
-  }
-
-  void showSnackBar(String message, BuildContext context) {
-    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 2),
       ),
     );
   }

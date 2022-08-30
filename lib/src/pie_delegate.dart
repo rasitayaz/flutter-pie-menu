@@ -78,9 +78,10 @@ class PieDelegate extends FlowDelegate {
 
   @override
   BoxConstraints getConstraintsForChild(int i, BoxConstraints constraints) {
-    Size size = i == 0
-        ? Size(theme.pointerSize, theme.pointerSize)
-        : Size(theme.buttonSize, theme.buttonSize);
-    return BoxConstraints.tight(size);
+    return BoxConstraints.tight(
+      i == 0
+          ? Size(theme.pointerSize, theme.pointerSize)
+          : Size(theme.buttonSize, theme.buttonSize),
+    );
   }
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pie_menu/src/displayed_canvas.dart';
 import 'package:pie_menu/src/pie_action.dart';
 import 'package:pie_menu/src/pie_button.dart';
 import 'package:pie_menu/src/pie_canvas.dart';
+import 'package:pie_menu/src/pie_canvas_provider.dart';
 import 'package:pie_menu/src/pie_theme.dart';
 
 /// Widget that displays [PieAction]s as circular buttons for its child.
@@ -10,10 +10,10 @@ class PieMenu extends StatefulWidget {
   const PieMenu({
     super.key,
     this.theme,
-    required this.child,
     this.actions = const [],
     this.onToggle,
     this.visibleMenuChild,
+    required this.child,
   });
 
   /// Theme to use for this menu, overrides [PieCanvas] theme.
@@ -33,34 +33,51 @@ class PieMenu extends StatefulWidget {
   final Function(bool menuVisible)? onToggle;
 
   @override
-  State<PieMenu> createState() => _PieMenuState();
+  State<PieMenu> createState() => PieMenuState();
 }
 
-class _PieMenuState extends State<PieMenu> {
-  late DisplayedCanvasState _canvasState;
-  RenderBox? _renderBox;
+class PieMenuState extends State<PieMenu> {
+  bool _childVisible = true;
+
+  void setVisibility(bool visible) {
+    if (visible != _childVisible) {
+      setState(() {
+        _childVisible = visible;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     try {
-      _canvasState = InheritedCanvas.of(context)!.canvasKey.currentState!;
-
+      final canvas = PieCanvasProvider.of(context)?.canvasKey.currentState;
       return Listener(
         behavior: HitTestBehavior.translucent,
         onPointerDown: (event) {
-          _renderBox = context.findRenderObject() as RenderBox;
-          _canvasState.pointerDown(
+          if (canvas == null) {
+            throw Exception(
+              'Could not find any PieCanvas.\n'
+              'Please make sure there is a PieCanvas at the parent widget hierarchy of PieMenu.\n\n'
+              'For more information, see the pie_menu documentation.\n'
+              'https://pub.dev/packages/pie_menu',
+            );
+          }
+          canvas.pointerDown(
+            state: this,
             child: widget.visibleMenuChild ?? widget.child,
-            renderBox: _renderBox!,
+            renderBox: context.findRenderObject() as RenderBox,
             offset: event.position,
             actions: widget.actions,
             theme: widget.theme,
             onMenuToggle: widget.onToggle,
           );
         },
-        onPointerMove: (event) => _canvasState.pointerMove(event.position),
-        onPointerUp: (event) => _canvasState.pointerUp(event.position),
-        child: widget.child,
+        onPointerMove: (event) => canvas?.pointerMove(event.position),
+        onPointerUp: (event) => canvas?.pointerUp(event.position),
+        child: Opacity(
+          opacity: _childVisible ? 1 : 0,
+          child: widget.child,
+        ),
       );
     } catch (e) {
       return widget.child;

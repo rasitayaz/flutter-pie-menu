@@ -1,3 +1,4 @@
+import 'package:example/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pie_menu/pie_menu.dart';
@@ -40,30 +41,29 @@ class _ListViewPageState extends State<ListViewPage> {
                 PieAction(
                   tooltip: 'Like',
                   child: const FaIcon(FontAwesomeIcons.solidHeart),
-                  onSelect: () => showSnackBar('Like #$index', context),
+                  onSelect: () => context.showSnackBar('Like #$index'),
                 ),
                 PieAction(
                   tooltip: 'Comment',
                   child: const FaIcon(FontAwesomeIcons.solidComment),
-                  onSelect: () => showSnackBar('Comment #$index', context),
+                  onSelect: () => context.showSnackBar('Comment #$index'),
                 ),
                 PieAction(
                   tooltip: 'Save',
                   child: const FaIcon(FontAwesomeIcons.solidBookmark),
-                  onSelect: () => showSnackBar('Save #$index', context),
+                  onSelect: () => context.showSnackBar('Save #$index'),
                 ),
                 PieAction(
                   tooltip: 'Share',
                   child: const FaIcon(FontAwesomeIcons.share),
-                  onSelect: () => showSnackBar('Share #$index', context),
+                  onSelect: () => context.showSnackBar('Share #$index'),
                 ),
               ],
               child: GestureDetector(
                 onTap: _menuVisible
                     ? null
-                    : () => showSnackBar(
-                          'Tap #$index (Long press to display Pie Menu)',
-                          context,
+                    : () => context.showSnackBar(
+                          'Tap #$index (Long press for Pie Menu)',
                         ),
                 child: Container(
                   decoration: BoxDecoration(
@@ -85,16 +85,6 @@ class _ListViewPageState extends State<ListViewPage> {
             ),
           );
         },
-      ),
-    );
-  }
-
-  void showSnackBar(String message, BuildContext context) {
-    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 2),
       ),
     );
   }

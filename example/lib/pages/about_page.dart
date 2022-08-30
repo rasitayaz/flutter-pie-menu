@@ -1,7 +1,7 @@
+import 'package:example/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pie_menu/pie_menu.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
@@ -11,9 +11,17 @@ class AboutPage extends StatelessWidget {
     return PieCanvas(
       theme: PieTheme(
         delayDuration: Duration.zero,
-        buttonTheme: const PieButtonTheme(backgroundColor: Colors.black),
-        buttonThemeHovered: PieButtonTheme.hovered(
+        tooltipStyle: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w900,
+        ),
+        buttonTheme: const PieButtonTheme(
+          backgroundColor: Colors.black,
+          iconColor: Colors.white,
+        ),
+        buttonThemeHovered: PieButtonTheme(
           backgroundColor: Colors.lime[200],
+          iconColor: Colors.black,
         ),
         overlayColor: Colors.blue[200]!.withOpacity(0.5),
       ),
@@ -21,21 +29,23 @@ class AboutPage extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            const FlutterLogo(size: 200),
+            const SizedBox(height: 32),
             PieMenu(
               actions: [
                 PieAction(
                   tooltip: 'github.com/rasitayaz',
                   child: const FaIcon(FontAwesomeIcons.github),
                   onSelect: () {
-                    launchUrl(Uri.parse('https://github.com/rasitayaz'));
+                    launchUrlExternally('https://github.com/rasitayaz');
                   },
                 ),
                 PieAction(
                   tooltip: 'in/rasitayaz',
                   child: const FaIcon(FontAwesomeIcons.linkedinIn),
                   onSelect: () {
-                    launchUrl(
-                      Uri.parse('https://www.linkedin.com/in/rasitayaz/'),
+                    launchUrlExternally(
+                      'https://www.linkedin.com/in/rasitayaz/',
                     );
                   },
                 ),
@@ -43,42 +53,38 @@ class AboutPage extends StatelessWidget {
                   tooltip: 'mrasitayaz@gmail.com',
                   child: const FaIcon(FontAwesomeIcons.solidEnvelope),
                   onSelect: () {
-                    launchUrl(Uri.parse('mailto:mrasitayaz@gmail.com'));
+                    launchUrlExternally('mailto:mrasitayaz@gmail.com');
                   },
                 ),
               ],
               child: Container(
+                padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
                   color: Colors.blue,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(32),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Text(
-                        'created by',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 36,
-                        ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Text(
+                      'created by',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 36,
                       ),
-                      Text(
-                        'Raşit Ayaz.',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 48,
-                        ),
+                    ),
+                    Text(
+                      'Raşit Ayaz.',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 48,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
-            const SizedBox(height: 32),
-            const FlutterLogo(size: 200),
           ],
         ),
       ),
