@@ -241,8 +241,13 @@ class StylingPage extends StatelessWidget {
     return Expanded(
       child: PieMenu(
         theme: _pageTheme.copyWith(
-          brightness: Brightness.dark,
-          overlayColor: Colors.green.withOpacity(0.7),
+          tooltipStyle: const TextStyle(
+            fontSize: 32,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+          pointerColor: Colors.red.withOpacity(0.5),
+          overlayColor: Colors.lightGreen.withOpacity(0.7),
           buttonTheme: const PieButtonTheme(
             backgroundColor: Colors.red,
             iconColor: Colors.white,
