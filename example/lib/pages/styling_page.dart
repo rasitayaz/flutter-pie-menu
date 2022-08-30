@@ -1,6 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pie_menu/pie_menu.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class StylingPage extends StatelessWidget {
   const StylingPage({super.key});
@@ -53,7 +54,7 @@ class StylingPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Center(
-        child: Icon(
+        child: FaIcon(
           iconData,
           color: Colors.white,
           size: 64,
@@ -68,25 +69,25 @@ class StylingPage extends StatelessWidget {
         actions: [
           PieAction(
             tooltip: 'Play',
-            child: const Icon(CupertinoIcons.play_fill),
+            child: const FaIcon(FontAwesomeIcons.play),
             onSelect: () => showSnackBar('Play', context),
             // Optical correction
             padding: const EdgeInsets.only(left: 4),
           ),
           PieAction(
             tooltip: 'Download',
-            child: const Icon(CupertinoIcons.floppy_disk),
+            child: const FaIcon(FontAwesomeIcons.download),
             onSelect: () => showSnackBar('Download', context),
           ),
           PieAction(
             tooltip: 'Share',
-            child: const Icon(Icons.share),
+            child: const FaIcon(FontAwesomeIcons.share),
             onSelect: () => showSnackBar('Share', context),
           ),
         ],
         child: _buildCard(
           color: Colors.deepOrangeAccent,
-          iconData: CupertinoIcons.video_camera_solid,
+          iconData: FontAwesomeIcons.video,
         ),
       ),
     );
@@ -130,7 +131,7 @@ class StylingPage extends StatelessWidget {
         ],
         child: _buildCard(
           color: Colors.deepPurple,
-          iconData: CupertinoIcons.moon_fill,
+          iconData: FontAwesomeIcons.solidMoon,
         ),
       ),
     );
@@ -153,7 +154,9 @@ class StylingPage extends StatelessWidget {
         theme: _pageTheme.copyWith(
           brightness: Brightness.dark,
           overlayColor: Colors.green.withOpacity(0.7),
-          buttonTheme: const PieButtonTheme(backgroundColor: Colors.red),
+          buttonTheme: const PieButtonTheme(
+            backgroundColor: Colors.red,
+          ),
           buttonThemeHovered: const PieButtonTheme.hovered(
             backgroundColor: Colors.white,
           ),
@@ -162,27 +165,37 @@ class StylingPage extends StatelessWidget {
         actions: [
           PieAction(
             tooltip: 'Like the package',
-            onSelect: () {},
-            child: const Icon(Icons.thumb_up),
+            onSelect: () {
+              launchUrl(Uri.parse('https://pub.dev/packages/pie_menu'));
+            },
+            child: const FaIcon(FontAwesomeIcons.solidThumbsUp),
           ),
           PieAction(
             tooltip: 'Import to your app',
             // Custom icon size
-            child: const Icon(Icons.scatter_plot, size: 32),
+            child: const FaIcon(FontAwesomeIcons.download),
             // Custom background color
-            buttonTheme: PieButtonTheme(backgroundColor: Colors.red[700]),
-            onSelect: () {},
+            buttonTheme: const PieButtonTheme(
+              backgroundColor: Colors.deepOrange,
+            ),
+            onSelect: () {
+              launchUrl(Uri.parse('https://pub.dev/packages/pie_menu'));
+            },
           ),
           PieAction(
-            tooltip: 'Leave a feedback',
-            child: const Icon(CupertinoIcons.chat_bubble_text_fill),
-            buttonTheme: PieButtonTheme(backgroundColor: Colors.red[900]),
-            onSelect: () {},
+            tooltip: 'Share with other developers',
+            child: const FaIcon(FontAwesomeIcons.share),
+            buttonTheme: const PieButtonTheme(
+              backgroundColor: Colors.orange,
+            ),
+            onSelect: () {
+              launchUrl(Uri.parse('https://pub.dev/packages/pie_menu'));
+            },
           ),
         ],
         child: _buildCard(
           color: Colors.blue,
-          iconData: CupertinoIcons.zoom_in,
+          iconData: FontAwesomeIcons.magnifyingGlassPlus,
         ),
       ),
     );

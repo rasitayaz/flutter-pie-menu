@@ -1,8 +1,8 @@
 import 'package:example/pages/about_page.dart';
 import 'package:example/pages/list_view_page.dart';
 import 'package:example/pages/styling_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 void main() {
   runApp(const SandboxApp());
@@ -54,15 +54,15 @@ class _HomePageState extends State<HomePage> {
         onTap: (index) => setState(() => _navigationIndex = index),
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.palette),
+            icon: FaIcon(FontAwesomeIcons.palette),
             label: 'Styling',
           ),
           BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.square_list_fill),
+            icon: FaIcon(FontAwesomeIcons.list),
             label: 'ListView',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.scatter_plot),
+            icon: FaIcon(FontAwesomeIcons.circleInfo),
             label: 'About',
           ),
         ],

@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pie_menu/pie_menu.dart';
 
 class ListViewPage extends StatefulWidget {
@@ -39,22 +39,22 @@ class _ListViewPageState extends State<ListViewPage> {
               actions: [
                 PieAction(
                   tooltip: 'Like',
-                  child: const Icon(CupertinoIcons.heart_fill),
+                  child: const FaIcon(FontAwesomeIcons.solidHeart),
                   onSelect: () => showSnackBar('Like #$index', context),
                 ),
                 PieAction(
                   tooltip: 'Comment',
-                  child: const Icon(CupertinoIcons.chat_bubble_fill),
+                  child: const FaIcon(FontAwesomeIcons.solidComment),
                   onSelect: () => showSnackBar('Comment #$index', context),
                 ),
                 PieAction(
                   tooltip: 'Save',
-                  child: const Icon(CupertinoIcons.bookmark_fill),
+                  child: const FaIcon(FontAwesomeIcons.solidBookmark),
                   onSelect: () => showSnackBar('Save #$index', context),
                 ),
                 PieAction(
                   tooltip: 'Share',
-                  child: const Icon(Icons.share),
+                  child: const FaIcon(FontAwesomeIcons.share),
                   onSelect: () => showSnackBar('Share #$index', context),
                 ),
               ],

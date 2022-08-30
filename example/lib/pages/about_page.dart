@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pie_menu/pie_menu.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
-
-  void _openUrl(String url) async {
-    await launchUrl(Uri.parse(url));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,39 +24,26 @@ class AboutPage extends StatelessWidget {
             PieMenu(
               actions: [
                 PieAction(
-                  tooltip: 'GitHub',
-                  child: const Icon(Icons.language),
+                  tooltip: 'github.com/rasitayaz',
+                  child: const FaIcon(FontAwesomeIcons.github),
                   onSelect: () {
-                    _openUrl('https://github.com/rasitayaz');
+                    launchUrl(Uri.parse('https://github.com/rasitayaz'));
                   },
                 ),
                 PieAction(
-                  tooltip: 'LinkedIn',
-                  child: const Text(
-                    'in',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  childHovered: const Text(
-                    'in',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
+                  tooltip: 'in/rasitayaz',
+                  child: const FaIcon(FontAwesomeIcons.linkedinIn),
                   onSelect: () {
-                    _openUrl('https://www.linkedin.com/in/rasitayaz/');
+                    launchUrl(
+                      Uri.parse('https://www.linkedin.com/in/rasitayaz/'),
+                    );
                   },
                 ),
                 PieAction(
                   tooltip: 'mrasitayaz@gmail.com',
-                  child: const Icon(Icons.mail_rounded),
+                  child: const FaIcon(FontAwesomeIcons.solidEnvelope),
                   onSelect: () {
-                    _openUrl('mailto:mrasitayaz@gmail.com');
+                    launchUrl(Uri.parse('mailto:mrasitayaz@gmail.com'));
                   },
                 ),
               ],
