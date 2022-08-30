@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pie_menu/src/displayed_canvas.dart';
-import 'package:pie_menu/src/menu.dart';
-import 'package:pie_menu/src/theme.dart';
+import 'package:pie_menu/src/pie_menu.dart';
+import 'package:pie_menu/src/pie_theme.dart';
 
 /// An overlay widget that displays the [PieMenu]s physically
 /// and highlights the child widgets of the menus.

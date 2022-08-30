@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:pie_menu/src/action.dart';
-import 'package:pie_menu/src/button.dart';
-import 'package:pie_menu/src/canvas.dart';
 import 'package:pie_menu/src/delegate.dart';
-import 'package:pie_menu/src/menu.dart';
-import 'package:pie_menu/src/theme.dart';
+import 'package:pie_menu/src/pie_action.dart';
+import 'package:pie_menu/src/pie_button.dart';
+import 'package:pie_menu/src/pie_canvas.dart';
+import 'package:pie_menu/src/pie_menu.dart';
+import 'package:pie_menu/src/pie_theme.dart';
 import 'package:vector_math/vector_math.dart' hide Colors;
 
 /// This widget provides a global [DisplayedCanvasState] key

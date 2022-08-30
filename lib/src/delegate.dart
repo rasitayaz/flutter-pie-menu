@@ -1,10 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:pie_menu/src/button.dart';
-import 'package:pie_menu/src/canvas.dart';
-import 'package:pie_menu/src/menu.dart';
-import 'package:pie_menu/src/theme.dart';
+import 'package:pie_menu/src/pie_button.dart';
+import 'package:pie_menu/src/pie_canvas.dart';
+import 'package:pie_menu/src/pie_menu.dart';
+import 'package:pie_menu/src/pie_theme.dart';
 import 'package:vector_math/vector_math.dart' hide Matrix4;
 
 /// Customized [FlowDelegate] to size and position children efficiently.

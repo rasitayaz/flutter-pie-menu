@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pie_menu/src/button.dart';
-import 'package:pie_menu/src/canvas.dart';
-import 'package:pie_menu/src/menu.dart';
+import 'package:pie_menu/src/pie_button.dart';
+import 'package:pie_menu/src/pie_canvas.dart';
+import 'package:pie_menu/src/pie_menu.dart';
 
 /// Defines the behavior and the appearance
 /// of the [PieCanvas] and [PieMenu] widgets.
