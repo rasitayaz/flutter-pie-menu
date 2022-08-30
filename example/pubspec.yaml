@@ -13,8 +13,8 @@ dependencies:
   pie_menu:
     path: ../
 
-  cupertino_icons: ^1.0.4
-  url_launcher: ^6.1.2
+  cupertino_icons: ^1.0.5
+  url_launcher: ^6.1.5
 
 dev_dependencies:
   flutter_test:

@@ -5,6 +5,10 @@ import 'package:url_launcher/url_launcher.dart';
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
 
+  void _openUrl(String url) async {
+    await launchUrl(Uri.parse(url));
+  }
+
   @override
   Widget build(BuildContext context) {
     return PieCanvas(
@@ -26,7 +30,7 @@ class AboutPage extends StatelessWidget {
                   tooltip: 'GitHub',
                   child: const Icon(Icons.language),
                   onSelect: () {
-                    openLink('https://github.com/rasitayaz');
+                    _openUrl('https://github.com/rasitayaz');
                   },
                 ),
                 PieAction(
@@ -48,14 +52,14 @@ class AboutPage extends StatelessWidget {
                     ),
                   ),
                   onSelect: () {
-                    openLink('https://www.linkedin.com/in/rasitayaz/');
+                    _openUrl('https://www.linkedin.com/in/rasitayaz/');
                   },
                 ),
                 PieAction(
                   tooltip: 'mrasitayaz@gmail.com',
                   child: const Icon(Icons.mail_rounded),
                   onSelect: () {
-                    openLink('mailto:mrasitayaz@gmail.com');
+                    _openUrl('mailto:mrasitayaz@gmail.com');
                   },
                 ),
               ],
@@ -95,11 +99,5 @@ class AboutPage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void openLink(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    }
   }
 }
