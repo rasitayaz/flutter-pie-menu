@@ -1,3 +1,10 @@
+## 1.1.0
+
+* Added bouncing menu child animation. (Can be customized or disabled with `PieTheme`)
+* Added `onTap` callback to `PieMenu`.
+* Clicking the center of the menu now dismisses it.
+* Bug fixes and stabilization improvements.
+
 ## 1.0.0
 
 * Migrated to Flutter 3
