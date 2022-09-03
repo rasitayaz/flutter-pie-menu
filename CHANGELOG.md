@@ -1,9 +1,16 @@
+## 1.1.0
+
+* Added bouncing menu child animation. (Can be customized or disabled with `PieTheme`)
+* Added `onTap` callback to `PieMenu`.
+* Clicking the center of the menu now dismisses it.
+* Bug fixes and stabilization improvements.
+
 ## 1.0.0
 
 * Migrated to Flutter 3
-* Updated `PieAction` properties, now `child` and `childHovered` should be used instead of iconData, customWidget, customHoveredWidget.
-* No longer depends on the `font_awesome_flutter` package, because icons can be specified as widgets.
-* Some property names are updated. Check out documentation for more info.
+* Updated `PieAction` properties, now `child` and `childHovered` should be used instead of the old `iconData`, `customWidget`, `customHoveredWidget` properties.
+* No longer depends on the `font_awesome_flutter` package, because icons should be specified as widgets.
+* Some property names are updated. Check the documentation for more info.
 
 ## 0.2.0
 
