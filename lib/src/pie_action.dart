@@ -12,8 +12,8 @@ class PieAction {
     this.padding = EdgeInsets.zero,
     this.buttonTheme,
     this.buttonThemeHovered,
-    this.childHovered,
     required this.child,
+    this.childHovered,
   });
 
   /// * [PieButton] refers to the button this [PieAction] belongs to.

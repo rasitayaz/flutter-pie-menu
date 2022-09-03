@@ -154,21 +154,21 @@ class StylingPage extends StatelessWidget {
         actions: [
           PieAction(
             tooltip: 'Play',
-            child: const FaIcon(FontAwesomeIcons.play),
             onSelect: () => context.showSnackBar('Play'),
+            child: const FaIcon(FontAwesomeIcons.play),
 
             /// Optical correction
             padding: const EdgeInsets.only(left: 4),
           ),
           PieAction(
             tooltip: 'Download',
-            child: const FaIcon(FontAwesomeIcons.download),
             onSelect: () => context.showSnackBar('Download'),
+            child: const FaIcon(FontAwesomeIcons.download),
           ),
           PieAction(
             tooltip: 'Share',
-            child: const FaIcon(FontAwesomeIcons.share),
             onSelect: () => context.showSnackBar('Share'),
+            child: const FaIcon(FontAwesomeIcons.share),
           ),
         ],
         child: _buildCard(
@@ -197,14 +197,14 @@ class StylingPage extends StatelessWidget {
           PieAction(
             tooltip: 'how',
             onSelect: () => context.showSnackBar('1'),
-            child: _buildTextButton('1', false),
             childHovered: _buildTextButton('1', true),
+            child: _buildTextButton('1', false),
           ),
           PieAction(
             tooltip: 'cool',
             onSelect: () => context.showSnackBar('2'),
-            child: _buildTextButton('2', false),
             childHovered: _buildTextButton('2', true),
+            child: _buildTextButton('2', false),
           ),
           PieAction(
             tooltip: 'is',
@@ -269,7 +269,6 @@ class StylingPage extends StatelessWidget {
           ),
           PieAction(
             tooltip: 'Import to your app',
-            child: const FaIcon(FontAwesomeIcons.download),
 
             /// Custom background color
             buttonTheme: const PieButtonTheme(
@@ -279,10 +278,10 @@ class StylingPage extends StatelessWidget {
             onSelect: () {
               launchUrlExternally('https://pub.dev/packages/pie_menu');
             },
+            child: const FaIcon(FontAwesomeIcons.download),
           ),
           PieAction(
             tooltip: 'Share with other developers',
-            child: const FaIcon(FontAwesomeIcons.share),
             buttonTheme: const PieButtonTheme(
               backgroundColor: Colors.orange,
               iconColor: Colors.white,
@@ -290,6 +289,7 @@ class StylingPage extends StatelessWidget {
             onSelect: () {
               launchUrlExternally('https://pub.dev/packages/pie_menu');
             },
+            child: const FaIcon(FontAwesomeIcons.share),
           ),
         ],
         child: _buildCard(
@@ -317,16 +317,11 @@ class _ListViewPageState extends State<ListViewPage> {
   @override
   Widget build(BuildContext context) {
     return PieCanvas(
-      onMenuToggle: (displaying) {
-        setState(() => _menuVisible = displaying);
+      onMenuToggle: (visible) {
+        setState(() => _menuVisible = visible);
       },
       child: ListView.separated(
-        padding: EdgeInsets.only(
-          top: MediaQuery.of(context).padding.top + spacing,
-          bottom: MediaQuery.of(context).padding.bottom + spacing,
-          left: spacing,
-          right: spacing,
-        ),
+        padding: const EdgeInsets.all(spacing),
         physics: _menuVisible
             ? const NeverScrollableScrollPhysics()
             : const BouncingScrollPhysics(),
@@ -342,23 +337,23 @@ class _ListViewPageState extends State<ListViewPage> {
               actions: [
                 PieAction(
                   tooltip: 'Like',
-                  child: const FaIcon(FontAwesomeIcons.solidHeart),
                   onSelect: () => context.showSnackBar('Like #$index'),
+                  child: const FaIcon(FontAwesomeIcons.solidHeart),
                 ),
                 PieAction(
                   tooltip: 'Comment',
-                  child: const FaIcon(FontAwesomeIcons.solidComment),
                   onSelect: () => context.showSnackBar('Comment #$index'),
+                  child: const FaIcon(FontAwesomeIcons.solidComment),
                 ),
                 PieAction(
                   tooltip: 'Save',
-                  child: const FaIcon(FontAwesomeIcons.solidBookmark),
                   onSelect: () => context.showSnackBar('Save #$index'),
+                  child: const FaIcon(FontAwesomeIcons.solidBookmark),
                 ),
                 PieAction(
                   tooltip: 'Share',
-                  child: const FaIcon(FontAwesomeIcons.share),
                   onSelect: () => context.showSnackBar('Share #$index'),
+                  child: const FaIcon(FontAwesomeIcons.share),
                 ),
               ],
               child: DecoratedBox(
@@ -418,26 +413,26 @@ class AboutPage extends StatelessWidget {
               actions: [
                 PieAction(
                   tooltip: 'github.com/rasitayaz',
-                  child: const FaIcon(FontAwesomeIcons.github),
                   onSelect: () {
                     launchUrlExternally('https://github.com/rasitayaz');
                   },
+                  child: const FaIcon(FontAwesomeIcons.github),
                 ),
                 PieAction(
                   tooltip: 'in/rasitayaz',
-                  child: const FaIcon(FontAwesomeIcons.linkedinIn),
                   onSelect: () {
                     launchUrlExternally(
                       'https://www.linkedin.com/in/rasitayaz/',
                     );
                   },
+                  child: const FaIcon(FontAwesomeIcons.linkedinIn),
                 ),
                 PieAction(
                   tooltip: 'mrasitayaz@gmail.com',
-                  child: const FaIcon(FontAwesomeIcons.solidEnvelope),
                   onSelect: () {
                     launchUrlExternally('mailto:mrasitayaz@gmail.com');
                   },
+                  child: const FaIcon(FontAwesomeIcons.solidEnvelope),
                 ),
               ],
               child: Container(

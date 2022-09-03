@@ -30,7 +30,7 @@ class PieMenu extends StatefulWidget {
 
   /// Functional callback that is triggered when
   /// this [PieMenu] is opened and closed.
-  final Function(bool menuVisible)? onToggle;
+  final Function(bool visible)? onToggle;
 
   final VoidCallback? onTap;
 

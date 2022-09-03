@@ -28,7 +28,7 @@ class PieCanvas extends StatefulWidget {
   /// this callback can be used to disable scrolling by rebuilding the widget
   /// and giving the scrollable a [NeverScrollableScrollPhysics] as physics
   /// if a [PieMenu] is visible on the screen.
-  final Function(bool menuVisible)? onMenuToggle;
+  final Function(bool visible)? onMenuToggle;
 
   @override
   State<PieCanvas> createState() => _PieCanvasState();
