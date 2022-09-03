@@ -9,7 +9,7 @@ import 'package:pie_menu/src/pie_theme.dart';
 class PieCanvasProvider extends InheritedWidget {
   PieCanvasProvider({
     super.key,
-    required PieTheme theme,
+    required this.theme,
     Function(bool menuVisible)? onMenuToggle,
     required this.canvasKey,
     required Widget child,
@@ -25,6 +25,9 @@ class PieCanvasProvider extends InheritedWidget {
   /// [PieMenu] can control the appearance of the menu
   /// displayed on the [PieCanvas] using this key.
   final GlobalKey<PieCanvasOverlayState> canvasKey;
+
+  /// [PieMenu] can access the canvas theme using this property.
+  final PieTheme theme;
 
   static PieCanvasProvider? of(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<PieCanvasProvider>();

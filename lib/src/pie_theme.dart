@@ -8,6 +8,7 @@ import 'package:pie_menu/src/pie_menu.dart';
 class PieTheme {
   /// Creates a [PieTheme] to configure [PieMenu]s.
   const PieTheme({
+    this.bouncingMenu = true,
     this.brightness = Brightness.light,
     this.overlayColor,
     this.pointerColor,
@@ -25,11 +26,17 @@ class PieTheme {
     this.pointerSize = 42,
     this.tooltipPadding = const EdgeInsets.symmetric(horizontal: 32),
     this.tooltipStyle,
-    this.bounceDuration = const Duration(seconds: 1),
+    this.pieBounceDuration = const Duration(seconds: 1),
+    this.menuBounceDuration = const Duration(milliseconds: 150),
+    this.menuBounceDepth = 0.95,
+    this.menuBounceCurve = Curves.ease,
+    this.menuBounceReverseCurve,
     this.fadeDuration = const Duration(milliseconds: 250),
     this.hoverDuration = const Duration(milliseconds: 250),
-    this.delayDuration = const Duration(milliseconds: 250),
+    this.delayDuration = const Duration(milliseconds: 350),
   });
+
+  final bool bouncingMenu;
 
   /// How the background and tooltip texts should be displayed
   /// if they are not specified explicitly.
@@ -39,40 +46,53 @@ class PieTheme {
   /// under the menu child, and on top of the other widgets.
   final Color? overlayColor;
 
-  /// Color of the widget displayed in the center of the [PieMenu].
+  /// Color of the widget displayed in the center of [PieMenu].
   final Color? pointerColor;
 
-  /// Theme of the [PieButton].
+  /// Theme of [PieButton].
   final PieButtonTheme buttonTheme;
 
-  /// Theme of the [PieButton] when it is hovered.
+  /// Theme of [PieButton] when it is hovered.
   final PieButtonTheme buttonThemeHovered;
 
   /// Size of the icon to be displayed on the [PieButton].
   final double? iconSize;
 
-  /// Distance between the [PieButton] and the center of the [PieMenu].
+  /// Distance between the [PieButton] and the center of [PieMenu].
   final double distance;
 
-  /// Size of the [PieButton] circle.
+  /// Size of [PieButton] circle.
   final double buttonSize;
 
-  /// Size of the widget displayed in the center of the [PieMenu].
+  /// Size of the widget displayed in the center of [PieMenu].
   final double pointerSize;
 
-  /// Padding value of the tooltip at the edges of the [PieCanvas].
+  /// Padding value of the tooltip at the edges of [PieCanvas].
   final EdgeInsets tooltipPadding;
 
   /// Style of the tooltip text.
   final TextStyle? tooltipStyle;
 
-  /// Duration of the [PieButton] bounce animation.
-  final Duration bounceDuration;
+  /// Duration of [PieButton] bounce animation.
+  final Duration pieBounceDuration;
 
-  /// Duration of the [PieMenu] fade animation.
+  /// Duration of [PieMenu] bounce animation.
+  final Duration menuBounceDuration;
+
+  /// Decides how small the menu child will be when it is bouncing.
+  /// A value between 0 and 1.
+  final double menuBounceDepth;
+
+  /// Curve for the menu bounce animation.
+  final Curve menuBounceCurve;
+
+  /// Reverse curve for the menu bounce animation.
+  final Curve? menuBounceReverseCurve;
+
+  /// Duration of [PieMenu] fade animation.
   final Duration fadeDuration;
 
-  /// Duration of the [PieButton] hover animation.
+  /// Duration of [PieButton] hover animation.
   final Duration hoverDuration;
 
   /// Long press duration for [PieMenu] to display.
@@ -81,7 +101,7 @@ class PieTheme {
   /// after pressing the menu child.
   final Duration delayDuration;
 
-  /// Displacement distance of the [PieButton]s when hovered.
+  /// Displacement distance of [PieButton]s when hovered.
   double get hoverDisplacement => buttonSize / 8;
 
   /// Creates a copy of this theme but with the
@@ -113,7 +133,7 @@ class PieTheme {
       pointerSize: pointerSize ?? this.pointerSize,
       tooltipPadding: tooltipPadding ?? this.tooltipPadding,
       tooltipStyle: tooltipStyle ?? this.tooltipStyle,
-      bounceDuration: bounceDuration ?? this.bounceDuration,
+      pieBounceDuration: bounceDuration ?? pieBounceDuration,
       fadeDuration: fadeDuration ?? this.fadeDuration,
       hoverDuration: hoverDuration ?? this.hoverDuration,
       delayDuration: delayDuration ?? this.delayDuration,
@@ -129,13 +149,13 @@ class PieButtonTheme {
     this.decoration,
   });
 
-  /// Background color of the [PieButton].
+  /// Background color of [PieButton].
   final Color? backgroundColor;
 
-  /// Icon color of the [PieButton].
+  /// Icon color of [PieButton].
   final Color? iconColor;
 
-  /// Container decoration of the [PieButton].
+  /// Container decoration of [PieButton].
   ///
   /// Note that a custom decoration ignores [backgroundColor].
   final Decoration? decoration;

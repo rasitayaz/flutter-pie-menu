@@ -30,17 +30,17 @@ class PieAction {
   /// Can be used for optical correction.
   final EdgeInsets padding;
 
-  /// Widget to display inside the [PieButton], usually an icon
-  final Widget child;
-
-  /// Widget to display inside the [PieButton] when the button is hovered.
-  final Widget? childHovered;
-
   /// Theme of the [PieButton].
   final PieButtonTheme? buttonTheme;
 
   /// Theme of the [PieButton] when it is hovered.
   final PieButtonTheme? buttonThemeHovered;
+
+  /// Widget to display inside the [PieButton], usually an icon
+  final Widget child;
+
+  /// Widget to display inside the [PieButton] when the button is hovered.
+  final Widget? childHovered;
 
   /// Display angle of the [PieButton] in radians.
   ///

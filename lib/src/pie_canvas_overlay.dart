@@ -19,16 +19,16 @@ class PieCanvasOverlay extends StatefulWidget {
     required this.child,
   });
 
-  final Widget child;
   final PieTheme theme;
   final Function(bool menuVisible)? onMenuToggle;
+  final Widget child;
 
   @override
   PieCanvasOverlayState createState() => PieCanvasOverlayState();
 }
 
 class PieCanvasOverlayState extends State<PieCanvasOverlay>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   /// * [PieMenu] refers to the menu that is currently displayed on the canvas.
 
   /// Theme of the [PieMenu].
@@ -40,10 +40,19 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   List<PieAction> _actions = [];
 
   /// Controls [_bounceAnimation].
-  late AnimationController _controller;
+  late final AnimationController _bounceController = AnimationController(
+    duration: widget.theme.pieBounceDuration,
+    vsync: this,
+  );
 
   /// Bouncing animation for the [PieButton]s.
-  late Animation _bounceAnimation;
+  late final Animation _bounceAnimation = Tween(
+    begin: 0.0,
+    end: 1.0,
+  ).animate(CurvedAnimation(
+    parent: _bounceController,
+    curve: Curves.elasticOut,
+  ));
 
   /// Whether the [_menuChild] is currently pressed.
   bool _pressed = false;
@@ -52,10 +61,13 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   bool _pressedAgain = false;
 
   /// Whether the [PieMenu] is currently visible.
-  bool _menuVisible = false;
+  bool menuVisible = false;
+
+  /// Whether a [PieMenu] is pressed.
+  bool _menuAttached = false;
 
   /// State of the current [PieMenu].
-  PieMenuState? _menuState;
+  PieMenuState? menuState;
 
   /// Child widget of the [PieMenu].
   Widget? _menuChild;
@@ -70,7 +82,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   Offset get _menuOffset => _menuRenderBox!.localToGlobal(Offset.zero);
 
   /// Currently pressed pointer offset.
-  Offset _pressedOffset = Offset.zero;
+  Offset _pointerOffset = Offset.zero;
 
   /// Currently hovered [PieButton] index.
   int _hoveredAction = -1;
@@ -86,7 +98,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   Timer? _pointerUpTimer;
 
   /// Tooltip text for the hovered [PieButton].
-  String? _hoveredTooltip;
+  String? _tooltip;
 
   /// Functional callback that is triggered when
   /// the active [PieMenu] is opened and closed.
@@ -122,21 +134,13 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   @override
   void initState() {
     super.initState();
-
-    _controller = AnimationController(
-      duration: widget.theme.bounceDuration,
-      vsync: this,
-    );
-
-    _bounceAnimation = Tween(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _bounceController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -147,12 +151,14 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     }
   }
 
-  String? get _tooltip {
-    if (_hoveredAction >= 0) {
-      _hoveredTooltip = _actions[_hoveredAction].tooltip;
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    if (mounted && menuVisible) {
+      menuState?.setVisibility(true);
+      toggleMenu(false);
+      _detachMenu();
     }
-
-    return _hoveredTooltip;
   }
 
   TextStyle get _tooltipStyle {
@@ -168,8 +174,8 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
 
   @override
   Widget build(BuildContext context) {
-    double dx = _pressedOffset.dx - _canvasOffset.dx;
-    double dy = _pressedOffset.dy - _canvasOffset.dy;
+    double dx = _pointerOffset.dx - _canvasOffset.dx;
+    double dy = _pointerOffset.dy - _canvasOffset.dy;
     double angleDifference = 7.4 * _theme.buttonSize / sqrt(_theme.distance);
     double arc = (_actions.length - 1) * angleDifference;
     double dxRatio = dx / _canvasSize.width;
@@ -190,9 +196,9 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
         children: [
           Listener(
             behavior: HitTestBehavior.translucent,
-            onPointerDown: (event) => pointerMove(event.position),
-            onPointerMove: (event) => pointerMove(event.position),
-            onPointerUp: (event) => pointerUp(event.position),
+            onPointerDown: (event) => _pointerDown(event.position),
+            onPointerMove: (event) => _pointerMove(event.position),
+            onPointerUp: (event) => _pointerUp(event.position),
             child: widget.child,
           ),
           IgnorePointer(
@@ -202,7 +208,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                 Positioned.fill(
                   child: AnimatedOpacity(
                     duration: _theme.fadeDuration,
-                    opacity: _menuVisible ? 1 : 0,
+                    opacity: menuVisible ? 1 : 0,
                     curve: Curves.ease,
                     child: ColoredBox(
                       color: _overlayColor,
@@ -228,30 +234,27 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                   ),
 
                 /// Tooltip
-                Positioned(
-                  top: dy < _canvasSize.height / 2
-                      ? dy + _theme.distance + _theme.buttonSize
-                      : null,
-                  bottom: dy >= _canvasSize.height / 2
-                      ? _canvasSize.height -
-                          dy +
-                          _theme.distance +
-                          _theme.buttonSize
-                      : null,
-                  left: 0,
-                  right: 0,
-                  child: Padding(
-                    padding: _theme.tooltipPadding,
-                    child: Row(
-                      mainAxisAlignment: dx < _canvasSize.width / 2
-                          ? MainAxisAlignment.end
-                          : MainAxisAlignment.start,
-                      children: [
-                        if (_tooltip != null && _tooltip!.isNotEmpty)
+                if (_tooltip != null)
+                  Positioned(
+                    top: dy < _canvasSize.height / 2
+                        ? dy + _theme.distance + _theme.buttonSize
+                        : null,
+                    bottom: dy >= _canvasSize.height / 2
+                        ? _canvasSize.height -
+                            dy +
+                            _theme.distance +
+                            _theme.buttonSize
+                        : null,
+                    left: 0,
+                    right: 0,
+                    child: Padding(
+                      padding: _theme.tooltipPadding,
+                      child: Row(
+                        children: [
                           Expanded(
                             child: AnimatedOpacity(
                               opacity:
-                                  _menuVisible && _hoveredAction >= 0 ? 1 : 0,
+                                  menuVisible && _hoveredAction >= 0 ? 1 : 0,
                               duration: _theme.hoverDuration,
                               curve: Curves.ease,
                               child: Text(
@@ -263,20 +266,20 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                               ),
                             ),
                           ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
 
                 /// Action buttons
                 AnimatedOpacity(
                   duration: _theme.fadeDuration,
-                  opacity: _menuVisible ? 1 : 0,
+                  opacity: menuVisible ? 1 : 0,
                   curve: Curves.ease,
                   child: Flow(
                     delegate: PieDelegate(
                       bounceAnimation: _bounceAnimation,
-                      pointerOffset: _pressedOffset,
+                      pointerOffset: _pointerOffset,
                       canvasOffset: _canvasOffset,
                       baseAngle: baseAngle,
                       angleDifference: angleDifference,
@@ -325,64 +328,89 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   }
 
   bool isOutsideOfPointerArea(Offset offset) {
-    return (_pressedOffset - offset).distance > _theme.pointerSize / 2;
+    return (_pointerOffset - offset).distance > _theme.pointerSize / 2;
   }
 
-  void pointerDown({
+  void attachMenu({
     required PieMenuState state,
     required Widget child,
     required RenderBox renderBox,
-    required Offset offset,
     required List<PieAction> actions,
-    Function(bool menuVisible)? onMenuToggle,
-    PieTheme? theme,
+    required PieTheme? theme,
+    required Function(bool menuVisible)? onMenuToggle,
   }) {
-    if (_menuVisible) {
+    if (menuVisible) {
       _pressedAgain = true;
-      pointerMove(offset);
     } else if (!_pressed) {
+      _pointerDownTimer?.cancel();
+      _pointerUpTimer?.cancel();
+      menuState?.setVisibility(true);
+
+      _menuAttached = true;
       _onActiveMenuToggle = onMenuToggle;
       _theme = theme ?? widget.theme;
       _actions = actions;
+      menuState = state;
+      _menuChild = child;
+      _menuRenderBox = renderBox;
+    }
+  }
+
+  void _detachMenu() {
+    _pointerDownTimer?.cancel();
+    setState(() {
+      _pressed = false;
+      _pressedAgain = false;
+      _tooltip = null;
+      _hoveredAction = -1;
+      menuState = null;
+      _menuRenderBox = null;
+      _menuChild = null;
+      _menuAttached = false;
+      menuVisible = false;
+    });
+  }
+
+  void _pointerDown(Offset offset) {
+    if (!_menuAttached) return;
+
+    if (menuVisible) {
+      _pressedAgain = true;
+      _pointerMove(offset);
+    } else if (!_pressed) {
       _pressed = true;
-      _pressedOffset = offset;
+      _pointerOffset = offset;
+
       _pointerDownTimer = Timer(_theme.delayDuration, () {
         _pointerUpTimer?.cancel();
-        _pointerDownTimer = null;
-        _controller.forward(from: 0);
+        _bounceController.forward(from: 0);
         setState(() {
-          _menuState = state;
-          _menuVisible = true;
+          menuVisible = true;
           _hoveredAction = -1;
-          _menuChild = child;
-          _menuRenderBox = renderBox;
         });
         toggleMenu(true);
-        _menuState?.setVisibility(false);
+        menuState?.setVisibility(false);
       });
     }
   }
 
-  void pointerUp(Offset offset) {
+  void _pointerUp(Offset offset) {
     _pointerDownTimer?.cancel();
 
-    if (_menuVisible && (isOutsideOfPointerArea(offset) || _pressedAgain)) {
+    if (menuVisible && (isOutsideOfPointerArea(offset) || _pressedAgain)) {
       if (_hoveredAction >= 0) {
         _actions[_hoveredAction].onSelect();
       }
 
-      _menuState?.setVisibility(true);
-      setState(() => _menuVisible = false);
+      menuState?.setVisibility(true);
+      toggleMenu(false);
+      setState(() {
+        _menuAttached = false;
+        menuVisible = false;
+      });
 
       _pointerUpTimer = Timer(_theme.fadeDuration, () {
-        _pointerUpTimer = null;
-        toggleMenu(false);
-        setState(() {
-          _hoveredTooltip = null;
-          _hoveredAction = -1;
-          _menuRenderBox = null;
-          _menuChild = null;
-        });
+        _detachMenu();
       });
     }
 
@@ -390,27 +418,30 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     _pressedAgain = false;
   }
 
-  void pointerMove(Offset offset) {
-    if (_menuVisible) {
+  void _pointerMove(Offset offset) {
+    if (menuVisible) {
       for (int i = 0; i < _actions.length; i++) {
         PieAction action = _actions[i];
         Offset actionOffset = Offset(
-          _pressedOffset.dx + _theme.distance * cos(action.angle),
-          _pressedOffset.dy - _theme.distance * sin(action.angle),
+          _pointerOffset.dx + _theme.distance * cos(action.angle),
+          _pointerOffset.dy - _theme.distance * sin(action.angle),
         );
         if ((actionOffset - offset).distance <
             _theme.buttonSize / 2 + sqrt(_theme.buttonSize)) {
           if (_hoveredAction != i) {
-            setState(() => _hoveredAction = i);
+            setState(() {
+              _hoveredAction = i;
+              _tooltip = action.tooltip;
+            });
           }
           return;
         }
       }
-      if (_hoveredAction != -1) {
+      if (_hoveredAction != -1 && !_pressedAgain) {
         setState(() => _hoveredAction = -1);
       }
     } else if (_pressed && isOutsideOfPointerArea(offset)) {
-      pointerUp(offset);
+      _detachMenu();
     }
   }
 }
