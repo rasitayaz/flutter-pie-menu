@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Flutter Pie Menu',
+          'Flutter Pie Menu 🥧',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
@@ -156,7 +156,8 @@ class StylingPage extends StatelessWidget {
             tooltip: 'Play',
             child: const FaIcon(FontAwesomeIcons.play),
             onSelect: () => context.showSnackBar('Play'),
-            // Optical correction
+
+            /// Optical correction
             padding: const EdgeInsets.only(left: 4),
           ),
           PieAction(
@@ -268,9 +269,9 @@ class StylingPage extends StatelessWidget {
           ),
           PieAction(
             tooltip: 'Import to your app',
-            // Custom icon size
             child: const FaIcon(FontAwesomeIcons.download),
-            // Custom background color
+
+            /// Custom background color
             buttonTheme: const PieButtonTheme(
               backgroundColor: Colors.deepOrange,
               iconColor: Colors.white,
@@ -335,6 +336,9 @@ class _ListViewPageState extends State<ListViewPage> {
           return SizedBox(
             height: 200,
             child: PieMenu(
+              onTap: () {
+                context.showSnackBar('Tap #$index (Long press for Pie Menu)');
+              },
               actions: [
                 PieAction(
                   tooltip: 'Like',
@@ -357,25 +361,18 @@ class _ListViewPageState extends State<ListViewPage> {
                   onSelect: () => context.showSnackBar('Share #$index'),
                 ),
               ],
-              child: GestureDetector(
-                onTap: _menuVisible
-                    ? null
-                    : () => context.showSnackBar(
-                          'Tap #$index (Long press for Pie Menu)',
-                        ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.deepOrangeAccent,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Center(
-                    child: Text(
-                      '#$index',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 64,
-                      ),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.deepOrangeAccent,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Center(
+                  child: Text(
+                    '#$index',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 64,
                     ),
                   ),
                 ),
