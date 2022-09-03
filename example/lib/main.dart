@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pie_menu/pie_menu.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -20,6 +21,12 @@ void launchUrlExternally(String url) {
 }
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    systemNavigationBarColor: Colors.transparent,
+  ));
   runApp(const SandboxApp());
 }
 
@@ -433,6 +440,15 @@ class AboutPage extends StatelessWidget {
                     launchUrlExternally('mailto:mrasitayaz@gmail.com');
                   },
                   child: const FaIcon(FontAwesomeIcons.solidEnvelope),
+                ),
+                PieAction(
+                  tooltip: 'Buy me a coffee',
+                  onSelect: () {
+                    launchUrlExternally(
+                      'https://www.buymeacoffee.com/rasitayaz',
+                    );
+                  },
+                  child: const FaIcon(FontAwesomeIcons.mugSaucer, size: 20),
                 ),
               ],
               child: Container(
