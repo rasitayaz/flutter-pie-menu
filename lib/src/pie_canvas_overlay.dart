@@ -286,7 +286,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                       theme: _theme,
                     ),
                     children: [
-                      Container(
+                      DecoratedBox(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
@@ -298,7 +298,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                       for (int i = 0; i < _actions.length; i++)
                         PieButton(
                           action: _actions[i],
-                          menuOpen: _pressed,
+                          menuOpen: menuVisible,
                           hovered: i == _hoveredAction,
                           theme: _theme,
                           fadeDuration: _theme.fadeDuration,
@@ -437,7 +437,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
           return;
         }
       }
-      if (_hoveredAction != -1 && !_pressedAgain) {
+      if (_hoveredAction != -1) {
         setState(() => _hoveredAction = -1);
       }
     } else if (_pressed && isOutsideOfPointerArea(offset)) {

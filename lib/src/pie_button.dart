@@ -43,43 +43,38 @@ class PieButton extends StatefulWidget {
 
 class _PieButtonState extends State<PieButton>
     with SingleTickerProviderStateMixin {
-  /// Controls [animation].
-  late AnimationController controller;
+  /// Controls [_animation].
+  late final AnimationController _controller = AnimationController(
+    duration: widget.fadeDuration,
+    vsync: this,
+  )..addListener(() => setState(() {}));
 
   /// Fade animation for the [PieButton]s.
-  late Animation animation;
+  late final Animation _animation = Tween(
+    begin: 0.0,
+    end: 1.0,
+  ).animate(CurvedAnimation(
+    parent: _controller,
+    curve: Curves.ease,
+  ));
 
   /// Wether the [PieButton] is visible.
   bool visible = false;
 
-  PieAction get action => widget.action;
-  PieTheme get theme => widget.theme;
+  PieAction get _action => widget.action;
+  PieTheme get _theme => widget.theme;
 
-  PieButtonTheme get buttonTheme {
-    return action.buttonTheme ?? theme.buttonTheme;
+  PieButtonTheme get _buttonTheme {
+    return _action.buttonTheme ?? _theme.buttonTheme;
   }
 
-  PieButtonTheme get buttonThemeHovered {
-    return action.buttonThemeHovered ?? theme.buttonThemeHovered;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    controller = AnimationController(
-      duration: widget.fadeDuration,
-      vsync: this,
-    )..addListener(() => setState(() {}));
-
-    animation = Tween(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: controller, curve: Curves.ease));
+  PieButtonTheme get _buttonThemeHovered {
+    return _action.buttonThemeHovered ?? _theme.buttonThemeHovered;
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -89,58 +84,58 @@ class _PieButtonState extends State<PieButton>
       visible = false;
     } else if (widget.menuOpen && !visible) {
       visible = true;
-      controller.forward(from: 0);
+      _controller.forward(from: 0);
     }
 
     return OverflowBox(
-      maxHeight: theme.buttonSize * 2,
-      maxWidth: theme.buttonSize * 2,
+      maxHeight: _theme.buttonSize * 2,
+      maxWidth: _theme.buttonSize * 2,
       child: AnimatedScale(
         scale: widget.hovered ? 1.2 : 1,
         duration: widget.hoverDuration,
         curve: Curves.ease,
         child: Transform.scale(
-          scale: animation.value,
+          scale: _animation.value,
           child: Stack(
             children: [
               AnimatedPositioned(
                 duration: widget.hoverDuration,
                 curve: Curves.ease,
                 top: widget.hovered
-                    ? theme.buttonSize / 2 -
-                        sin(action.angle) * theme.hoverDisplacement
-                    : theme.buttonSize / 2,
+                    ? _theme.buttonSize / 2 -
+                        sin(_action.angle) * _theme.hoverDisplacement
+                    : _theme.buttonSize / 2,
                 right: widget.hovered
-                    ? theme.buttonSize / 2 -
-                        cos(action.angle) * theme.hoverDisplacement
-                    : theme.buttonSize / 2,
+                    ? _theme.buttonSize / 2 -
+                        cos(_action.angle) * _theme.hoverDisplacement
+                    : _theme.buttonSize / 2,
                 child: Container(
-                  height: theme.buttonSize,
-                  width: theme.buttonSize,
+                  height: _theme.buttonSize,
+                  width: _theme.buttonSize,
                   decoration: (widget.hovered
-                          ? buttonThemeHovered.decoration
-                          : buttonTheme.decoration) ??
+                          ? _buttonThemeHovered.decoration
+                          : _buttonTheme.decoration) ??
                       BoxDecoration(
                         shape: BoxShape.circle,
                         color: widget.hovered
-                            ? buttonThemeHovered.backgroundColor
-                            : buttonTheme.backgroundColor,
+                            ? _buttonThemeHovered.backgroundColor
+                            : _buttonTheme.backgroundColor,
                       ),
                   child: Center(
                     child: Padding(
-                      padding: action.padding,
+                      padding: _action.padding,
                       child: Theme(
                         data: Theme.of(context).copyWith(
                           iconTheme: IconThemeData(
                             color: widget.hovered
-                                ? buttonThemeHovered.iconColor
-                                : buttonTheme.iconColor,
-                            size: theme.iconSize,
+                                ? _buttonThemeHovered.iconColor
+                                : _buttonTheme.iconColor,
+                            size: _theme.iconSize,
                           ),
                         ),
                         child: widget.hovered
-                            ? (action.childHovered ?? action.child)
-                            : action.child,
+                            ? (_action.childHovered ?? _action.child)
+                            : _action.child,
                       ),
                     ),
                   ),
