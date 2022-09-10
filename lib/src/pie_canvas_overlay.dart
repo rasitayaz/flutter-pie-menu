@@ -31,12 +31,12 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   /// * [PieMenu] refers to the menu that is currently displayed on the canvas.
 
-  /// Theme of the [PieMenu].
+  /// Theme of [PieMenu].
   ///
   /// If [PieMenu] does not have a theme, [PieCanvas] theme is displayed.
   late PieTheme _theme = widget.theme;
 
-  /// Actions of the [PieMenu].
+  /// Actions of [PieMenu].
   List<PieAction> _actions = [];
 
   /// Controls [_bounceAnimation].
@@ -54,31 +54,31 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     curve: Curves.elasticOut,
   ));
 
-  /// Whether the [_menuChild] is currently pressed.
+  /// Whether [_menuChild] is currently pressed.
   bool _pressed = false;
 
-  /// Whether the [_menuChild] is pressed when the menu is visible.
+  /// Whether [_menuChild] is pressed when the menu is visible.
   bool _pressedAgain = false;
 
-  /// Whether the [PieMenu] is currently visible.
+  /// Whether [PieMenu] is currently visible.
   bool menuVisible = false;
 
   /// Whether a [PieMenu] is pressed.
   bool _menuAttached = false;
 
-  /// State of the current [PieMenu].
+  /// State of [PieMenu].
   PieMenuState? menuState;
 
-  /// Child widget of the [PieMenu].
+  /// Child widget of [PieMenu].
   Widget? _menuChild;
 
-  /// Render box of the [_menuChild].
+  /// Render box of [_menuChild].
   RenderBox? _menuRenderBox;
 
-  /// Size of the [_menuChild].
+  /// Size of [_menuChild].
   Size? get _menuSize => _menuRenderBox?.size;
 
-  /// Offset of the [_menuChild].
+  /// Offset of [_menuChild].
   Offset get _menuOffset => _menuRenderBox!.localToGlobal(Offset.zero);
 
   /// Currently pressed pointer offset.
@@ -217,11 +217,11 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
               ),
             ),
           ),
-          AnimatedOpacity(
-            duration: _theme.fadeDuration,
-            opacity: menuVisible ? 1 : 0,
-            curve: Curves.ease,
-            child: IgnorePointer(
+          IgnorePointer(
+            child: AnimatedOpacity(
+              duration: _theme.fadeDuration,
+              opacity: menuVisible ? 1 : 0,
+              curve: Curves.ease,
               child: Stack(
                 children: [
                   /// Overlay
@@ -352,21 +352,17 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     required PieTheme? theme,
     required Function(bool menuVisible)? onMenuToggle,
   }) {
-    if (menuVisible) {
-      _pressedAgain = true;
-    } else if (!_pressed) {
-      _pointerDownTimer?.cancel();
-      _pointerUpTimer?.cancel();
-      menuState?.setVisibility(true);
+    _pointerDownTimer?.cancel();
+    _pointerUpTimer?.cancel();
+    menuState?.setVisibility(true);
 
-      _menuAttached = true;
-      _onActiveMenuToggle = onMenuToggle;
-      _theme = theme ?? widget.theme;
-      _actions = actions;
-      menuState = state;
-      _menuChild = child;
-      _menuRenderBox = renderBox;
-    }
+    _menuAttached = true;
+    _onActiveMenuToggle = onMenuToggle;
+    _theme = theme ?? widget.theme;
+    _actions = actions;
+    menuState = state;
+    _menuChild = child;
+    _menuRenderBox = renderBox;
   }
 
   void _detachMenu() {
@@ -387,7 +383,9 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   }
 
   void _pointerDown(Offset offset) {
-    if (!_menuAttached) return;
+    if (!_menuAttached) {
+      return;
+    }
 
     if (menuVisible) {
       _pressedAgain = true;
