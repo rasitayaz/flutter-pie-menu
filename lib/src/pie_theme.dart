@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:pie_menu/pie_menu.dart';
 import 'package:pie_menu/src/pie_button.dart';
-import 'package:pie_menu/src/pie_canvas.dart';
-import 'package:pie_menu/src/pie_menu.dart';
+import 'package:pie_menu/src/pie_canvas_provider.dart';
 
 /// Defines the behavior and the appearance
-/// of the [PieCanvas] and [PieMenu] widgets.
+/// of [PieCanvas] and [PieMenu] widgets.
 class PieTheme {
   /// Creates a [PieTheme] to configure [PieMenu]s.
   const PieTheme({
@@ -97,66 +97,63 @@ class PieTheme {
 
   /// Long press duration for [PieMenu] to display.
   ///
-  /// Can be set to [Duration.zero] to display the menu immediately
-  /// after pressing the menu child.
+  /// Can be set to [Duration.zero] to display the menu immediately on tap.
   final Duration delayDuration;
 
   /// Displacement distance of [PieButton]s when hovered.
   double get hoverDisplacement => buttonSize / 8;
 
+  /// Returns the [PieTheme] defined in the closest [PieCanvas].
+  static PieTheme of(BuildContext context) {
+    return PieCanvasProvider.of(context).theme;
+  }
+
   /// Creates a copy of this theme but with the
   /// given fields replaced with the new values.
   PieTheme copyWith({
+    bool? bouncingMenu,
     Brightness? brightness,
     Color? overlayColor,
     Color? pointerColor,
     PieButtonTheme? buttonTheme,
     PieButtonTheme? buttonThemeHovered,
+    double? iconSize,
     double? distance,
     double? buttonSize,
     double? pointerSize,
     EdgeInsets? tooltipPadding,
     TextStyle? tooltipStyle,
-    Duration? bounceDuration,
+    Duration? pieBounceDuration,
+    Duration? menuBounceDuration,
+    double? menuBounceDepth,
+    Curve? menuBounceCurve,
+    Curve? menuBounceReverseCurve,
     Duration? fadeDuration,
     Duration? hoverDuration,
     Duration? delayDuration,
   }) {
     return PieTheme(
+      bouncingMenu: bouncingMenu ?? this.bouncingMenu,
       brightness: brightness ?? this.brightness,
       overlayColor: overlayColor ?? this.overlayColor,
       pointerColor: pointerColor ?? this.pointerColor,
       buttonTheme: buttonTheme ?? this.buttonTheme,
       buttonThemeHovered: buttonThemeHovered ?? this.buttonThemeHovered,
+      iconSize: iconSize ?? this.iconSize,
       distance: distance ?? this.distance,
       buttonSize: buttonSize ?? this.buttonSize,
       pointerSize: pointerSize ?? this.pointerSize,
       tooltipPadding: tooltipPadding ?? this.tooltipPadding,
       tooltipStyle: tooltipStyle ?? this.tooltipStyle,
-      pieBounceDuration: bounceDuration ?? pieBounceDuration,
+      pieBounceDuration: pieBounceDuration ?? this.pieBounceDuration,
+      menuBounceDuration: menuBounceDuration ?? this.menuBounceDuration,
+      menuBounceDepth: menuBounceDepth ?? this.menuBounceDepth,
+      menuBounceCurve: menuBounceCurve ?? this.menuBounceCurve,
+      menuBounceReverseCurve:
+          menuBounceReverseCurve ?? this.menuBounceReverseCurve,
       fadeDuration: fadeDuration ?? this.fadeDuration,
       hoverDuration: hoverDuration ?? this.hoverDuration,
       delayDuration: delayDuration ?? this.delayDuration,
     );
   }
-}
-
-/// Defines the appearance of the circular buttons.
-class PieButtonTheme {
-  const PieButtonTheme({
-    required this.backgroundColor,
-    required this.iconColor,
-    this.decoration,
-  });
-
-  /// Background color of [PieButton].
-  final Color? backgroundColor;
-
-  /// Icon color of [PieButton].
-  final Color? iconColor;
-
-  /// Container decoration of [PieButton].
-  ///
-  /// Note that a custom decoration ignores [backgroundColor].
-  final Decoration? decoration;
 }

@@ -30,11 +30,11 @@ Wrap the widget that will react to gestures with `PieMenu` widget, and give the 
 
 ```dart
 PieMenu(
-  onTap: () => print('Tap'),
+  onTap: () => print('tap'),
   actions: [
     PieAction(
-      tooltip: 'Like',
-      onSelect: () => print('Like action selected.'),
+      tooltip: 'like',
+      onSelect: () => print('liked'),
       child: const Icon(Icons.favorite), // Not necessarily an icon widget
     ),
   ],
@@ -42,9 +42,9 @@ PieMenu(
 ),
 ```
 
-Note that you can only use `PieMenu` in the sub-hierarchy of a `PieCanvas` widget.
+> 💡 Note that you can only use `PieMenu` in the sub-hierarchy of a `PieCanvas` widget.
 
-Wrap the parent widget of your page (or any other widget you want to draw pie buttons on) with `PieCanvas` widget.
+Wrap your page (or any other widget you want to draw pie buttons and background overlay on) with `PieCanvas` widget.
 
 For example, if you want the menu to be displayed at the forefront, you can wrap your `Scaffold` with a `PieCanvas` like following:
 
@@ -64,9 +64,11 @@ PieCanvas(
 
 > ⚠️ If you want to use `PieMenu` inside a scrollable view like a `ListView`, or your widget is already interactive (e.g. it is clickable), you may need to **pay attention to this section.**
 
-`PieCanvas` and `PieMenu` widgets have functional callbacks named `onMenuToggle` and `onToggle` which are triggered when `PieMenu` visibility changed. Using these callbacks, you can prevent your scrollable or interactive widget's default behavior in order to give the control to `PieMenu`.
+`PieCanvas` and `PieMenu` widgets have functional callbacks named `onMenuToggle` and `onToggle` respectively, which are triggered when `PieMenu` visibility changed. Using these callbacks, you can prevent your scrollable or interactive widget's default behavior in order to give the control to `PieMenu`.
 
-> If you can think of a better implementation to handle this automatically, feel free to create a new issue on this package's repository and express your opinion.
+> 💡 You can use `onTap` callback defined in `PieMenu` to handle tap events without using an additional widget like `GestureDetector`.
+
+> 💡 As for the scrollables, there is an issue with Flutter framework related to `ScrollConfiguration`, so automatically disabling scroll may not be an option until [this issue](https://github.com/flutter/flutter/issues/111170) is resolved.
 
 Using the `visible` parameter of the callbacks, store a `bool` variable in your state.
 
@@ -84,15 +86,15 @@ Widget build(BuildContext context) {
 }
 ```
 
-Using this variable, you can decide whether scrolling should be enabled or not.
+For example, you can decide whether scrolling should be enabled or not using this variable.
 
 
 ```dart
 ListView(
-  // Disable scrolling if a 'PieMenu' is visible
+  // Disable scrolling if a PieMenu is visible
   physics: _menuVisible
       ? NeverScrollableScrollPhysics()
-      : ScrollPhysics(), // Or your default scroll physics
+      : null, // Uses the default physics
   ...
 );
 ```
@@ -122,12 +124,43 @@ PieMenu(
 ),
 ```
 
+It is also possible to copy the canvas theme with custom parameters, but make sure you are accessing it with the right `context`.
+
+```dart
+PieMenu(
+  theme: PieTheme.of(context).copyWith(
+    ...
+  ),
+),
+```
+
+### Button themes
+
 Buttons' background and icon colors are defined by theme's `buttonTheme` and `buttonThemeHovered`. You can create a custom `PieButtonTheme` instances for your canvas and menu themes.
 
 ```dart
 PieTheme(
   buttonTheme: PieButtonTheme(),
   buttonThemeHovered: PieButtonTheme(),
+),
+```
+
+### Custom button widgets
+
+If you wish to use custom widgets inside buttons instead of just icons, it is recommended to use `PieAction.builder()` with a `builder` which provides whether the action is hovered or not.
+
+```dart
+PieAction.builder(
+  tooltip: 'like',
+  onSelect: () => print('liked'),
+  builder: (hovered) {
+    return Text(
+      '<3',
+      style: TextStyle(
+        color: hovered ? Colors.green : Colors.red,
+      ),
+    );
+  },
 ),
 ```
 

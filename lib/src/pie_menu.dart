@@ -46,18 +46,7 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
   bool _bouncing = false;
   final _bounceStopwatch = Stopwatch();
 
-  PieCanvasProvider get _canvasProvider {
-    final provider = PieCanvasProvider.of(context);
-    if (provider == null) {
-      throw Exception(
-        'Could not find any PieCanvas.\n'
-        'Please make sure there is a PieCanvas that inherits PieMenu.\n\n'
-        'For more information, see the pie_menu documentation.\n'
-        'https://pub.dev/packages/pie_menu',
-      );
-    }
-    return provider;
-  }
+  PieCanvasProvider get _canvasProvider => PieCanvasProvider.of(context);
 
   PieTheme get _theme => widget.theme ?? _canvasProvider.theme;
 
@@ -86,14 +75,11 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
 
   void setVisibility(bool visible) {
     if (visible != _childVisible) {
-      setState(() {
-        _childVisible = visible;
-        if (!_childVisible) _debounce();
-      });
+      setState(() => _childVisible = visible);
     }
   }
 
-  void _debounce() async {
+  void debounce() async {
     if (!mounted || !_theme.bouncingMenu) return;
 
     if (_bouncing) {
@@ -104,7 +90,11 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
       } else {
         Future.delayed(
           _theme.menuBounceDuration - _bounceStopwatch.elapsed,
-          _menuBounceController.reverse,
+          () {
+            if (mounted) {
+              _menuBounceController.reverse();
+            }
+          },
         );
       }
 
@@ -156,14 +146,14 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
       },
       onPointerMove: (event) {
         if ((event.position - _tapOffset).distance > _theme.pointerSize / 2) {
-          _debounce();
+          debounce();
         }
       },
       onPointerUp: (event) {
         if (!_canvas.menuVisible && _tapOffset == event.position) {
           widget.onTap?.call();
         }
-        _debounce();
+        debounce();
       },
       child: Opacity(
         opacity: _childVisible ? 1 : 0,

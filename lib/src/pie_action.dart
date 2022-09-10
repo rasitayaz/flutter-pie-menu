@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:pie_menu/pie_menu.dart';
 import 'package:pie_menu/src/pie_button.dart';
-import 'package:pie_menu/src/pie_canvas.dart';
-import 'package:pie_menu/src/pie_menu.dart';
-import 'package:pie_menu/src/pie_theme.dart';
 
 /// Defines an action to display on the circular buttons of the [PieMenu].
 class PieAction {
+  /// Creates a [PieAction] with a child widget.
+  ///
+  /// It is recommended to use [PieAction.builder] if you want to provide
+  /// a custom widget instead of an icon.
   PieAction({
     required this.tooltip,
     required this.onSelect,
@@ -13,37 +15,46 @@ class PieAction {
     this.buttonTheme,
     this.buttonThemeHovered,
     required this.child,
-    this.childHovered,
-  });
+  }) : builder = null;
+
+  /// Creates a [PieAction] with a builder which provides
+  /// whether the action is hovered or not.
+  PieAction.builder({
+    required this.tooltip,
+    required this.onSelect,
+    this.padding = EdgeInsets.zero,
+    this.buttonTheme,
+    this.buttonThemeHovered,
+    required this.builder,
+  }) : child = null;
 
   /// * [PieButton] refers to the button this [PieAction] belongs to.
 
-  /// Text to display on the [PieCanvas] when the [PieButton] is hovered.
+  /// Text to display on [PieCanvas] when [PieButton] is hovered.
   final String tooltip;
 
-  /// Function to trigger when the [PieButton] is selected.
+  /// Function to trigger when [PieButton] is selected.
   final Function() onSelect;
 
-  /// Padding for the icon (or for the custom widget)
-  /// to be displayed on the [PieButton].
+  /// Padding for the child widget displayed on [PieButton].
   ///
   /// Can be used for optical correction.
   final EdgeInsets padding;
 
-  /// Theme of the [PieButton].
+  /// Theme of [PieButton].
   final PieButtonTheme? buttonTheme;
 
-  /// Theme of the [PieButton] when it is hovered.
+  /// Theme of [PieButton] when it is hovered.
   final PieButtonTheme? buttonThemeHovered;
 
-  /// Widget to display inside the [PieButton], usually an icon
-  final Widget child;
-
-  /// Widget to display inside the [PieButton] when the button is hovered.
-  final Widget? childHovered;
-
-  /// Display angle of the [PieButton] in radians.
+  /// Widget to display inside [PieButton], usually an icon.
   ///
-  /// This is assigned after all [PieAction]s have been processed.
-  double angle = 0;
+  /// If this is an icon, its theme can be customized easily
+  /// using [buttonTheme] and [buttonThemeHovered].
+  final Widget? child;
+
+  /// Widget builder which provides whether the action is hovered or not.
+  ///
+  /// Useful for custom widgets instead of icons.
+  final Widget Function(bool hovered)? builder;
 }

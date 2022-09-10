@@ -99,40 +99,178 @@ class StylingPage extends StatelessWidget {
 
   static const double spacing = 20;
 
-  final _pageTheme = const PieTheme(
-    delayDuration: Duration.zero,
-  );
-
   @override
   Widget build(BuildContext context) {
     return PieCanvas(
-      theme: _pageTheme,
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(spacing),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    _buildBasicUsage(context),
-                    const SizedBox(height: spacing),
-                    _buildDarkMode(context),
-                  ],
-                ),
-              ),
-              const SizedBox(width: spacing),
-              Expanded(
-                child: Column(
-                  children: [
-                    _buildLargeActions(context),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+      theme: const PieTheme(
+        delayDuration: Duration.zero,
       ),
+      child: Builder(builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(spacing),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: PieMenu(
+                          actions: [
+                            PieAction(
+                              tooltip: 'Play',
+                              onSelect: () => context.showSnackBar('Play'),
+                              child: const FaIcon(FontAwesomeIcons.play),
+
+                              /// Optical correction
+                              padding: const EdgeInsets.only(left: 4),
+                            ),
+                            PieAction(
+                              tooltip: 'Download',
+                              onSelect: () => context.showSnackBar('Download'),
+                              child: const FaIcon(FontAwesomeIcons.download),
+                            ),
+                            PieAction(
+                              tooltip: 'Share',
+                              onSelect: () => context.showSnackBar('Share'),
+                              child: const FaIcon(FontAwesomeIcons.share),
+                            ),
+                          ],
+                          child: _buildCard(
+                            color: Colors.deepOrangeAccent,
+                            iconData: FontAwesomeIcons.video,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: spacing),
+                      Expanded(
+                        child: PieMenu(
+                          theme: PieTheme.of(context).copyWith(
+                            buttonTheme: const PieButtonTheme(
+                              backgroundColor: Colors.deepOrange,
+                              iconColor: Colors.white,
+                            ),
+                            buttonThemeHovered: const PieButtonTheme(
+                              backgroundColor: Colors.orange,
+                              iconColor: Colors.black,
+                            ),
+                            brightness: Brightness.dark,
+                          ),
+                          actions: [
+                            PieAction.builder(
+                              tooltip: 'how',
+                              onSelect: () => context.showSnackBar('1'),
+                              builder: (hovered) {
+                                return _buildTextButton('1', hovered);
+                              },
+                            ),
+                            PieAction.builder(
+                              tooltip: 'cool',
+                              onSelect: () => context.showSnackBar('2'),
+                              builder: (hovered) {
+                                return _buildTextButton('2', hovered);
+                              },
+                            ),
+                            PieAction.builder(
+                              tooltip: 'is',
+                              onSelect: () => context.showSnackBar('3'),
+                              builder: (hovered) {
+                                return _buildTextButton('3', hovered);
+                              },
+                            ),
+                            PieAction.builder(
+                              tooltip: 'this?!',
+                              onSelect: () =>
+                                  context.showSnackBar('Pretty cool :)'),
+                              builder: (hovered) {
+                                return _buildTextButton('4', hovered);
+                              },
+                            ),
+                          ],
+                          child: _buildCard(
+                            color: Colors.deepPurple,
+                            iconData: FontAwesomeIcons.solidMoon,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: spacing),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: PieMenu(
+                          theme: PieTheme.of(context).copyWith(
+                            tooltipStyle: const TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                            pointerColor: Colors.red.withOpacity(0.5),
+                            overlayColor: Colors.lightGreen.withOpacity(0.7),
+                            buttonTheme: const PieButtonTheme(
+                              backgroundColor: Colors.red,
+                              iconColor: Colors.white,
+                            ),
+                            buttonThemeHovered: const PieButtonTheme(
+                              backgroundColor: Colors.white,
+                              iconColor: Colors.black,
+                            ),
+                            buttonSize: 84,
+                          ),
+                          actions: [
+                            PieAction(
+                              tooltip: 'Like the package',
+                              onSelect: () {
+                                launchUrlExternally(
+                                    'https://pub.dev/packages/pie_menu');
+                              },
+                              child:
+                                  const FaIcon(FontAwesomeIcons.solidThumbsUp),
+                            ),
+                            PieAction(
+                              tooltip: 'Import to your app',
+
+                              /// Custom background color
+                              buttonTheme: const PieButtonTheme(
+                                backgroundColor: Colors.deepOrange,
+                                iconColor: Colors.white,
+                              ),
+                              onSelect: () {
+                                launchUrlExternally(
+                                    'https://pub.dev/packages/pie_menu');
+                              },
+                              child: const FaIcon(FontAwesomeIcons.download),
+                            ),
+                            PieAction(
+                              tooltip: 'Share with other developers',
+                              buttonTheme: const PieButtonTheme(
+                                backgroundColor: Colors.orange,
+                                iconColor: Colors.white,
+                              ),
+                              onSelect: () {
+                                launchUrlExternally(
+                                    'https://pub.dev/packages/pie_menu');
+                              },
+                              child: const FaIcon(FontAwesomeIcons.share),
+                            ),
+                          ],
+                          child: _buildCard(
+                            color: Colors.blue,
+                            iconData: FontAwesomeIcons.magnifyingGlassPlus,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }),
     );
   }
 
@@ -155,85 +293,6 @@ class StylingPage extends StatelessWidget {
     );
   }
 
-  Widget _buildBasicUsage(BuildContext context) {
-    return Expanded(
-      child: PieMenu(
-        actions: [
-          PieAction(
-            tooltip: 'Play',
-            onSelect: () => context.showSnackBar('Play'),
-            child: const FaIcon(FontAwesomeIcons.play),
-
-            /// Optical correction
-            padding: const EdgeInsets.only(left: 4),
-          ),
-          PieAction(
-            tooltip: 'Download',
-            onSelect: () => context.showSnackBar('Download'),
-            child: const FaIcon(FontAwesomeIcons.download),
-          ),
-          PieAction(
-            tooltip: 'Share',
-            onSelect: () => context.showSnackBar('Share'),
-            child: const FaIcon(FontAwesomeIcons.share),
-          ),
-        ],
-        child: _buildCard(
-          color: Colors.deepOrangeAccent,
-          iconData: FontAwesomeIcons.video,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDarkMode(BuildContext context) {
-    return Expanded(
-      child: PieMenu(
-        theme: _pageTheme.copyWith(
-          buttonTheme: const PieButtonTheme(
-            backgroundColor: Colors.deepOrange,
-            iconColor: Colors.white,
-          ),
-          buttonThemeHovered: const PieButtonTheme(
-            backgroundColor: Colors.orange,
-            iconColor: Colors.black,
-          ),
-          brightness: Brightness.dark,
-        ),
-        actions: [
-          PieAction(
-            tooltip: 'how',
-            onSelect: () => context.showSnackBar('1'),
-            childHovered: _buildTextButton('1', true),
-            child: _buildTextButton('1', false),
-          ),
-          PieAction(
-            tooltip: 'cool',
-            onSelect: () => context.showSnackBar('2'),
-            childHovered: _buildTextButton('2', true),
-            child: _buildTextButton('2', false),
-          ),
-          PieAction(
-            tooltip: 'is',
-            onSelect: () => context.showSnackBar('3'),
-            child: _buildTextButton('3', false),
-            childHovered: _buildTextButton('3', true),
-          ),
-          PieAction(
-            tooltip: 'this?!',
-            onSelect: () => context.showSnackBar('Pretty cool :)'),
-            child: _buildTextButton('4', false),
-            childHovered: _buildTextButton('4', true),
-          ),
-        ],
-        child: _buildCard(
-          color: Colors.deepPurple,
-          iconData: FontAwesomeIcons.solidMoon,
-        ),
-      ),
-    );
-  }
-
   Widget _buildTextButton(String text, bool hovered) {
     return Text(
       text,
@@ -241,68 +300,6 @@ class StylingPage extends StatelessWidget {
         color: hovered ? Colors.black : Colors.white,
         fontSize: 20,
         fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-
-  Widget _buildLargeActions(BuildContext context) {
-    return Expanded(
-      child: PieMenu(
-        theme: _pageTheme.copyWith(
-          tooltipStyle: const TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-          pointerColor: Colors.red.withOpacity(0.5),
-          overlayColor: Colors.lightGreen.withOpacity(0.7),
-          buttonTheme: const PieButtonTheme(
-            backgroundColor: Colors.red,
-            iconColor: Colors.white,
-          ),
-          buttonThemeHovered: const PieButtonTheme(
-            backgroundColor: Colors.white,
-            iconColor: Colors.black,
-          ),
-          buttonSize: 84,
-        ),
-        actions: [
-          PieAction(
-            tooltip: 'Like the package',
-            onSelect: () {
-              launchUrlExternally('https://pub.dev/packages/pie_menu');
-            },
-            child: const FaIcon(FontAwesomeIcons.solidThumbsUp),
-          ),
-          PieAction(
-            tooltip: 'Import to your app',
-
-            /// Custom background color
-            buttonTheme: const PieButtonTheme(
-              backgroundColor: Colors.deepOrange,
-              iconColor: Colors.white,
-            ),
-            onSelect: () {
-              launchUrlExternally('https://pub.dev/packages/pie_menu');
-            },
-            child: const FaIcon(FontAwesomeIcons.download),
-          ),
-          PieAction(
-            tooltip: 'Share with other developers',
-            buttonTheme: const PieButtonTheme(
-              backgroundColor: Colors.orange,
-              iconColor: Colors.white,
-            ),
-            onSelect: () {
-              launchUrlExternally('https://pub.dev/packages/pie_menu');
-            },
-            child: const FaIcon(FontAwesomeIcons.share),
-          ),
-        ],
-        child: _buildCard(
-          color: Colors.blue,
-          iconData: FontAwesomeIcons.magnifyingGlassPlus,
-        ),
       ),
     );
   }

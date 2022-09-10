@@ -1,10 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:pie_menu/src/pie_action.dart';
-import 'package:pie_menu/src/pie_canvas.dart';
-import 'package:pie_menu/src/pie_menu.dart';
-import 'package:pie_menu/src/pie_theme.dart';
+import 'package:pie_menu/pie_menu.dart';
 
 /// Displays [PieAction]s of the [PieMenu] on the [PieCanvas].
 class PieButton extends StatefulWidget {
@@ -12,18 +9,19 @@ class PieButton extends StatefulWidget {
   const PieButton({
     super.key,
     required this.action,
-    required this.menuOpen,
+    required this.menuVisible,
     required this.hovered,
     required this.theme,
     required this.fadeDuration,
     required this.hoverDuration,
+    required this.angle,
   });
 
   /// Action to display.
   final PieAction action;
 
   /// Whether the [PieMenu] this [PieButton] belongs to is open.
-  final bool menuOpen;
+  final bool menuVisible;
 
   /// Whether this [PieButton] is currently hovered.
   final bool hovered;
@@ -36,6 +34,9 @@ class PieButton extends StatefulWidget {
 
   /// Duration of the [PieButton] hover animation.
   final Duration hoverDuration;
+
+  /// Display angle of [PieButton] in radians.
+  final double angle;
 
   @override
   State<PieButton> createState() => _PieButtonState();
@@ -80,9 +81,9 @@ class _PieButtonState extends State<PieButton>
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.menuOpen) {
+    if (!widget.menuVisible) {
       visible = false;
-    } else if (widget.menuOpen && !visible) {
+    } else if (widget.menuVisible && !visible) {
       visible = true;
       _controller.forward(from: 0);
     }
@@ -103,11 +104,11 @@ class _PieButtonState extends State<PieButton>
                 curve: Curves.ease,
                 top: widget.hovered
                     ? _theme.buttonSize / 2 -
-                        sin(_action.angle) * _theme.hoverDisplacement
+                        sin(widget.angle) * _theme.hoverDisplacement
                     : _theme.buttonSize / 2,
                 right: widget.hovered
                     ? _theme.buttonSize / 2 -
-                        cos(_action.angle) * _theme.hoverDisplacement
+                        cos(widget.angle) * _theme.hoverDisplacement
                     : _theme.buttonSize / 2,
                 child: Container(
                   height: _theme.buttonSize,
@@ -133,9 +134,8 @@ class _PieButtonState extends State<PieButton>
                             size: _theme.iconSize,
                           ),
                         ),
-                        child: widget.hovered
-                            ? (_action.childHovered ?? _action.child)
-                            : _action.child,
+                        child: _action.builder?.call(widget.hovered) ??
+                            _action.child!,
                       ),
                     ),
                   ),

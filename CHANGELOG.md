@@ -1,3 +1,14 @@
+## 1.2.0
+
+* Added `ScrollConfiguration` to disable scrolling automatically when a `PieMenu` is visible, but it is not working properly at the moment due to [an issue with Flutter framework](https://github.com/flutter/flutter/issues/111170).
+* Added missing `copyWith()` parameters in `PieTheme`.
+* Added `PieTheme.of(context)` function to access `PieCanvas` theme from `PieMenu` and customize it easily.
+* Removed `childHovered` parameter from `PieAction`, you can use `PieAction.builder()` and its `builder` parameter for custom hovered buttons.
+* Fixed menu child staying visible after dismiss.
+* Fixed issues related to animations after dispose.
+* Improved fade animations.
+* Stability and performance improvements.
+
 ## 1.1.0
 
 * Added bouncing menu child animation. (Can be customized or disabled with `PieTheme`)

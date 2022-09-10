@@ -24,10 +24,10 @@ class PieCanvas extends StatefulWidget {
   /// Functional callback that is triggered when a [PieMenu] that
   /// inherits this canvas is opened and closed.
   ///
-  /// If there is a [Scrollable] widget in the sub-hierarchy of the [child],
+  /// If there is a [Scrollable] widget in the sub-hierarchy of [child],
   /// this callback can be used to disable scrolling by rebuilding the widget
-  /// and giving the scrollable a [NeverScrollableScrollPhysics] as physics
-  /// if a [PieMenu] is visible on the screen.
+  /// and giving the scrollable a [NeverScrollableScrollPhysics]
+  /// when a [PieMenu] is visible on the screen.
   final Function(bool visible)? onMenuToggle;
 
   @override
