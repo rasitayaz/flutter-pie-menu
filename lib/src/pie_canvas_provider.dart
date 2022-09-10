@@ -29,8 +29,18 @@ class PieCanvasProvider extends InheritedWidget {
   /// [PieMenu] can access the canvas theme using this property.
   final PieTheme theme;
 
-  static PieCanvasProvider? of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<PieCanvasProvider>();
+  static PieCanvasProvider of(BuildContext context) {
+    final provider =
+        context.dependOnInheritedWidgetOfExactType<PieCanvasProvider>();
+    if (provider == null) {
+      throw Exception(
+        'Could not find any PieCanvas.\n'
+        'Please make sure there is a PieCanvas that inherits PieMenu.\n\n'
+        'For more information, see the pie_menu documentation.\n'
+        'https://pub.dev/packages/pie_menu',
+      );
+    }
+    return provider;
   }
 
   @override
