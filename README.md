@@ -1,23 +1,10 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
-
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
-
 # Flutter Pie Menu 🥧
 
-[![Pub](https://img.shields.io/pub/v/pie_menu.svg?style=popout)](https://pub.dartlang.org/packages/pie_menu)
-[![APK](https://img.shields.io/badge/APK-Demo-brightgreen.svg)](https://github.com/rasitayaz/flutter-pie-menu/raw/master/example/demo.apk)
-[![APK](https://img.shields.io/badge/EXE-Windows&nbsp;Demo-blueviolet)](https://github.com/rasitayaz/flutter-pie-menu/raw/master/example/demo-windows.zip)
-[![](https://img.shields.io/badge/github-rasitayaz-red)](https://github.com/rasitayaz)
-[![](https://img.shields.io/badge/buy&nbsp;me&nbsp;a&nbsp;coffee-donate-blue)](https://www.buymeacoffee.com/RasitAyaz)
+[![pub](https://img.shields.io/pub/v/pie_menu.svg?style=popout)](https://pub.dartlang.org/packages/pie_menu)
+[![apk](https://img.shields.io/badge/APK-Demo-brightgreen.svg)](https://github.com/rasitayaz/flutter-pie-menu/raw/master/example/demo.apk)
+[![exe](https://img.shields.io/badge/EXE-Windows&nbsp;Demo-blueviolet)](https://github.com/rasitayaz/flutter-pie-menu/raw/master/example/demo-windows.zip)
+[![github](https://img.shields.io/badge/github-rasitayaz-red)](https://github.com/rasitayaz)
+[![buy me a coffee](https://img.shields.io/badge/buy&nbsp;me&nbsp;a&nbsp;coffee-donate-blue)](https://www.buymeacoffee.com/RasitAyaz)
 
 A Flutter package that provides a customizable circular/radial context menu similar to Pinterest's
 
@@ -60,7 +47,7 @@ PieCanvas(
 ),
 ```
 
-## Using with Scrollable and Interactive Widgets
+## Using with scrollable and interactive widgets
 
 > ⚠️ If you want to use `PieMenu` inside a scrollable view like a `ListView`, or your widget is already interactive (e.g. it is clickable), you may need to **pay attention to this section.**
 

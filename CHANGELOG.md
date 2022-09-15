@@ -1,3 +1,7 @@
+## 1.2.1
+
+* Fixed stateful menu children not being updated.
+
 ## 1.2.0
 
 * Added `ScrollConfiguration` to disable scrolling automatically when a `PieMenu` is visible, but it is not working properly at the moment due to [an issue with Flutter framework](https://github.com/flutter/flutter/issues/111170).
