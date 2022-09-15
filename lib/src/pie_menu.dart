@@ -68,10 +68,12 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
     reverseCurve: _theme.menuBounceReverseCurve,
   ));
 
-  late final Widget _bouncingChild = ScaleTransition(
-    scale: _menuBounceAnimation,
-    child: widget.child,
-  );
+  Widget get _bouncingChild {
+    return ScaleTransition(
+      scale: _menuBounceAnimation,
+      child: widget.child,
+    );
+  }
 
   void setVisibility(bool visible) {
     if (visible != _childVisible) {
