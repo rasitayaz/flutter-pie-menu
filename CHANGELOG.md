@@ -1,3 +1,8 @@
+## 1.2.2
+
+* Fixed menu not displaying and child disappearing on iOS devices: [#23](https://github.com/rasitayaz/flutter-pie-menu/issues/23)
+* Fixed menu being able to be activated from blank canvas areas.
+
 ## 1.2.1
 
 * Fixed stateful menu children not being updated.
