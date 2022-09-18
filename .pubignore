@@ -37,6 +37,7 @@ build/
 **/linux/**
 **/macos/**
 **/web/**
+example/.metadata
 example/demo.apk
 example/demo-windows.zip
 
