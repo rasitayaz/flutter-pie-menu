@@ -325,7 +325,12 @@ class _ListViewPageState extends State<ListViewPage> {
         setState(() => _menuVisible = visible);
       },
       child: ListView.separated(
-        padding: const EdgeInsets.all(spacing),
+        padding: EdgeInsets.only(
+          top: spacing,
+          bottom: spacing,
+          left: MediaQuery.of(context).padding.left + spacing,
+          right: MediaQuery.of(context).padding.right + spacing,
+        ),
         physics: _menuVisible
             ? const NeverScrollableScrollPhysics()
             : const BouncingScrollPhysics(),
@@ -408,75 +413,80 @@ class AboutPage extends StatelessWidget {
         overlayColor: Colors.blue[200]!.withOpacity(0.5),
       ),
       child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const FlutterLogo(size: 200),
-            const SizedBox(height: 32),
-            PieMenu(
-              actions: [
-                PieAction(
-                  tooltip: 'github.com/rasitayaz',
-                  onSelect: () {
-                    launchUrlExternally('https://github.com/rasitayaz');
-                  },
-                  child: const FaIcon(FontAwesomeIcons.github),
-                ),
-                PieAction(
-                  tooltip: 'in/rasitayaz',
-                  onSelect: () {
-                    launchUrlExternally(
-                      'https://www.linkedin.com/in/rasitayaz/',
-                    );
-                  },
-                  child: const FaIcon(FontAwesomeIcons.linkedinIn),
-                ),
-                PieAction(
-                  tooltip: 'mrasitayaz@gmail.com',
-                  onSelect: () {
-                    launchUrlExternally('mailto:mrasitayaz@gmail.com');
-                  },
-                  child: const FaIcon(FontAwesomeIcons.solidEnvelope),
-                ),
-                PieAction(
-                  tooltip: 'Buy me a coffee',
-                  onSelect: () {
-                    launchUrlExternally(
-                      'https://www.buymeacoffee.com/rasitayaz',
-                    );
-                  },
-                  child: const FaIcon(FontAwesomeIcons.mugSaucer, size: 20),
-                ),
-              ],
-              child: Container(
-                padding: const EdgeInsets.all(32),
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Text(
-                      'created by',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 36,
-                      ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const FlutterLogo(size: 200),
+              const SizedBox(height: 32),
+              Center(
+                child: PieMenu(
+                  actions: [
+                    PieAction(
+                      tooltip: 'github.com/rasitayaz',
+                      onSelect: () {
+                        launchUrlExternally('https://github.com/rasitayaz');
+                      },
+                      child: const FaIcon(FontAwesomeIcons.github),
                     ),
-                    Text(
-                      'Raşit Ayaz.',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 48,
-                      ),
+                    PieAction(
+                      tooltip: 'in/rasitayaz',
+                      onSelect: () {
+                        launchUrlExternally(
+                          'https://www.linkedin.com/in/rasitayaz/',
+                        );
+                      },
+                      child: const FaIcon(FontAwesomeIcons.linkedinIn),
+                    ),
+                    PieAction(
+                      tooltip: 'mrasitayaz@gmail.com',
+                      onSelect: () {
+                        launchUrlExternally('mailto:mrasitayaz@gmail.com');
+                      },
+                      child: const FaIcon(FontAwesomeIcons.solidEnvelope),
+                    ),
+                    PieAction(
+                      tooltip: 'Buy me a coffee',
+                      onSelect: () {
+                        launchUrlExternally(
+                          'https://www.buymeacoffee.com/rasitayaz',
+                        );
+                      },
+                      child: const FaIcon(FontAwesomeIcons.mugSaucer, size: 20),
                     ),
                   ],
+                  child: Container(
+                    padding: const EdgeInsets.all(32),
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Text(
+                          'created by',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 36,
+                          ),
+                        ),
+                        Text(
+                          'Raşit Ayaz.',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 48,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
