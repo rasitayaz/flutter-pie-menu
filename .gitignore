@@ -33,6 +33,7 @@
 build/
 
 # Example project related
+example/.metadata
 **/android/**
 **/ios/**
 **/windows/**
