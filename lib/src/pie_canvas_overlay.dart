@@ -151,14 +151,20 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     }
   }
 
+  Size _metrics = WidgetsBinding.instance.window.physicalSize;
+
   @override
   void didChangeMetrics() {
     super.didChangeMetrics();
     if (mounted && menuVisible) {
-      menuVisible = false;
-      menuState?.setVisibility(true);
-      toggleMenu(false);
-      Future.delayed(_theme.fadeDuration, _detachMenu);
+      final previousMetrics = _metrics;
+      _metrics = WidgetsBinding.instance.window.physicalSize;
+      if (previousMetrics != _metrics) {
+        menuVisible = false;
+        menuState?.setVisibility(true);
+        toggleMenu(false);
+        Future.delayed(_theme.fadeDuration, _detachMenu);
+      }
     }
   }
 
