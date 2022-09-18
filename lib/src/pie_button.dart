@@ -9,7 +9,7 @@ class PieButton extends StatefulWidget {
   const PieButton({
     super.key,
     required this.action,
-    required this.menuVisible,
+    required this.menuActive,
     required this.hovered,
     required this.theme,
     required this.fadeDuration,
@@ -21,7 +21,7 @@ class PieButton extends StatefulWidget {
   final PieAction action;
 
   /// Whether the [PieMenu] this [PieButton] belongs to is open.
-  final bool menuVisible;
+  final bool menuActive;
 
   /// Whether this [PieButton] is currently hovered.
   final bool hovered;
@@ -59,7 +59,7 @@ class _PieButtonState extends State<PieButton>
     curve: Curves.ease,
   ));
 
-  /// Wether the [PieButton] is visible.
+  /// Whether the [PieButton] is visible.
   bool visible = false;
 
   PieAction get _action => widget.action;
@@ -81,9 +81,9 @@ class _PieButtonState extends State<PieButton>
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.menuVisible) {
+    if (!widget.menuActive) {
       visible = false;
-    } else if (widget.menuVisible && !visible) {
+    } else if (widget.menuActive && !visible) {
       visible = true;
       _controller.forward(from: 0);
     }

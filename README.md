@@ -57,16 +57,16 @@ PieCanvas(
 
 > 💡 As for the scrollables, there is an issue with Flutter framework related to `ScrollConfiguration`, so automatically disabling scroll may not be an option until [this issue](https://github.com/flutter/flutter/issues/111170) is resolved.
 
-Using the `visible` parameter of the callbacks, store a `bool` variable in your state.
+Store the `active` parameter of the callbacks in your state.
 
 ```dart
-bool _menuVisible = false;
+bool _menuActive = false;
 
 @override
 Widget build(BuildContext context) {
   return PieCanvas(
-    onMenuToggle: (visible) {
-      setState(() => _menuVisible = visible);
+    onMenuToggle: (active) {
+      setState(() => _menuActive = active);
     },
     ...
   );
@@ -78,8 +78,8 @@ For example, you can decide whether scrolling should be enabled or not using thi
 
 ```dart
 ListView(
-  // Disable scrolling if a PieMenu is visible
-  physics: _menuVisible
+  // Disable scrolling if a PieMenu is active
+  physics: _menuActive
       ? NeverScrollableScrollPhysics()
       : null, // Uses the default physics
   ...

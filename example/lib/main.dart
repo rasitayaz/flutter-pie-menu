@@ -314,15 +314,15 @@ class ListViewPage extends StatefulWidget {
 }
 
 class _ListViewPageState extends State<ListViewPage> {
-  bool _menuVisible = false;
+  bool _menuActive = false;
 
   static const double spacing = 20;
 
   @override
   Widget build(BuildContext context) {
     return PieCanvas(
-      onMenuToggle: (visible) {
-        setState(() => _menuVisible = visible);
+      onMenuToggle: (active) {
+        setState(() => _menuActive = active);
       },
       child: ListView.separated(
         padding: EdgeInsets.only(
@@ -331,7 +331,7 @@ class _ListViewPageState extends State<ListViewPage> {
           left: MediaQuery.of(context).padding.left + spacing,
           right: MediaQuery.of(context).padding.right + spacing,
         ),
-        physics: _menuVisible
+        physics: _menuActive
             ? const NeverScrollableScrollPhysics()
             : const BouncingScrollPhysics(),
         itemCount: 16,

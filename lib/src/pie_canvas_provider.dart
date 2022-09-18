@@ -10,7 +10,7 @@ class PieCanvasProvider extends InheritedWidget {
   PieCanvasProvider({
     super.key,
     required this.theme,
-    Function(bool menuVisible)? onMenuToggle,
+    Function(bool active)? onMenuToggle,
     required this.canvasKey,
     required Widget child,
   }) : super(

@@ -20,7 +20,7 @@ class PieCanvasOverlay extends StatefulWidget {
   });
 
   final PieTheme theme;
-  final Function(bool menuVisible)? onMenuToggle;
+  final Function(bool active)? onMenuToggle;
   final Widget child;
 
   @override
@@ -57,13 +57,13 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   /// Whether [_menuChild] is currently pressed.
   bool _pressed = false;
 
-  /// Whether [_menuChild] is pressed when the menu is visible.
+  /// Whether [_menuChild] is pressed again when the menu is active.
   bool _pressedAgain = false;
 
-  /// Whether [PieMenu] is currently visible.
-  bool menuVisible = false;
+  /// Whether [PieMenu] is currently active.
+  bool menuActive = false;
 
-  /// Whether a [PieMenu] is pressed.
+  /// Whether a [PieMenu] is attached.
   bool _menuAttached = false;
 
   /// State of [PieMenu].
@@ -102,7 +102,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
 
   /// Functional callback that is triggered when
   /// the active [PieMenu] is opened and closed.
-  Function(bool menuVisible)? _onActiveMenuToggle;
+  Function(bool active)? _onActiveMenuToggle;
 
   RenderBox? get _renderBox {
     final object = context.findRenderObject();
@@ -156,11 +156,11 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   @override
   void didChangeMetrics() {
     super.didChangeMetrics();
-    if (mounted && menuVisible) {
+    if (mounted && menuActive) {
       final previousMetrics = _metrics;
       _metrics = WidgetsBinding.instance.window.physicalSize;
       if (previousMetrics != _metrics) {
-        menuVisible = false;
+        menuActive = false;
         menuState?.setVisibility(true);
         toggleMenu(false);
         Future.delayed(_theme.fadeDuration, _detachMenu);
@@ -215,10 +215,10 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
             child: ScrollConfiguration(
               behavior: ScrollConfiguration.of(context).copyWith(
                 physics:
-                    menuVisible ? const NeverScrollableScrollPhysics() : null,
+                    menuActive ? const NeverScrollableScrollPhysics() : null,
               ),
               child: IgnorePointer(
-                ignoring: menuVisible,
+                ignoring: menuActive,
                 child: widget.child,
               ),
             ),
@@ -226,7 +226,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
           IgnorePointer(
             child: AnimatedOpacity(
               duration: _theme.fadeDuration,
-              opacity: menuVisible ? 1 : 0,
+              opacity: menuActive ? 1 : 0,
               curve: Curves.ease,
               child: Stack(
                 children: [
@@ -274,7 +274,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                           children: [
                             Expanded(
                               child: AnimatedOpacity(
-                                opacity: menuVisible && _hoveredAction != null
+                                opacity: menuActive && _hoveredAction != null
                                     ? 1
                                     : 0,
                                 duration: _theme.hoverDuration,
@@ -317,7 +317,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                         PieButton(
                           action: _actions[i],
                           angle: _getActionAngle(i),
-                          menuVisible: menuVisible,
+                          menuActive: menuActive,
                           hovered: i == _hoveredAction,
                           theme: _theme,
                           fadeDuration: _theme.fadeDuration,
@@ -334,10 +334,10 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     );
   }
 
-  void toggleMenu(bool menuVisible) {
-    _onActiveMenuToggle?.call(menuVisible);
-    widget.onMenuToggle?.call(menuVisible);
-    if (menuVisible) {
+  void toggleMenu(bool active) {
+    _onActiveMenuToggle?.call(active);
+    widget.onMenuToggle?.call(active);
+    if (active) {
       WidgetsBinding.instance.addPostFrameCallback((duration) {
         /// This rebuild prevents menu child being displayed
         /// in the wrong offset when the scrollable swiped fast.
@@ -351,12 +351,13 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   }
 
   void attachMenu({
+    required Offset offset,
     required PieMenuState state,
     required Widget child,
     required RenderBox renderBox,
     required List<PieAction> actions,
     required PieTheme? theme,
-    required Function(bool menuVisible)? onMenuToggle,
+    required Function(bool menuActive)? onMenuToggle,
   }) {
     _pointerDownTimer?.cancel();
     _pointerUpTimer?.cancel();
@@ -369,34 +370,8 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     menuState = state;
     _menuChild = child;
     _menuRenderBox = renderBox;
-  }
 
-  void _detachMenu() {
-    _pointerDownTimer?.cancel();
-    if (_menuAttached) {
-      setState(() {
-        _pressed = false;
-        _pressedAgain = false;
-        _tooltip = null;
-        _hoveredAction = null;
-        menuState = null;
-        _menuRenderBox = null;
-        _menuChild = null;
-        _menuAttached = false;
-        menuVisible = false;
-      });
-    }
-  }
-
-  void _pointerDown(Offset offset) {
-    if (!_menuAttached) {
-      return;
-    }
-
-    if (menuVisible) {
-      _pressedAgain = true;
-      _pointerMove(offset);
-    } else if (!_pressed) {
+    if (!_pressed) {
       _pressed = true;
       _pointerOffset = offset;
 
@@ -404,7 +379,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
         _pointerUpTimer?.cancel();
         _bounceController.forward(from: 0);
         setState(() {
-          menuVisible = true;
+          menuActive = true;
           _hoveredAction = null;
         });
         toggleMenu(true);
@@ -419,10 +394,34 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     }
   }
 
+  void _detachMenu() {
+    _pointerDownTimer?.cancel();
+    if (_menuAttached) {
+      setState(() {
+        _pressed = false;
+        _pressedAgain = false;
+        _tooltip = null;
+        _hoveredAction = null;
+        menuState = null;
+        _menuRenderBox = null;
+        _menuChild = null;
+        _menuAttached = false;
+        menuActive = false;
+      });
+    }
+  }
+
+  void _pointerDown(Offset offset) {
+    if (menuActive) {
+      _pressedAgain = true;
+      _pointerMove(offset);
+    }
+  }
+
   void _pointerUp(Offset offset) {
     _pointerDownTimer?.cancel();
 
-    if (menuVisible) {
+    if (menuActive) {
       if (isOutsideOfPointerArea(offset) || _pressedAgain) {
         if (_hoveredAction != null) {
           _actions[_hoveredAction!].onSelect();
@@ -430,7 +429,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
 
         menuState?.setVisibility(true);
         toggleMenu(false);
-        setState(() => menuVisible = false);
+        setState(() => menuActive = false);
 
         _pointerUpTimer = Timer(_theme.fadeDuration, () {
           _detachMenu();
@@ -445,7 +444,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   }
 
   void _pointerMove(Offset offset) {
-    if (menuVisible) {
+    if (menuActive) {
       for (int i = 0; i < _actions.length; i++) {
         PieAction action = _actions[i];
         final angle = _getActionAngle(i);

@@ -30,7 +30,7 @@ class PieMenu extends StatefulWidget {
 
   /// Functional callback that is triggered when
   /// this [PieMenu] is opened and closed.
-  final Function(bool visible)? onToggle;
+  final Function(bool active)? onToggle;
 
   final VoidCallback? onTap;
 
@@ -41,7 +41,7 @@ class PieMenu extends StatefulWidget {
 class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
   bool _childVisible = true;
 
-  Offset _tapOffset = Offset.zero;
+  Offset _offset = Offset.zero;
 
   bool _bouncing = false;
   final _bounceStopwatch = Stopwatch();
@@ -123,9 +123,9 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
     return Listener(
       behavior: HitTestBehavior.translucent,
       onPointerDown: (event) {
-        _tapOffset = event.position;
+        _offset = event.position;
 
-        if (!_canvas.menuVisible) {
+        if (!_canvas.menuActive) {
           if (_theme.delayDuration == Duration.zero) {
             widget.onTap?.call();
           }
@@ -137,6 +137,7 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
           }
 
           _canvas.attachMenu(
+            offset: _offset,
             state: this,
             child: _bouncingChild,
             renderBox: context.findRenderObject() as RenderBox,
@@ -147,12 +148,12 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
         }
       },
       onPointerMove: (event) {
-        if ((event.position - _tapOffset).distance > _theme.pointerSize / 2) {
+        if ((event.position - _offset).distance > _theme.pointerSize / 2) {
           debounce();
         }
       },
       onPointerUp: (event) {
-        if (!_canvas.menuVisible && _tapOffset == event.position) {
+        if (!_canvas.menuActive && _offset == event.position) {
           widget.onTap?.call();
         }
         debounce();
