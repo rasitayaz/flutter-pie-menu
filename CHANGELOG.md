@@ -1,3 +1,7 @@
+## 1.2.3
+
+* Fixed broken repository links in `README.md`.
+
 ## 1.2.2
 
 * Fixed menu not displaying and child disappearing on iOS devices: [#23](https://github.com/rasitayaz/flutter-pie-menu/issues/23)
