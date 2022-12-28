@@ -1,3 +1,8 @@
+## 1.2.4
+
+* Improved menu bounce animations.
+* Added [macOS demo](https://github.com/rasitayaz/flutter-pie-menu/raw/main/example/demo-macos.zip).
+
 ## 1.2.3
 
 * Fixed broken repository links in `README.md`.

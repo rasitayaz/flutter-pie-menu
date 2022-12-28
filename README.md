@@ -1,8 +1,8 @@
 # Flutter Pie Menu 🥧
 
 [![pub](https://img.shields.io/pub/v/pie_menu.svg?style=popout)](https://pub.dartlang.org/packages/pie_menu)
-[![apk](https://img.shields.io/badge/APK-Demo-brightgreen.svg)](https://github.com/rasitayaz/flutter-pie-menu/raw/main/example/demo.apk)
-[![exe](https://img.shields.io/badge/EXE-Windows&nbsp;Demo-blueviolet)](https://github.com/rasitayaz/flutter-pie-menu/raw/main/example/demo-windows.zip)
+[![apk](https://img.shields.io/badge/apk-demo-brightgreen.svg)](https://github.com/rasitayaz/flutter-pie-menu/raw/main/example/demo.apk)
+[![app](https://img.shields.io/badge/app-mac&nbsp;demo-blueviolet)](https://github.com/rasitayaz/flutter-pie-menu/raw/main/example/demo-macos.zip)
 [![github](https://img.shields.io/badge/github-rasitayaz-red)](https://github.com/rasitayaz)
 [![buy me a coffee](https://img.shields.io/badge/buy&nbsp;me&nbsp;a&nbsp;coffee-donate-blue)](https://www.buymeacoffee.com/RasitAyaz)
 
