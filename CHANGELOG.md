@@ -1,3 +1,7 @@
+## 1.2.4
+
+* Improved menu bounce animations.
+
 ## 1.2.3
 
 * Fixed broken repository links in `README.md`.
