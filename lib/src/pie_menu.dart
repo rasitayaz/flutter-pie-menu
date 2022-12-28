@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:pie_menu/src/pie_action.dart';
@@ -52,25 +53,35 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
 
   PieCanvasOverlayState get _canvas => _canvasProvider.canvasKey.currentState!;
 
-  /// Controls [_menuBounceAnimation].
-  late final AnimationController _menuBounceController = AnimationController(
-    duration: _theme.menuBounceDuration,
+  Size? _size;
+
+  Duration get _bounceDuration => _theme.menuBounceDuration;
+
+  /// Controls [_bounceAnimation].
+  late final AnimationController _bounceController = AnimationController(
+    duration: _bounceDuration,
     vsync: this,
   );
 
+  Animation<double> _getAnimation(double depth) {
+    return Tween(
+      begin: 1.0,
+      end: depth,
+    ).animate(CurvedAnimation(
+      parent: _bounceController,
+      curve: _theme.menuBounceCurve,
+      reverseCurve: _theme.menuBounceReverseCurve,
+    ));
+  }
+
   /// Bouncing animation for [PieMenu].
-  late final Animation<double> _menuBounceAnimation = Tween(
-    begin: 1.0,
-    end: _theme.menuBounceDepth,
-  ).animate(CurvedAnimation(
-    parent: _menuBounceController,
-    curve: _theme.menuBounceCurve,
-    reverseCurve: _theme.menuBounceReverseCurve,
-  ));
+  late Animation<double> _bounceAnimation = _getAnimation(
+    _theme.menuBounceDepth,
+  );
 
   Widget get _bouncingChild {
     return ScaleTransition(
-      scale: _menuBounceAnimation,
+      scale: _bounceAnimation,
       child: widget.child,
     );
   }
@@ -81,23 +92,20 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
     }
   }
 
-  void debounce() async {
+  void debounce() {
     if (!mounted || !_theme.bouncingMenu) return;
 
     if (_bouncing) {
       _bouncing = false;
 
-      if (_bounceStopwatch.elapsed > _theme.menuBounceDuration) {
-        _menuBounceController.reverse();
+      if (_bounceStopwatch.elapsed > _bounceDuration || !_canvas.menuActive) {
+        _bounceController.reverse();
       } else {
-        Future.delayed(
-          _theme.menuBounceDuration - _bounceStopwatch.elapsed,
-          () {
-            if (mounted) {
-              _menuBounceController.reverse();
-            }
-          },
-        );
+        Future.delayed(_bounceDuration - _bounceStopwatch.elapsed, () {
+          if (mounted) {
+            _bounceController.reverse();
+          }
+        });
       }
 
       _bounceStopwatch.stop();
@@ -114,12 +122,29 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
 
   @override
   void dispose() {
-    _menuBounceController.dispose();
+    _bounceController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      final size = context.size;
+
+      if (mounted && _size != size && size != null && !size.isEmpty) {
+        _size = context.size;
+
+        final screenSize = MediaQuery.of(context).size;
+
+        final widthRatio = size.width / screenSize.width;
+        final heightRatio = size.height / screenSize.height;
+
+        final depth = max(0, min(1, max(widthRatio, heightRatio))) * 0.1 + 0.8;
+
+        setState(() => _bounceAnimation = _getAnimation(depth));
+      }
+    });
+
     return Listener(
       behavior: HitTestBehavior.translucent,
       onPointerDown: (event) {
@@ -131,7 +156,7 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
           }
 
           if (_theme.bouncingMenu) {
-            _menuBounceController.forward();
+            _bounceController.forward();
             _bouncing = true;
             _bounceStopwatch.start();
           }
