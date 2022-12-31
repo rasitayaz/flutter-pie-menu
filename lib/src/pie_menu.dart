@@ -40,12 +40,14 @@ class PieMenu extends StatefulWidget {
 }
 
 class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
-  bool _childVisible = true;
+  var _childVisible = true;
 
-  Offset _offset = Offset.zero;
+  var _offset = Offset.zero;
 
-  bool _bouncing = false;
+  var _bouncing = false;
   final _bounceStopwatch = Stopwatch();
+
+  var _canTap = true;
 
   PieCanvasProvider get _canvasProvider => PieCanvasProvider.of(context);
 
@@ -75,9 +77,7 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
   }
 
   /// Bouncing animation for [PieMenu].
-  late Animation<double> _bounceAnimation = _getAnimation(
-    _theme.menuBounceDepth,
-  );
+  late Animation<double> _bounceAnimation = _getAnimation(1);
 
   Widget get _bouncingChild {
     return ScaleTransition(
@@ -93,6 +93,8 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
   }
 
   void debounce() {
+    _canTap = false;
+
     if (!mounted || !_theme.bouncingMenu) return;
 
     if (_bouncing) {
@@ -129,25 +131,28 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final size = context.size;
+      if (mounted) {
+        final size = context.size;
 
-      if (mounted && _size != size && size != null && !size.isEmpty) {
-        _size = context.size;
+        if (_size != size && size != null && !size.isEmpty) {
+          _size = context.size;
 
-        final screenSize = MediaQuery.of(context).size;
+          final effectiveSize = max(size.width, size.height);
+          final depth = max(
+            (effectiveSize - _theme.menuBounceDistance) / effectiveSize,
+            0.0,
+          );
 
-        final widthRatio = size.width / screenSize.width;
-        final heightRatio = size.height / screenSize.height;
-
-        final depth = max(0, min(1, max(widthRatio, heightRatio))) * 0.1 + 0.8;
-
-        setState(() => _bounceAnimation = _getAnimation(depth));
+          setState(() => _bounceAnimation = _getAnimation(depth));
+        }
       }
     });
 
     return Listener(
       behavior: HitTestBehavior.translucent,
       onPointerDown: (event) {
+        _canTap = true;
+
         _offset = event.position;
 
         if (!_canvas.menuActive) {
@@ -156,9 +161,9 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
           }
 
           if (_theme.bouncingMenu) {
-            _bounceController.forward();
             _bouncing = true;
             _bounceStopwatch.start();
+            _bounceController.forward();
           }
 
           _canvas.attachMenu(
@@ -178,7 +183,7 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
         }
       },
       onPointerUp: (event) {
-        if (!_canvas.menuActive && _offset == event.position) {
+        if (_canTap && _offset == event.position) {
           widget.onTap?.call();
         }
         debounce();

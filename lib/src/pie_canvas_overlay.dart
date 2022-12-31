@@ -395,20 +395,22 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   }
 
   void _detachMenu() {
-    _pointerDownTimer?.cancel();
-    if (_menuAttached) {
-      setState(() {
-        _pressed = false;
-        _pressedAgain = false;
-        _tooltip = null;
-        _hoveredAction = null;
-        menuState = null;
-        _menuRenderBox = null;
-        _menuChild = null;
-        _menuAttached = false;
-        menuActive = false;
-      });
-    }
+    _pointerUpTimer = Timer(_theme.fadeDuration, () {
+      _pointerDownTimer?.cancel();
+      if (_menuAttached) {
+        setState(() {
+          _pressed = false;
+          _pressedAgain = false;
+          _tooltip = null;
+          _hoveredAction = null;
+          menuState = null;
+          _menuRenderBox = null;
+          _menuChild = null;
+          _menuAttached = false;
+          menuActive = false;
+        });
+      }
+    });
   }
 
   void _pointerDown(Offset offset) {
@@ -431,9 +433,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
         toggleMenu(false);
         setState(() => menuActive = false);
 
-        _pointerUpTimer = Timer(_theme.fadeDuration, () {
-          _detachMenu();
-        });
+        _detachMenu();
       }
     } else {
       _detachMenu();
