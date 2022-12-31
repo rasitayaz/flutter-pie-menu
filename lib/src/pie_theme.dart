@@ -27,8 +27,8 @@ class PieTheme {
     this.tooltipPadding = const EdgeInsets.symmetric(horizontal: 32),
     this.tooltipStyle,
     this.pieBounceDuration = const Duration(seconds: 1),
-    this.menuBounceDuration = const Duration(milliseconds: 100),
-    this.menuBounceDepth = 0.95,
+    this.menuBounceDuration = const Duration(milliseconds: 120),
+    this.menuBounceDistance = 24,
     this.menuBounceCurve = Curves.decelerate,
     this.menuBounceReverseCurve,
     this.fadeDuration = const Duration(milliseconds: 250),
@@ -79,9 +79,8 @@ class PieTheme {
   /// Duration of [PieMenu] bounce animation.
   final Duration menuBounceDuration;
 
-  /// Decides how small the menu child will be when it is bouncing.
-  /// A value between 0 and 1.
-  final double menuBounceDepth;
+  /// Distance of [PieMenu] bounce animation.
+  final double menuBounceDistance;
 
   /// Curve for the menu bounce animation.
   final Curve menuBounceCurve;
@@ -125,7 +124,7 @@ class PieTheme {
     TextStyle? tooltipStyle,
     Duration? pieBounceDuration,
     Duration? menuBounceDuration,
-    double? menuBounceDepth,
+    double? menuBounceDistance,
     Curve? menuBounceCurve,
     Curve? menuBounceReverseCurve,
     Duration? fadeDuration,
@@ -147,7 +146,7 @@ class PieTheme {
       tooltipStyle: tooltipStyle ?? this.tooltipStyle,
       pieBounceDuration: pieBounceDuration ?? this.pieBounceDuration,
       menuBounceDuration: menuBounceDuration ?? this.menuBounceDuration,
-      menuBounceDepth: menuBounceDepth ?? this.menuBounceDepth,
+      menuBounceDistance: menuBounceDistance ?? this.menuBounceDistance,
       menuBounceCurve: menuBounceCurve ?? this.menuBounceCurve,
       menuBounceReverseCurve:
           menuBounceReverseCurve ?? this.menuBounceReverseCurve,

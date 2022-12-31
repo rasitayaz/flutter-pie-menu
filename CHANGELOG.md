@@ -1,3 +1,8 @@
+## 1.2.5
+
+* Replaced `menuBounceDepth` with `menuBounceDistance` in `PieTheme` and improved default bounce animation.
+* Fixed [#28](https://github.com/rasitayaz/flutter-pie-menu/issues/28)
+
 ## 1.2.4
 
 * Improved menu bounce animations.
