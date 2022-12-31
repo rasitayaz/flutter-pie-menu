@@ -90,12 +90,12 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   /// Starts when the pointer is down,
   /// is triggered after the delay duration specified in [PieTheme],
   /// and gets cancelled when the pointer is up.
-  Timer? _pointerDownTimer;
+  Timer? _attachTimer;
 
   /// Starts when the pointer is up,
   /// is triggered after the fade duration specified in [PieTheme],
   /// and gets cancelled when the pointer is down again.
-  Timer? _pointerUpTimer;
+  Timer? _detachTimer;
 
   /// Tooltip text for the hovered [PieButton].
   String? _tooltip;
@@ -163,7 +163,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
         menuActive = false;
         menuState?.setVisibility(true);
         toggleMenu(false);
-        Future.delayed(_theme.fadeDuration, _detachMenu);
+        _detachMenu();
       }
     }
   }
@@ -359,8 +359,8 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     required PieTheme? theme,
     required Function(bool menuActive)? onMenuToggle,
   }) {
-    _pointerDownTimer?.cancel();
-    _pointerUpTimer?.cancel();
+    _attachTimer?.cancel();
+    _detachTimer?.cancel();
     menuState?.setVisibility(true);
 
     _menuAttached = true;
@@ -375,8 +375,8 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
       _pressed = true;
       _pointerOffset = offset;
 
-      _pointerDownTimer = Timer(_theme.delayDuration, () {
-        _pointerUpTimer?.cancel();
+      _attachTimer = Timer(_theme.delayDuration, () {
+        _detachTimer?.cancel();
         _bounceController.forward(from: 0);
         setState(() {
           menuActive = true;
@@ -386,7 +386,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
 
         menuState?.debounce();
         Future.delayed(_theme.fadeDuration, () {
-          if (!(_pointerUpTimer?.isActive ?? false)) {
+          if (!(_detachTimer?.isActive ?? false)) {
             menuState?.setVisibility(false);
           }
         });
@@ -394,23 +394,26 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     }
   }
 
-  void _detachMenu() {
-    _pointerUpTimer = Timer(_theme.fadeDuration, () {
-      _pointerDownTimer?.cancel();
-      if (_menuAttached) {
-        setState(() {
-          _pressed = false;
-          _pressedAgain = false;
-          _tooltip = null;
-          _hoveredAction = null;
-          menuState = null;
-          _menuRenderBox = null;
-          _menuChild = null;
-          _menuAttached = false;
-          menuActive = false;
-        });
-      }
-    });
+  void _detachMenu({bool afterDelay = true}) {
+    _detachTimer = Timer(
+      afterDelay ? _theme.fadeDuration : Duration.zero,
+      () {
+        _attachTimer?.cancel();
+        if (_menuAttached) {
+          setState(() {
+            _pressed = false;
+            _pressedAgain = false;
+            _tooltip = null;
+            _hoveredAction = null;
+            menuState = null;
+            _menuRenderBox = null;
+            _menuChild = null;
+            _menuAttached = false;
+            menuActive = false;
+          });
+        }
+      },
+    );
   }
 
   void _pointerDown(Offset offset) {
@@ -421,7 +424,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   }
 
   void _pointerUp(Offset offset) {
-    _pointerDownTimer?.cancel();
+    _attachTimer?.cancel();
 
     if (menuActive) {
       if (isOutsideOfPointerArea(offset) || _pressedAgain) {
@@ -467,7 +470,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
         setState(() => _hoveredAction = null);
       }
     } else if (_pressed && isOutsideOfPointerArea(offset)) {
-      _detachMenu();
+      _detachMenu(afterDelay: false);
     }
   }
 }
