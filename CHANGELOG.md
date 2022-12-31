@@ -1,3 +1,7 @@
+## 1.2.6
+
+* Fixed some critical gesture issues.
+
 ## 1.2.5
 
 * Replaced `menuBounceDepth` with `menuBounceDistance` in `PieTheme` and improved default bounce animation.
