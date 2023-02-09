@@ -22,6 +22,7 @@ class PieTheme {
     ),
     this.iconSize,
     this.distance = 96,
+    this.startAngle = 0,
     this.buttonSize = 56,
     this.pointerSize = 42,
     this.tooltipPadding = const EdgeInsets.symmetric(horizontal: 32),
@@ -60,6 +61,9 @@ class PieTheme {
 
   /// Distance between the [PieButton] and the center of [PieMenu].
   final double distance;
+
+  /// Sets the starting Angle of the [PieMenu].
+  final double startAngle
 
   /// Size of [PieButton] circle.
   final double buttonSize;
@@ -118,6 +122,7 @@ class PieTheme {
     PieButtonTheme? buttonThemeHovered,
     double? iconSize,
     double? distance,
+    double? startAngle,
     double? buttonSize,
     double? pointerSize,
     EdgeInsets? tooltipPadding,
@@ -140,6 +145,7 @@ class PieTheme {
       buttonThemeHovered: buttonThemeHovered ?? this.buttonThemeHovered,
       iconSize: iconSize ?? this.iconSize,
       distance: distance ?? this.distance,
+      startAngle: startAngle ?? this.startAngle,
       buttonSize: buttonSize ?? this.buttonSize,
       pointerSize: pointerSize ?? this.pointerSize,
       tooltipPadding: tooltipPadding ?? this.tooltipPadding,
