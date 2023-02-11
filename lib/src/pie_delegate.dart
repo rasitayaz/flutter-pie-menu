@@ -48,8 +48,9 @@ class PieDelegate extends FlowDelegate {
     int count = context.childCount;
 
     for (int i = 0; i < count; ++i) {
-      Size size = context.getChildSize(i)!;
-      double angle = theme.startAngle + baseAngle - angleDifference * (i - 1);
+      final size = context.getChildSize(i)!;
+      final angle =
+          radians(theme.angleOffset + baseAngle - angleDifference * (i - 1));
       if (i == 0) {
         context.paintChild(
           i,
@@ -65,10 +66,10 @@ class PieDelegate extends FlowDelegate {
           transform: Matrix4.translationValues(
             dx -
                 size.width / 2 +
-                theme.distance * cos(radians(angle)) * bounceAnimation.value,
+                theme.distance * cos(angle) * bounceAnimation.value,
             dy -
                 size.height / 2 -
-                theme.distance * sin(radians(angle)) * bounceAnimation.value,
+                theme.distance * sin(angle) * bounceAnimation.value,
             0,
           ),
         );
