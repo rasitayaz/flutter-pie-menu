@@ -188,7 +188,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
 
   double get baseAngle {
     final arc = (_actions.length - 1) * angleDifference;
-    final dxRatio = dx / _canvasSize.width;
+    final dxRatio = dx / _canvasWidth;
 
     double angleBetween(Offset o1, Offset o2) {
       final slope = (o2.dy - o1.dy) / (o2.dx - o1.dx);
@@ -272,11 +272,11 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                   /// Tooltip
                   if (_tooltip != null)
                     Positioned(
-                      top: dy < _canvasSize.height / 2
+                      top: dy < _canvasHeight / 2
                           ? dy + _theme.distance + _theme.buttonSize
                           : null,
-                      bottom: dy >= _canvasSize.height / 2
-                          ? _canvasSize.height -
+                      bottom: dy >= _canvasHeight / 2
+                          ? _canvasHeight -
                               dy +
                               _theme.distance +
                               _theme.buttonSize
@@ -296,7 +296,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                                 curve: Curves.ease,
                                 child: Text(
                                   _tooltip!,
-                                  textAlign: dx < _canvasSize.width / 2
+                                  textAlign: dx < _canvasWidth / 2
                                       ? TextAlign.right
                                       : TextAlign.left,
                                   style: _tooltipStyle,
