@@ -43,14 +43,14 @@ class PieDelegate extends FlowDelegate {
 
   @override
   void paintChildren(FlowPaintingContext context) {
-    double dx = pointerOffset.dx - canvasOffset.dx;
-    double dy = pointerOffset.dy - canvasOffset.dy;
-    int count = context.childCount;
+    final dx = pointerOffset.dx - canvasOffset.dx;
+    final dy = pointerOffset.dy - canvasOffset.dy;
+    final count = context.childCount;
 
     for (int i = 0; i < count; ++i) {
       final size = context.getChildSize(i)!;
-      final angle =
-          radians(theme.angleOffset + baseAngle - angleDifference * (i - 1));
+      final angleInRadians =
+          radians(baseAngle - theme.angleOffset - angleDifference * (i - 1));
       if (i == 0) {
         context.paintChild(
           i,
@@ -66,10 +66,10 @@ class PieDelegate extends FlowDelegate {
           transform: Matrix4.translationValues(
             dx -
                 size.width / 2 +
-                theme.distance * cos(angle) * bounceAnimation.value,
+                theme.distance * cos(angleInRadians) * bounceAnimation.value,
             dy -
                 size.height / 2 -
-                theme.distance * sin(angle) * bounceAnimation.value,
+                theme.distance * sin(angleInRadians) * bounceAnimation.value,
             0,
           ),
         );

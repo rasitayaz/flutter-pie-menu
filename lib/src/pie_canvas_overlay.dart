@@ -113,9 +113,9 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     return _renderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
   }
 
-  Size get _canvasSize {
-    return _renderBox?.size ?? Size.zero;
-  }
+  Size get _canvasSize => _renderBox?.size ?? Size.zero;
+  double get _canvasWidth => _canvasSize.width;
+  double get _canvasHeight => _canvasSize.height;
 
   Color get _overlayColor {
     return _theme.overlayColor ??
@@ -187,18 +187,33 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   }
 
   double get baseAngle {
-    double arc = (_actions.length - 1) * angleDifference;
-    double dxRatio = dx / _canvasSize.width;
-    return dy >
-            _theme.distance +
-                _theme.buttonSize +
-                MediaQuery.of(context).padding.top
-        ? (arc / 2) + 180 * dxRatio
-        : (arc / 2) - 180 * dxRatio;
+    final arc = (_actions.length - 1) * angleDifference;
+    final dxRatio = dx / _canvasSize.width;
+
+    double angleBetween(Offset o1, Offset o2) {
+      final slope = (o2.dy - o1.dy) / (o2.dx - o1.dx);
+      return degrees(atan(slope));
+    }
+
+    final offset = Offset(dx, dy);
+
+    if (dy < _canvasWidth / 2) {
+      final origin = Offset(_canvasWidth / 2, _canvasWidth / 2);
+      return dx < _canvasWidth / 2
+          ? arc / 2 - angleBetween(origin, offset)
+          : arc / 2 + 180 - angleBetween(origin, offset);
+    } else if (_canvasHeight - dy < _canvasWidth / 2) {
+      final origin = Offset(_canvasWidth / 2, _canvasHeight - _canvasWidth / 2);
+      return dx < _canvasWidth / 2
+          ? arc / 2 - angleBetween(origin, offset)
+          : arc / 2 + 180 - angleBetween(origin, offset);
+    } else {
+      return arc / 2 + 180 * dxRatio;
+    }
   }
 
   double _getActionAngle(int index) {
-    return radians(_theme.angleOffset + baseAngle - angleDifference * index);
+    return radians(baseAngle - _theme.angleOffset - angleDifference * index);
   }
 
   @override
