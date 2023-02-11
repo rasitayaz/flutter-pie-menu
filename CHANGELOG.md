@@ -1,3 +1,8 @@
+## 1.3.0
+
+* Improved menu angle calculation, the menu is now displayed at a better angle when opened from the corners of the screen.
+* Added `angleOffset` parameter to `PieTheme` to adjust the menu angle.
+
 ## 1.2.6
 
 * Fixed some critical gesture issues.
