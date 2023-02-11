@@ -5,6 +5,13 @@ homepage: https://github.com/rasitayaz/flutter-pie-menu
 repository: https://github.com/rasitayaz/flutter-pie-menu
 issue_tracker: https://github.com/rasitayaz/flutter-pie-menu/issues
 
+funding:
+  - https://www.buymeacoffee.com/RasitAyaz
+
+screenshots:
+  - description: Pie Menu
+    path: pie.jpg
+
 environment:
   sdk: ">=2.17.0 <3.0.0"
   flutter: ">=1.17.0"
