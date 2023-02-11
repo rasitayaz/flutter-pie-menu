@@ -49,7 +49,7 @@ class PieDelegate extends FlowDelegate {
 
     for (int i = 0; i < count; ++i) {
       Size size = context.getChildSize(i)!;
-      double angle = baseAngle - angleDifference * (i - 1);
+      double angle = theme.startAngle + baseAngle - angleDifference * (i - 1);
       if (i == 0) {
         context.paintChild(
           i,

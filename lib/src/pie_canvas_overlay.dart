@@ -198,7 +198,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   }
 
   double _getActionAngle(int index) {
-    return radians(baseAngle - angleDifference * index);
+    return radians(_theme.startAngle + baseAngle - angleDifference * index);
   }
 
   @override
