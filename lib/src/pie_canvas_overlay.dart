@@ -113,9 +113,9 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     return _renderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
   }
 
-  Size get _canvasSize {
-    return _renderBox?.size ?? Size.zero;
-  }
+  Size get _canvasSize => _renderBox?.size ?? Size.zero;
+  double get _canvasWidth => _canvasSize.width;
+  double get _canvasHeight => _canvasSize.height;
 
   Color get _overlayColor {
     return _theme.overlayColor ??
@@ -187,18 +187,33 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   }
 
   double get baseAngle {
-    double arc = (_actions.length - 1) * angleDifference;
-    double dxRatio = dx / _canvasSize.width;
-    return dy >
-            _theme.distance +
-                _theme.buttonSize +
-                MediaQuery.of(context).padding.top
-        ? (arc / 2) + 180 * dxRatio
-        : (arc / 2) - 180 * dxRatio;
+    final arc = (_actions.length - 1) * angleDifference;
+    final dxRatio = dx / _canvasWidth;
+
+    double angleBetween(Offset o1, Offset o2) {
+      final slope = (o2.dy - o1.dy) / (o2.dx - o1.dx);
+      return degrees(atan(slope));
+    }
+
+    final offset = Offset(dx, dy);
+
+    if (dy < _canvasWidth / 2) {
+      final origin = Offset(_canvasWidth / 2, _canvasWidth / 2);
+      return dx < _canvasWidth / 2
+          ? arc / 2 - angleBetween(origin, offset)
+          : arc / 2 + 180 - angleBetween(origin, offset);
+    } else if (_canvasHeight - dy < _canvasWidth / 2) {
+      final origin = Offset(_canvasWidth / 2, _canvasHeight - _canvasWidth / 2);
+      return dx < _canvasWidth / 2
+          ? arc / 2 - angleBetween(origin, offset)
+          : arc / 2 + 180 - angleBetween(origin, offset);
+    } else {
+      return arc / 2 + 180 * dxRatio;
+    }
   }
 
   double _getActionAngle(int index) {
-    return radians(baseAngle - angleDifference * index);
+    return radians(baseAngle - _theme.angleOffset - angleDifference * index);
   }
 
   @override
@@ -257,11 +272,11 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                   /// Tooltip
                   if (_tooltip != null)
                     Positioned(
-                      top: dy < _canvasSize.height / 2
+                      top: dy < _canvasHeight / 2
                           ? dy + _theme.distance + _theme.buttonSize
                           : null,
-                      bottom: dy >= _canvasSize.height / 2
-                          ? _canvasSize.height -
+                      bottom: dy >= _canvasHeight / 2
+                          ? _canvasHeight -
                               dy +
                               _theme.distance +
                               _theme.buttonSize
@@ -281,7 +296,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                                 curve: Curves.ease,
                                 child: Text(
                                   _tooltip!,
-                                  textAlign: dx < _canvasSize.width / 2
+                                  textAlign: dx < _canvasWidth / 2
                                       ? TextAlign.right
                                       : TextAlign.left,
                                   style: _tooltipStyle,
