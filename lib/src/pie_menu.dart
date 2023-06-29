@@ -17,6 +17,7 @@ class PieMenu extends StatefulWidget {
     this.actions = const [],
     this.onToggle,
     this.onTap,
+    this.disabled = false,
     required this.child,
   });
 
@@ -34,6 +35,9 @@ class PieMenu extends StatefulWidget {
   final Function(bool active)? onToggle;
 
   final VoidCallback? onTap;
+
+  /// Whether Listener's onTapDown callback can be triggered.
+  final bool disabled;
 
   @override
   State<PieMenu> createState() => PieMenuState();
@@ -115,6 +119,43 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
     }
   }
 
+  void onTapLocal(Offset offset) {
+    final object = context.findRenderObject();
+    final renderBox = object is RenderBox && object.hasSize ? object : null;
+    final localOffset = renderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
+    onTap(offset + localOffset);
+  }
+
+  void onTap(Offset offset) {
+    if (widget.disabled) return;
+
+    _canTap = true;
+
+    _offset = offset;
+
+    if (!_canvas.menuActive) {
+      if (_theme.delayDuration == Duration.zero) {
+        widget.onTap?.call();
+      }
+
+      if (_theme.bouncingMenu) {
+        _bouncing = true;
+        _bounceStopwatch.start();
+        _bounceController.forward();
+      }
+
+      _canvas.attachMenu(
+        offset: _offset,
+        state: this,
+        child: _bouncingChild,
+        renderBox: context.findRenderObject() as RenderBox,
+        actions: widget.actions,
+        theme: widget.theme,
+        onMenuToggle: widget.onToggle,
+      );
+    }
+  }
+
   @override
   void setState(fn) {
     if (mounted) {
@@ -151,31 +192,7 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
     return Listener(
       behavior: HitTestBehavior.translucent,
       onPointerDown: (event) {
-        _canTap = true;
-
-        _offset = event.position;
-
-        if (!_canvas.menuActive) {
-          if (_theme.delayDuration == Duration.zero) {
-            widget.onTap?.call();
-          }
-
-          if (_theme.bouncingMenu) {
-            _bouncing = true;
-            _bounceStopwatch.start();
-            _bounceController.forward();
-          }
-
-          _canvas.attachMenu(
-            offset: _offset,
-            state: this,
-            child: _bouncingChild,
-            renderBox: context.findRenderObject() as RenderBox,
-            actions: widget.actions,
-            theme: widget.theme,
-            onMenuToggle: widget.onToggle,
-          );
-        }
+        onTap(event.position);
       },
       onPointerMove: (event) {
         if ((event.position - _offset).distance > _theme.pointerSize / 2) {
