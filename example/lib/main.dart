@@ -4,6 +4,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pie_menu/pie_menu.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+import 'package:example/canvas.dart';
+
 extension ContextExtension on BuildContext {
   void showSnackBar(String message) {
     ScaffoldMessenger.of(this).removeCurrentSnackBar();
@@ -68,10 +70,13 @@ class _HomePageState extends State<HomePage> {
         children: const [
           StylingPage(),
           ListViewPage(),
+          NodePage(),
           AboutPage(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        unselectedItemColor: Theme.of(context).unselectedWidgetColor,
         currentIndex: _navigationIndex,
         onTap: (index) => setState(() => _navigationIndex = index),
         items: const [
@@ -82,6 +87,10 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(
             icon: FaIcon(FontAwesomeIcons.list),
             label: 'ListView',
+          ),
+          BottomNavigationBarItem(
+            icon: FaIcon(FontAwesomeIcons.paintbrush),
+            label: 'Canvas',
           ),
           BottomNavigationBarItem(
             icon: FaIcon(FontAwesomeIcons.circleInfo),
@@ -462,9 +471,9 @@ class AboutPage extends StatelessWidget {
                       color: Colors.blue,
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Column(
+                    child: const Column(
                       mainAxisSize: MainAxisSize.min,
-                      children: const [
+                      children: [
                         Text(
                           'created by',
                           style: TextStyle(
