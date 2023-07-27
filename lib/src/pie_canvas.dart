@@ -12,6 +12,7 @@ class PieCanvas extends StatefulWidget {
     this.theme = const PieTheme(),
     this.onMenuToggle,
     required this.child,
+    this.isHighlightedChild = true,
   });
 
   /// Widget to display behind the canvas.
@@ -30,6 +31,8 @@ class PieCanvas extends StatefulWidget {
   /// when a [PieMenu] is active.
   final Function(bool active)? onMenuToggle;
 
+  final bool isHighlightedChild;
+
   @override
   State<PieCanvas> createState() => _PieCanvasState();
 }
@@ -43,6 +46,7 @@ class _PieCanvasState extends State<PieCanvas> {
       canvasKey: _canvasKey,
       theme: widget.theme,
       onMenuToggle: widget.onMenuToggle,
+      isHighlightedChild: widget.isHighlightedChild,
       child: widget.child,
     );
   }

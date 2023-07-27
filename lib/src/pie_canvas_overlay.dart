@@ -17,11 +17,13 @@ class PieCanvasOverlay extends StatefulWidget {
     required this.theme,
     this.onMenuToggle,
     required this.child,
+    this.isHighlightedChild = true,
   });
 
   final PieTheme theme;
   final Function(bool active)? onMenuToggle;
   final Widget child;
+  final bool isHighlightedChild;
 
   @override
   PieCanvasOverlayState createState() => PieCanvasOverlayState();
@@ -231,8 +233,8 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay> with SingleTickerPro
               curve: Curves.ease,
               child: Stack(
                 children: [
-                  /// Pie Menu child
-                  if (_menuRenderBox != null && _menuRenderBox!.attached)
+                  /// Pie Menu child below the Overlay
+                  if (_menuRenderBox != null && _menuRenderBox!.attached && !widget.isHighlightedChild)
                     Positioned(
                       top: _menuOffset.dy - _canvasOffset.dy,
                       left: _menuOffset.dx - _canvasOffset.dx,
@@ -254,6 +256,23 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay> with SingleTickerPro
                       color: _overlayColor,
                     ),
                   ),
+
+                  /// Pie Menu child on top of the Overlay
+                  if (_menuRenderBox != null && _menuRenderBox!.attached && widget.isHighlightedChild)
+                    Positioned(
+                      top: _menuOffset.dy - _canvasOffset.dy,
+                      left: _menuOffset.dx - _canvasOffset.dx,
+                      child: AnimatedOpacity(
+                        opacity: _hoveredAction != null ? 0.5 : 1,
+                        duration: _theme.hoverDuration,
+                        curve: Curves.ease,
+                        child: SizedBox(
+                          width: _menuSize!.width,
+                          height: _menuSize!.height,
+                          child: _menuChild!,
+                        ),
+                      ),
+                    ),
 
                   /// Tooltip
                   if (_tooltip != null)

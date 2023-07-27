@@ -13,11 +13,13 @@ class PieCanvasProvider extends InheritedWidget {
     Function(bool active)? onMenuToggle,
     required this.canvasKey,
     required Widget child,
+    bool isHighlightedChild = true,
   }) : super(
           child: PieCanvasOverlay(
             key: canvasKey,
             theme: theme,
             onMenuToggle: onMenuToggle,
+            isHighlightedChild: isHighlightedChild,
             child: child,
           ),
         );
@@ -30,8 +32,7 @@ class PieCanvasProvider extends InheritedWidget {
   final PieTheme theme;
 
   static PieCanvasProvider of(BuildContext context) {
-    final provider =
-        context.dependOnInheritedWidgetOfExactType<PieCanvasProvider>();
+    final provider = context.dependOnInheritedWidgetOfExactType<PieCanvasProvider>();
     if (provider == null) {
       throw Exception(
         'Could not find any PieCanvas.\n'
