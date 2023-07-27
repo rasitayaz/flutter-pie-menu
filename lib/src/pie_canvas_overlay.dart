@@ -27,8 +27,7 @@ class PieCanvasOverlay extends StatefulWidget {
   PieCanvasOverlayState createState() => PieCanvasOverlayState();
 }
 
-class PieCanvasOverlayState extends State<PieCanvasOverlay>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+class PieCanvasOverlayState extends State<PieCanvasOverlay> with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   /// * [PieMenu] refers to the menu that is currently displayed on the canvas.
 
   /// Theme of [PieMenu].
@@ -118,17 +117,11 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   double get _canvasHeight => _canvasSize.height;
 
   Color get _overlayColor {
-    return _theme.overlayColor ??
-        (_theme.brightness == Brightness.light
-            ? Colors.white.withOpacity(0.8)
-            : Colors.black.withOpacity(0.8));
+    return _theme.overlayColor ?? (_theme.brightness == Brightness.light ? Colors.white.withOpacity(0.8) : Colors.black.withOpacity(0.8));
   }
 
   Color get _pointerColor {
-    return _theme.pointerColor ??
-        (_theme.brightness == Brightness.light
-            ? Colors.black.withOpacity(0.35)
-            : Colors.white.withOpacity(0.5));
+    return _theme.pointerColor ?? (_theme.brightness == Brightness.light ? Colors.black.withOpacity(0.35) : Colors.white.withOpacity(0.5));
   }
 
   @override
@@ -173,9 +166,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
         TextStyle(
           fontSize: 32,
           fontWeight: FontWeight.bold,
-          color: _theme.brightness == Brightness.light
-              ? Colors.black
-              : Colors.white,
+          color: _theme.brightness == Brightness.light ? Colors.black : Colors.white,
         );
   }
 
@@ -199,14 +190,10 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
 
     if (dy < _canvasWidth / 2) {
       final origin = Offset(_canvasWidth / 2, _canvasWidth / 2);
-      return dx < _canvasWidth / 2
-          ? arc / 2 - angleBetween(origin, offset)
-          : arc / 2 + 180 - angleBetween(origin, offset);
+      return dx < _canvasWidth / 2 ? arc / 2 - angleBetween(origin, offset) : arc / 2 + 180 - angleBetween(origin, offset);
     } else if (_canvasHeight - dy < _canvasWidth / 2) {
       final origin = Offset(_canvasWidth / 2, _canvasHeight - _canvasWidth / 2);
-      return dx < _canvasWidth / 2
-          ? arc / 2 - angleBetween(origin, offset)
-          : arc / 2 + 180 - angleBetween(origin, offset);
+      return dx < _canvasWidth / 2 ? arc / 2 - angleBetween(origin, offset) : arc / 2 + 180 - angleBetween(origin, offset);
     } else {
       return arc / 2 + 180 * dxRatio;
     }
@@ -229,8 +216,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
             onPointerUp: (event) => _pointerUp(event.position),
             child: ScrollConfiguration(
               behavior: ScrollConfiguration.of(context).copyWith(
-                physics:
-                    menuActive ? const NeverScrollableScrollPhysics() : null,
+                physics: menuActive ? const NeverScrollableScrollPhysics() : null,
               ),
               child: IgnorePointer(
                 ignoring: menuActive,
@@ -245,13 +231,6 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
               curve: Curves.ease,
               child: Stack(
                 children: [
-                  /// Overlay
-                  Positioned.fill(
-                    child: ColoredBox(
-                      color: _overlayColor,
-                    ),
-                  ),
-
                   /// Pie Menu child
                   if (_menuRenderBox != null && _menuRenderBox!.attached)
                     Positioned(
@@ -269,18 +248,18 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                       ),
                     ),
 
+                  /// Overlay
+                  Positioned.fill(
+                    child: ColoredBox(
+                      color: _overlayColor,
+                    ),
+                  ),
+
                   /// Tooltip
                   if (_tooltip != null)
                     Positioned(
-                      top: dy < _canvasHeight / 2
-                          ? dy + _theme.distance + _theme.buttonSize
-                          : null,
-                      bottom: dy >= _canvasHeight / 2
-                          ? _canvasHeight -
-                              dy +
-                              _theme.distance +
-                              _theme.buttonSize
-                          : null,
+                      top: dy < _canvasHeight / 2 ? dy + _theme.distance + _theme.buttonSize : null,
+                      bottom: dy >= _canvasHeight / 2 ? _canvasHeight - dy + _theme.distance + _theme.buttonSize : null,
                       left: 0,
                       right: 0,
                       child: Padding(
@@ -289,16 +268,12 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                           children: [
                             Expanded(
                               child: AnimatedOpacity(
-                                opacity: menuActive && _hoveredAction != null
-                                    ? 1
-                                    : 0,
+                                opacity: menuActive && _hoveredAction != null ? 1 : 0,
                                 duration: _theme.hoverDuration,
                                 curve: Curves.ease,
                                 child: Text(
                                   _tooltip!,
-                                  textAlign: dx < _canvasWidth / 2
-                                      ? TextAlign.right
-                                      : TextAlign.left,
+                                  textAlign: dx < _canvasWidth / 2 ? TextAlign.right : TextAlign.left,
                                   style: _tooltipStyle,
                                 ),
                               ),
@@ -470,8 +445,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
           _pointerOffset.dx + _theme.distance * cos(angle),
           _pointerOffset.dy - _theme.distance * sin(angle),
         );
-        if ((actionOffset - offset).distance <
-            _theme.buttonSize / 2 + sqrt(_theme.buttonSize)) {
+        if ((actionOffset - offset).distance < _theme.buttonSize / 2 + sqrt(_theme.buttonSize)) {
           if (_hoveredAction != i) {
             setState(() {
               _hoveredAction = i;
