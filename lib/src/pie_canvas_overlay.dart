@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pie_menu/src/pie_action.dart';
 import 'package:pie_menu/src/pie_button.dart';
@@ -151,14 +152,14 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     }
   }
 
-  Size _metrics = WidgetsBinding.instance.window.physicalSize;
+  Size _metrics = PlatformDispatcher.instance.views.first.physicalSize;
 
   @override
   void didChangeMetrics() {
     super.didChangeMetrics();
     if (mounted && menuActive) {
       final previousMetrics = _metrics;
-      _metrics = WidgetsBinding.instance.window.physicalSize;
+      _metrics = PlatformDispatcher.instance.views.first.physicalSize;
       if (previousMetrics != _metrics) {
         menuActive = false;
         menuState?.setVisibility(true);
