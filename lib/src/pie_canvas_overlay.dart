@@ -288,7 +288,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                     ),
 
                   /// Tooltip
-                  if (_tooltip != null)
+                  if (_tooltip != null && _theme.tooltipAlignment == null)
                     Positioned(
                       top: py < _canvasHeight / 2
                           ? py + _theme.distance + _theme.buttonSize
@@ -301,28 +301,13 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                           : null,
                       left: 0,
                       right: 0,
-                      child: Padding(
-                        padding: _theme.tooltipPadding,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: AnimatedOpacity(
-                                opacity: menuActive && _hoveredAction != null
-                                    ? 1
-                                    : 0,
-                                duration: _theme.hoverDuration,
-                                curve: Curves.ease,
-                                child: Text(
-                                  _tooltip!,
-                                  textAlign: px < _canvasWidth / 2
-                                      ? TextAlign.right
-                                      : TextAlign.left,
-                                  style: _tooltipStyle,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                      child: _buildToggle(isExpanded: true),
+                    ),
+                  if (_tooltip != null && _theme.tooltipAlignment != null)
+                    Positioned.fill(
+                      child: Align(
+                        alignment: _theme.tooltipAlignment!,
+                        child: _buildToggle(isExpanded: false),
                       ),
                     ),
 
@@ -365,6 +350,32 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
         ],
       ),
     );
+  }
+
+  Widget _buildToggle({required bool isExpanded}) {
+    final Widget toggle = AnimatedOpacity(
+      opacity: menuActive && _hoveredAction != null ? 1 : 0,
+      duration: _theme.hoverDuration,
+      curve: Curves.ease,
+      child: Text(
+        _tooltip!,
+        textAlign: dx < _canvasWidth / 2 ? TextAlign.right : TextAlign.left,
+        style: _tooltipStyle,
+      ),
+    );
+
+    if (isExpanded) {
+      return Padding(
+        padding: _theme.tooltipPadding,
+        child: Row(
+          children: [
+            Expanded(child: toggle),
+          ],
+        ),
+      );
+    }
+
+    return Padding(padding: _theme.tooltipPadding, child: toggle);
   }
 
   void toggleMenu(bool active) {

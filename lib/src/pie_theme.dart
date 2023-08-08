@@ -27,6 +27,7 @@ class PieTheme {
     this.pointerSize = 42,
     this.tooltipPadding = const EdgeInsets.symmetric(horizontal: 32),
     this.tooltipStyle,
+    this.tooltipAlignment,
     this.pieBounceDuration = const Duration(seconds: 1),
     this.menuBounceDuration = const Duration(milliseconds: 120),
     this.menuBounceDistance = 24,
@@ -76,6 +77,9 @@ class PieTheme {
 
   /// Style of the tooltip text.
   final TextStyle? tooltipStyle;
+
+  /// Alignment of the tooltip in the [PieCanvas].
+  final Alignment? tooltipAlignment;
 
   /// Duration of [PieButton] bounce animation.
   final Duration pieBounceDuration;
@@ -127,6 +131,7 @@ class PieTheme {
     double? pointerSize,
     EdgeInsets? tooltipPadding,
     TextStyle? tooltipStyle,
+    Alignment? tooltipAlignment,
     Duration? pieBounceDuration,
     Duration? menuBounceDuration,
     double? menuBounceDistance,
@@ -150,6 +155,7 @@ class PieTheme {
       pointerSize: pointerSize ?? this.pointerSize,
       tooltipPadding: tooltipPadding ?? this.tooltipPadding,
       tooltipStyle: tooltipStyle ?? this.tooltipStyle,
+      tooltipAlignment: tooltipAlignment ?? this.tooltipAlignment,
       pieBounceDuration: pieBounceDuration ?? this.pieBounceDuration,
       menuBounceDuration: menuBounceDuration ?? this.menuBounceDuration,
       menuBounceDistance: menuBounceDistance ?? this.menuBounceDistance,
