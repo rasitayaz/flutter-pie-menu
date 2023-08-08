@@ -462,9 +462,9 @@ class AboutPage extends StatelessWidget {
                       color: Colors.blue,
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Column(
+                    child: const Column(
                       mainAxisSize: MainAxisSize.min,
-                      children: const [
+                      children: [
                         Text(
                           'created by',
                           style: TextStyle(
