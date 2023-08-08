@@ -3,6 +3,9 @@ import 'package:pie_menu/pie_menu.dart';
 import 'package:pie_menu/src/pie_button.dart';
 import 'package:pie_menu/src/pie_canvas_provider.dart';
 
+/// Action display anchor point for the specified custom angle in [PieTheme].
+enum PieAnchor { start, center, end }
+
 /// Defines the behavior and the appearance
 /// of [PieCanvas] and [PieMenu] widgets.
 class PieTheme {
@@ -23,6 +26,8 @@ class PieTheme {
     this.iconSize,
     this.distance = 96,
     this.angleOffset = 0,
+    this.customAngle,
+    this.customAngleAnchor = PieAnchor.center,
     this.buttonSize = 56,
     this.pointerSize = 42,
     this.tooltipPadding = const EdgeInsets.symmetric(horizontal: 32),
@@ -64,8 +69,14 @@ class PieTheme {
   /// Distance between the [PieButton] and the center of [PieMenu].
   final double distance;
 
-  /// Angle offset of the first [PieButton] displayed.
+  /// Angle offset in degrees for the actions.
   final double angleOffset;
+
+  /// Display the menu actions in a specific angle in degrees.
+  final double? customAngle;
+
+  /// Action display alignment for the specified [customAngle].
+  final PieAnchor customAngleAnchor;
 
   /// Size of [PieButton] circle.
   final double buttonSize;
@@ -131,6 +142,8 @@ class PieTheme {
     double? iconSize,
     double? distance,
     double? angleOffset,
+    double? customAngle,
+    PieAnchor? customAngleAlignment,
     double? buttonSize,
     double? pointerSize,
     EdgeInsets? tooltipPadding,
@@ -156,6 +169,8 @@ class PieTheme {
       iconSize: iconSize ?? this.iconSize,
       distance: distance ?? this.distance,
       angleOffset: angleOffset ?? this.angleOffset,
+      customAngle: customAngle ?? this.customAngle,
+      customAngleAnchor: customAngleAlignment ?? this.customAngleAnchor,
       buttonSize: buttonSize ?? this.buttonSize,
       pointerSize: pointerSize ?? this.pointerSize,
       tooltipPadding: tooltipPadding ?? this.tooltipPadding,

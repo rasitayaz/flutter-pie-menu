@@ -187,11 +187,23 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     return 7.4 * _theme.buttonSize / sqrt(_theme.distance);
   }
 
-  double get baseAngle {
+  double get _baseAngle {
+    final arc = (_actions.length - 1) * angleDifference;
+    final customAngle = _theme.customAngle;
+
+    if (customAngle != null) {
+      switch (_theme.customAngleAnchor) {
+        case PieAnchor.start:
+          return customAngle;
+        case PieAnchor.center:
+          return customAngle + arc / 2;
+        case PieAnchor.end:
+          return customAngle + arc;
+      }
+    }
+
     final w = _canvasWidth;
     final h = _canvasHeight;
-
-    final arc = (_actions.length - 1) * angleDifference;
 
     final distanceFactor = min(1, (w / 2 - px) / (w / 2));
     final safeDistance = _theme.distance + _theme.buttonSize;
@@ -231,7 +243,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   }
 
   double _getActionAngle(int index) {
-    return radians(baseAngle - _theme.angleOffset - angleDifference * index);
+    return radians(_baseAngle - _theme.angleOffset - angleDifference * index);
   }
 
   @override
@@ -298,7 +310,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                       bounceAnimation: _bounceAnimation,
                       pointerOffset: _pointerOffset,
                       canvasOffset: _canvasOffset,
-                      baseAngle: baseAngle,
+                      baseAngle: _baseAngle,
                       angleDifference: angleDifference,
                       theme: _theme,
                     ),
