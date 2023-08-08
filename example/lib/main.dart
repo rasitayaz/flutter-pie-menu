@@ -400,6 +400,7 @@ class AboutPage extends StatelessWidget {
       theme: PieTheme(
         delayDuration: Duration.zero,
         tooltipStyle: const TextStyle(
+          color: Colors.black,
           fontSize: 24,
           fontWeight: FontWeight.w900,
         ),
