@@ -237,7 +237,6 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   @override
   Widget build(BuildContext context) {
     final tooltip = _tooltip;
-    final tooltipAlignment = _theme.tooltipAlignment;
 
     return Material(
       type: MaterialType.transparency,
@@ -291,30 +290,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                     ),
 
                   /// Tooltip
-                  if (tooltip != null) ...[
-                    if (tooltipAlignment != null)
-                      Positioned.fill(
-                        child: Align(
-                          alignment: tooltipAlignment,
-                          child: _buildTooltip(tooltip),
-                        ),
-                      )
-                    else
-                      Positioned(
-                        top: py < _canvasHeight / 2
-                            ? py + _theme.distance + _theme.buttonSize
-                            : null,
-                        bottom: py >= _canvasHeight / 2
-                            ? _canvasHeight -
-                                py +
-                                _theme.distance +
-                                _theme.buttonSize
-                            : null,
-                        left: 0,
-                        right: 0,
-                        child: _buildTooltip(tooltip),
-                      ),
-                  ],
+                  if (tooltip != null) _buildTooltip(tooltip),
 
                   /// Action buttons
                   Flow(
@@ -358,7 +334,9 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   }
 
   Widget _buildTooltip(Widget tooltip) {
-    return AnimatedOpacity(
+    final tooltipAlignment = _theme.tooltipAlignment;
+
+    final child = AnimatedOpacity(
       opacity: menuActive && _hoveredAction != null ? 1 : 0,
       duration: _theme.hoverDuration,
       curve: Curves.ease,
@@ -372,6 +350,30 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
         ),
       ),
     );
+
+    if (tooltipAlignment != null) {
+      return Align(
+        alignment: tooltipAlignment,
+        child: child,
+      );
+    } else {
+      return Positioned(
+        top: py < _canvasHeight / 2
+            ? py + _theme.distance + _theme.buttonSize
+            : null,
+        bottom: py >= _canvasHeight / 2
+            ? _canvasHeight - py + _theme.distance + _theme.buttonSize
+            : null,
+        left: 0,
+        right: 0,
+        child: Align(
+          alignment: px < _canvasWidth / 2
+              ? Alignment.centerRight
+              : Alignment.centerLeft,
+          child: child,
+        ),
+      );
+    }
   }
 
   void toggleMenu(bool active) {
