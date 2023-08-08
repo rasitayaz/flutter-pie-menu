@@ -180,36 +180,53 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
         );
   }
 
-  double get dx => _pointerOffset.dx - _canvasOffset.dx;
-  double get dy => _pointerOffset.dy - _canvasOffset.dy;
+  double get px => _pointerOffset.dx - _canvasOffset.dx;
+  double get py => _pointerOffset.dy - _canvasOffset.dy;
 
   double get angleDifference {
     return 7.4 * _theme.buttonSize / sqrt(_theme.distance);
   }
 
   double get baseAngle {
+    final w = _canvasWidth;
+    final h = _canvasHeight;
+
     final arc = (_actions.length - 1) * angleDifference;
-    final dxRatio = dx / _canvasWidth;
+
+    final distanceFactor = min(1, (w / 2 - px) / (w / 2));
+    final safeDistance = _theme.distance + _theme.buttonSize;
+
+    final p = Offset(px, py);
 
     double angleBetween(Offset o1, Offset o2) {
       final slope = (o2.dy - o1.dy) / (o2.dx - o1.dx);
       return degrees(atan(slope));
     }
 
-    final offset = Offset(dx, dy);
-
-    if (dy < _canvasWidth / 2) {
-      final origin = Offset(_canvasWidth / 2, _canvasWidth / 2);
-      return dx < _canvasWidth / 2
-          ? arc / 2 - angleBetween(origin, offset)
-          : arc / 2 + 180 - angleBetween(origin, offset);
-    } else if (_canvasHeight - dy < _canvasWidth / 2) {
-      final origin = Offset(_canvasWidth / 2, _canvasHeight - _canvasWidth / 2);
-      return dx < _canvasWidth / 2
-          ? arc / 2 - angleBetween(origin, offset)
-          : arc / 2 + 180 - angleBetween(origin, offset);
+    if ((p - const Offset(0, 0)).distance < safeDistance) {
+      final o = Offset(safeDistance, safeDistance);
+      return arc / 2 - angleBetween(o, p);
+    } else if ((p - Offset(w, 0)).distance < safeDistance) {
+      final o = Offset(w - safeDistance, safeDistance);
+      return arc / 2 + 180 - angleBetween(o, p);
+    } else if ((p - Offset(0, h)).distance < safeDistance) {
+      final o = Offset(safeDistance, h - safeDistance);
+      return arc / 2 - angleBetween(o, p);
+    } else if ((p - Offset(w, h)).distance < safeDistance) {
+      final o = Offset(w - safeDistance, h - safeDistance);
+      return arc / 2 + 180 - angleBetween(o, p);
+    } else if (py < safeDistance) {
+      final o = Offset(w / 2, max(w, h));
+      return px > w / 2
+          ? arc / 2 - 180 - angleBetween(o, p)
+          : arc / 2 - angleBetween(o, p);
+    } else if (py > h - safeDistance / 2) {
+      final o = Offset(w / 2, min(0, h - w));
+      return px > w / 2
+          ? arc / 2 - 180 - angleBetween(o, p)
+          : arc / 2 - angleBetween(o, p);
     } else {
-      return arc / 2 + 180 * dxRatio;
+      return arc / 2 + 90 - 90 * distanceFactor;
     }
   }
 
@@ -273,12 +290,12 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                   /// Tooltip
                   if (_tooltip != null)
                     Positioned(
-                      top: dy < _canvasHeight / 2
-                          ? dy + _theme.distance + _theme.buttonSize
+                      top: py < _canvasHeight / 2
+                          ? py + _theme.distance + _theme.buttonSize
                           : null,
-                      bottom: dy >= _canvasHeight / 2
+                      bottom: py >= _canvasHeight / 2
                           ? _canvasHeight -
-                              dy +
+                              py +
                               _theme.distance +
                               _theme.buttonSize
                           : null,
@@ -297,7 +314,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                                 curve: Curves.ease,
                                 child: Text(
                                   _tooltip!,
-                                  textAlign: dx < _canvasWidth / 2
+                                  textAlign: px < _canvasWidth / 2
                                       ? TextAlign.right
                                       : TextAlign.left,
                                   style: _tooltipStyle,
