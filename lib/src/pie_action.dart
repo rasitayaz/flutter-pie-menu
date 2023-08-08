@@ -31,7 +31,7 @@ class PieAction {
   /// * [PieButton] refers to the button this [PieAction] belongs to.
 
   /// Text to display on [PieCanvas] when [PieButton] is hovered.
-  final String tooltip;
+  final Widget tooltip;
 
   /// Function to trigger when [PieButton] is selected.
   final Function() onSelect;

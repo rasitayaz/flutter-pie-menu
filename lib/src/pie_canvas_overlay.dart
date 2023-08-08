@@ -98,8 +98,8 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   /// and gets cancelled when the pointer is down again.
   Timer? _detachTimer;
 
-  /// Tooltip text for the hovered [PieButton].
-  String? _tooltip;
+  /// Tooltip widget for the hovered [PieButton].
+  Widget? _tooltip;
 
   /// Functional callback that is triggered when
   /// the active [PieMenu] is opened and closed.
@@ -236,6 +236,9 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
 
   @override
   Widget build(BuildContext context) {
+    final tooltip = _tooltip;
+    final tooltipAlignment = _theme.tooltipAlignment;
+
     return Material(
       type: MaterialType.transparency,
       child: Stack(
@@ -288,28 +291,30 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                     ),
 
                   /// Tooltip
-                  if (_tooltip != null && _theme.tooltipAlignment == null)
-                    Positioned(
-                      top: py < _canvasHeight / 2
-                          ? py + _theme.distance + _theme.buttonSize
-                          : null,
-                      bottom: py >= _canvasHeight / 2
-                          ? _canvasHeight -
-                              py +
-                              _theme.distance +
-                              _theme.buttonSize
-                          : null,
-                      left: 0,
-                      right: 0,
-                      child: _buildToggle(isExpanded: true),
-                    ),
-                  if (_tooltip != null && _theme.tooltipAlignment != null)
-                    Positioned.fill(
-                      child: Align(
-                        alignment: _theme.tooltipAlignment!,
-                        child: _buildToggle(isExpanded: false),
+                  if (tooltip != null) ...[
+                    if (tooltipAlignment != null)
+                      Positioned.fill(
+                        child: Align(
+                          alignment: tooltipAlignment,
+                          child: _buildTooltip(tooltip),
+                        ),
+                      )
+                    else
+                      Positioned(
+                        top: py < _canvasHeight / 2
+                            ? py + _theme.distance + _theme.buttonSize
+                            : null,
+                        bottom: py >= _canvasHeight / 2
+                            ? _canvasHeight -
+                                py +
+                                _theme.distance +
+                                _theme.buttonSize
+                            : null,
+                        left: 0,
+                        right: 0,
+                        child: _buildTooltip(tooltip),
                       ),
-                    ),
+                  ],
 
                   /// Action buttons
                   Flow(
@@ -352,30 +357,21 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     );
   }
 
-  Widget _buildToggle({required bool isExpanded}) {
-    final Widget toggle = AnimatedOpacity(
+  Widget _buildTooltip(Widget tooltip) {
+    return AnimatedOpacity(
       opacity: menuActive && _hoveredAction != null ? 1 : 0,
       duration: _theme.hoverDuration,
       curve: Curves.ease,
-      child: Text(
-        _tooltip!,
-        textAlign: dx < _canvasWidth / 2 ? TextAlign.right : TextAlign.left,
-        style: _tooltipStyle,
+      child: Padding(
+        padding: _theme.tooltipPadding,
+        child: DefaultTextStyle(
+          textAlign: _theme.tooltipTextAlign ??
+              (px < _canvasWidth / 2 ? TextAlign.right : TextAlign.left),
+          style: _tooltipStyle,
+          child: tooltip,
+        ),
       ),
     );
-
-    if (isExpanded) {
-      return Padding(
-        padding: _theme.tooltipPadding,
-        child: Row(
-          children: [
-            Expanded(child: toggle),
-          ],
-        ),
-      );
-    }
-
-    return Padding(padding: _theme.tooltipPadding, child: toggle);
   }
 
   void toggleMenu(bool active) {

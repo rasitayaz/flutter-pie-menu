@@ -118,7 +118,7 @@ class StylingPage extends StatelessWidget {
                         child: PieMenu(
                           actions: [
                             PieAction(
-                              tooltip: 'Play',
+                              tooltip: const Text('Play'),
                               onSelect: () => context.showSnackBar('Play'),
                               child: const FaIcon(FontAwesomeIcons.play),
 
@@ -126,12 +126,12 @@ class StylingPage extends StatelessWidget {
                               padding: const EdgeInsets.only(left: 4),
                             ),
                             PieAction(
-                              tooltip: 'Download',
+                              tooltip: const Text('Download'),
                               onSelect: () => context.showSnackBar('Download'),
                               child: const FaIcon(FontAwesomeIcons.download),
                             ),
                             PieAction(
-                              tooltip: 'Share',
+                              tooltip: const Text('Share'),
                               onSelect: () => context.showSnackBar('Share'),
                               child: const FaIcon(FontAwesomeIcons.share),
                             ),
@@ -158,28 +158,28 @@ class StylingPage extends StatelessWidget {
                           ),
                           actions: [
                             PieAction.builder(
-                              tooltip: 'how',
+                              tooltip: const Text('how'),
                               onSelect: () => context.showSnackBar('1'),
                               builder: (hovered) {
                                 return _buildTextButton('1', hovered);
                               },
                             ),
                             PieAction.builder(
-                              tooltip: 'cool',
+                              tooltip: const Text('cool'),
                               onSelect: () => context.showSnackBar('2'),
                               builder: (hovered) {
                                 return _buildTextButton('2', hovered);
                               },
                             ),
                             PieAction.builder(
-                              tooltip: 'is',
+                              tooltip: const Text('is'),
                               onSelect: () => context.showSnackBar('3'),
                               builder: (hovered) {
                                 return _buildTextButton('3', hovered);
                               },
                             ),
                             PieAction.builder(
-                              tooltip: 'this?!',
+                              tooltip: const Text('this?!'),
                               onSelect: () =>
                                   context.showSnackBar('Pretty cool :)'),
                               builder: (hovered) {
@@ -222,7 +222,7 @@ class StylingPage extends StatelessWidget {
                           ),
                           actions: [
                             PieAction(
-                              tooltip: 'Like the package',
+                              tooltip: const Text('Like the package'),
                               onSelect: () {
                                 launchUrlExternally(
                                     'https://pub.dev/packages/pie_menu');
@@ -231,7 +231,7 @@ class StylingPage extends StatelessWidget {
                                   const FaIcon(FontAwesomeIcons.solidThumbsUp),
                             ),
                             PieAction(
-                              tooltip: 'Import to your app',
+                              tooltip: const Text('Import to your app'),
 
                               /// Custom background color
                               buttonTheme: const PieButtonTheme(
@@ -245,7 +245,8 @@ class StylingPage extends StatelessWidget {
                               child: const FaIcon(FontAwesomeIcons.download),
                             ),
                             PieAction(
-                              tooltip: 'Share with other developers',
+                              tooltip:
+                                  const Text('Share with other developers'),
                               buttonTheme: const PieButtonTheme(
                                 backgroundColor: Colors.orange,
                                 iconColor: Colors.white,
@@ -345,22 +346,22 @@ class _ListViewPageState extends State<ListViewPage> {
               },
               actions: [
                 PieAction(
-                  tooltip: 'Like',
+                  tooltip: const Text('Like'),
                   onSelect: () => context.showSnackBar('Like #$index'),
                   child: const FaIcon(FontAwesomeIcons.solidHeart),
                 ),
                 PieAction(
-                  tooltip: 'Comment',
+                  tooltip: const Text('Comment'),
                   onSelect: () => context.showSnackBar('Comment #$index'),
                   child: const FaIcon(FontAwesomeIcons.solidComment),
                 ),
                 PieAction(
-                  tooltip: 'Save',
+                  tooltip: const Text('Save'),
                   onSelect: () => context.showSnackBar('Save #$index'),
                   child: const FaIcon(FontAwesomeIcons.solidBookmark),
                 ),
                 PieAction(
-                  tooltip: 'Share',
+                  tooltip: const Text('Share'),
                   onSelect: () => context.showSnackBar('Share #$index'),
                   child: const FaIcon(FontAwesomeIcons.share),
                 ),
@@ -424,14 +425,14 @@ class AboutPage extends StatelessWidget {
                 child: PieMenu(
                   actions: [
                     PieAction(
-                      tooltip: 'github.com/rasitayaz',
+                      tooltip: const Text('github.com/rasitayaz'),
                       onSelect: () {
                         launchUrlExternally('https://github.com/rasitayaz');
                       },
                       child: const FaIcon(FontAwesomeIcons.github),
                     ),
                     PieAction(
-                      tooltip: 'in/rasitayaz',
+                      tooltip: const Text('in/rasitayaz'),
                       onSelect: () {
                         launchUrlExternally(
                           'https://www.linkedin.com/in/rasitayaz/',
@@ -440,14 +441,14 @@ class AboutPage extends StatelessWidget {
                       child: const FaIcon(FontAwesomeIcons.linkedinIn),
                     ),
                     PieAction(
-                      tooltip: 'mrasitayaz@gmail.com',
+                      tooltip: const Text('mrasitayaz@gmail.com'),
                       onSelect: () {
                         launchUrlExternally('mailto:mrasitayaz@gmail.com');
                       },
                       child: const FaIcon(FontAwesomeIcons.solidEnvelope),
                     ),
                     PieAction(
-                      tooltip: 'Buy me a coffee',
+                      tooltip: const Text('Buy me a coffee'),
                       onSelect: () {
                         launchUrlExternally(
                           'https://www.buymeacoffee.com/rasitayaz',
