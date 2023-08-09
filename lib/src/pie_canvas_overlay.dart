@@ -250,14 +250,18 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   Widget build(BuildContext context) {
     final tooltip = _tooltip;
 
-    return Material(
-      type: MaterialType.transparency,
+    return MouseRegion(
+      cursor: _hoveredAction != null
+          ? SystemMouseCursors.click
+          : SystemMouseCursors.basic,
       child: Stack(
         children: [
           Listener(
             behavior: HitTestBehavior.translucent,
             onPointerDown: (event) => _pointerDown(event.position),
             onPointerMove: (event) => _pointerMove(event.position),
+            onPointerHover:
+                menuActive ? (event) => _pointerMove(event.position) : null,
             onPointerUp: (event) => _pointerUp(event.position),
             child: ScrollConfiguration(
               behavior: ScrollConfiguration.of(context).copyWith(
