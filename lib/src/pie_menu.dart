@@ -148,49 +148,52 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
       }
     });
 
-    return Listener(
-      behavior: HitTestBehavior.translucent,
-      onPointerDown: (event) {
-        _canTap = true;
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: Listener(
+        behavior: HitTestBehavior.translucent,
+        onPointerDown: (event) {
+          _canTap = true;
 
-        _offset = event.position;
+          _offset = event.position;
 
-        if (!_canvas.menuActive) {
-          if (_theme.delayDuration == Duration.zero) {
+          if (!_canvas.menuActive) {
+            if (_theme.delayDuration == Duration.zero) {
+              widget.onTap?.call();
+            }
+
+            if (_theme.bouncingMenu) {
+              _bouncing = true;
+              _bounceStopwatch.start();
+              _bounceController.forward();
+            }
+
+            _canvas.attachMenu(
+              offset: _offset,
+              state: this,
+              child: _bouncingChild,
+              renderBox: context.findRenderObject() as RenderBox,
+              actions: widget.actions,
+              theme: widget.theme,
+              onMenuToggle: widget.onToggle,
+            );
+          }
+        },
+        onPointerMove: (event) {
+          if ((event.position - _offset).distance > _theme.pointerSize / 2) {
+            debounce();
+          }
+        },
+        onPointerUp: (event) {
+          if (_canTap && _offset == event.position) {
             widget.onTap?.call();
           }
-
-          if (_theme.bouncingMenu) {
-            _bouncing = true;
-            _bounceStopwatch.start();
-            _bounceController.forward();
-          }
-
-          _canvas.attachMenu(
-            offset: _offset,
-            state: this,
-            child: _bouncingChild,
-            renderBox: context.findRenderObject() as RenderBox,
-            actions: widget.actions,
-            theme: widget.theme,
-            onMenuToggle: widget.onToggle,
-          );
-        }
-      },
-      onPointerMove: (event) {
-        if ((event.position - _offset).distance > _theme.pointerSize / 2) {
           debounce();
-        }
-      },
-      onPointerUp: (event) {
-        if (_canTap && _offset == event.position) {
-          widget.onTap?.call();
-        }
-        debounce();
-      },
-      child: Opacity(
-        opacity: _childVisible ? 1 : 0,
-        child: _bouncingChild,
+        },
+        child: Opacity(
+          opacity: _childVisible ? 1 : 0,
+          child: _bouncingChild,
+        ),
       ),
     );
   }
