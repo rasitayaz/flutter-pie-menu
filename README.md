@@ -191,6 +191,8 @@ PieTheme(
 ),
 ```
 
+You can also use `customAngleDiff` or `spacing` to adjust the angle between buttons, and `angleOffset` to rotate the menu.
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
