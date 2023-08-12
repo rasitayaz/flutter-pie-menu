@@ -31,12 +31,3 @@
 .pub-cache/
 .pub/
 build/
-
-# Example project related
-example/.metadata
-**/android/**
-**/ios/**
-**/windows/**
-**/linux/**
-**/macos/**
-**/web/**
