@@ -4,7 +4,7 @@
 [![apk](https://img.shields.io/badge/apk-demo-brightgreen.svg)](https://github.com/rasitayaz/flutter-pie-menu/raw/main/example/demo.apk)
 [![app](https://img.shields.io/badge/app-mac&nbsp;demo-blueviolet)](https://github.com/rasitayaz/flutter-pie-menu/raw/main/example/demo-macos.zip)
 [![github](https://img.shields.io/badge/github-rasitayaz-red)](https://github.com/rasitayaz)
-[![buy me a coffee](https://img.shields.io/badge/buy&nbsp;me&nbsp;a&nbsp;coffee-donate-blue)](https://www.buymeacoffee.com/rasitayaz)
+[![buy me a coffee](https://img.shields.io/badge/buy&nbsp;me&nbsp;a&nbsp;coffee-donate-blue)](https://buymeacoffee.com/rasitayaz)
 
 A Flutter package that provides a highly customizable circular/radial context menu similar to Pinterest's
 
