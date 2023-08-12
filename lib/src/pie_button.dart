@@ -125,14 +125,12 @@ class _PieButtonState extends State<PieButton>
                   child: Center(
                     child: Padding(
                       padding: _action.padding,
-                      child: Theme(
-                        data: Theme.of(context).copyWith(
-                          iconTheme: IconThemeData(
-                            color: widget.hovered
-                                ? _buttonThemeHovered.iconColor
-                                : _buttonTheme.iconColor,
-                            size: _theme.iconSize,
-                          ),
+                      child: IconTheme(
+                        data: IconThemeData(
+                          color: widget.hovered
+                              ? _buttonThemeHovered.iconColor
+                              : _buttonTheme.iconColor,
+                          size: _theme.iconSize,
                         ),
                         child: _action.builder?.call(widget.hovered) ??
                             _action.child!,
