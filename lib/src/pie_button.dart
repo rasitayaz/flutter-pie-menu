@@ -123,18 +123,15 @@ class _PieButtonState extends State<PieButton>
                             : _buttonTheme.backgroundColor,
                       ),
                   child: Center(
-                    child: Padding(
-                      padding: _action.padding,
-                      child: IconTheme(
-                        data: IconThemeData(
-                          color: widget.hovered
-                              ? _buttonThemeHovered.iconColor
-                              : _buttonTheme.iconColor,
-                          size: _theme.iconSize,
-                        ),
-                        child: _action.builder?.call(widget.hovered) ??
-                            _action.child!,
+                    child: IconTheme(
+                      data: IconThemeData(
+                        color: widget.hovered
+                            ? _buttonThemeHovered.iconColor
+                            : _buttonTheme.iconColor,
+                        size: _theme.iconSize,
                       ),
+                      child: _action.builder?.call(widget.hovered) ??
+                          _action.child!,
                     ),
                   ),
                 ),

@@ -11,7 +11,6 @@ class PieAction {
   PieAction({
     required this.tooltip,
     required this.onSelect,
-    this.padding = EdgeInsets.zero,
     this.buttonTheme,
     this.buttonThemeHovered,
     required this.child,
@@ -22,7 +21,6 @@ class PieAction {
   PieAction.builder({
     required this.tooltip,
     required this.onSelect,
-    this.padding = EdgeInsets.zero,
     this.buttonTheme,
     this.buttonThemeHovered,
     required this.builder,
@@ -35,11 +33,6 @@ class PieAction {
 
   /// Function to trigger when [PieButton] is selected.
   final Function() onSelect;
-
-  /// Padding for the child widget displayed on [PieButton].
-  ///
-  /// Can be used for optical correction.
-  final EdgeInsets padding;
 
   /// Theme of [PieButton].
   final PieButtonTheme? buttonTheme;

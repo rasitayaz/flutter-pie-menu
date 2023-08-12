@@ -109,7 +109,7 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-  void setVisibility(bool visible) {
+  void setChildVisibility(bool visible) {
     if (visible != _childVisible) {
       setState(() => _childVisible = visible);
     }

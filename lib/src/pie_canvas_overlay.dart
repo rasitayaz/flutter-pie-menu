@@ -146,9 +146,9 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
       final prevSize = _size;
       _size = PlatformDispatcher.instance.views.first.physicalSize;
       if (prevSize != _size) {
-        menuActive = false;
-        _menuState?.setVisibility(true);
-        toggleMenu(false);
+        setState(() => menuActive = false);
+        _menuState?.setChildVisibility(true);
+        _notifyMenuState(false);
         _detachMenu();
       }
     }
@@ -331,7 +331,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     );
   }
 
-  void toggleMenu(bool active) {
+  void _notifyMenuState(bool active) {
     _onMenuToggle?.call(active);
     widget.onMenuToggle?.call(active);
     if (active) {
@@ -362,22 +362,24 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
       }
     }
 
-    final distanceFactor = min(1, (cw / 2 - px) / (cw / 2));
-
-    final p = Offset(px, py);
-
     double angleBetween(Offset o1, Offset o2) {
       final slope = (o2.dy - o1.dy) / (o2.dx - o1.dx);
       return degrees(atan(slope));
     }
 
+    final p = Offset(px, py);
+    final distanceFactor = min(1, (cw / 2 - px) / (cw / 2));
+
     if (py < _safeDistance) {
       final o = px < cw / 2 ? const Offset(0, 0) : Offset(cw, 0);
       return arc / 2 - 90 + angleBetween(o, p);
-    } else if (py > ch - _safeDistance) {
+    } else if (py > ch - _safeDistance &&
+        (px < cw * 2 / 5 || px > cw * 3 / 5)) {
+      print('bottom');
       final o = px < cw / 2 ? Offset(0, ch) : Offset(cw, ch);
       return arc / 2 + 90 + angleBetween(o, p);
     } else {
+      print('normal');
       return arc / 2 + 90 - 90 * distanceFactor;
     }
   }
@@ -398,7 +400,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
 
     _attachTimer?.cancel();
     _detachTimer?.cancel();
-    _menuState?.setVisibility(true);
+    _menuState?.setChildVisibility(true);
 
     _menuAttached = true;
     _onMenuToggle = onMenuToggle;
@@ -422,12 +424,12 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
             menuActive = true;
             _hoveredAction = null;
           });
-          toggleMenu(true);
+          _notifyMenuState(true);
 
           _menuState?.debounce();
           Future.delayed(_theme.fadeDuration, () {
             if (!(_detachTimer?.isActive ?? false)) {
-              _menuState?.setVisibility(false);
+              _menuState?.setChildVisibility(false);
             }
           });
         },
@@ -478,8 +480,8 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
           _actions[hoveredAction].onSelect();
         }
 
-        _menuState?.setVisibility(true);
-        toggleMenu(false);
+        _menuState?.setChildVisibility(true);
+        _notifyMenuState(false);
         setState(() => menuActive = false);
 
         _detachMenu();
