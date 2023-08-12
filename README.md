@@ -29,9 +29,9 @@ PieMenu(
 ),
 ```
 
-> 💡 Note that you can only use the `PieMenu` within the sub-hierarchy of a `PieCanvas` widget.
+Then wrap your page (or any other desired widget for drawing pie buttons and a background overlay) with `PieCanvas` widget.
 
-Wrap your page (or any other desired widget for drawing pie buttons and a background overlay) with `PieCanvas` widget.
+> 💡 Note that you can only use the `PieMenu` within the sub-hierarchy of a `PieCanvas` widget.
 
 For instance, if you want the menu to be displayed at the forefront, you can wrap your `Scaffold` with a `PieCanvas` like following:
 
