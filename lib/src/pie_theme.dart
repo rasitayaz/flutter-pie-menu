@@ -24,7 +24,9 @@ class PieTheme {
       iconColor: Colors.white,
     ),
     this.iconSize,
-    this.distance = 96,
+    this.radius = 96,
+    this.spacing = 6,
+    this.customAngleDiff,
     this.angleOffset = 0,
     this.customAngle,
     this.customAngleAnchor = PieAnchor.center,
@@ -73,7 +75,15 @@ class PieTheme {
   final double? iconSize;
 
   /// Distance between the [PieButton] and the center of [PieMenu].
-  final double distance;
+  final double radius;
+
+  /// Spacing between the [PieButton]s.
+  final double spacing;
+
+  /// Angle difference between the [PieButton]s in degrees.
+  ///
+  /// If specified, [spacing] will be ignored.
+  final double? customAngleDiff;
 
   /// Angle offset in degrees for the actions.
   final double angleOffset;
@@ -157,7 +167,9 @@ class PieTheme {
     PieButtonTheme? buttonTheme,
     PieButtonTheme? buttonThemeHovered,
     double? iconSize,
-    double? distance,
+    double? radius,
+    double? spacing,
+    double? customAngleDiff,
     double? angleOffset,
     double? customAngle,
     PieAnchor? customAngleAnchor,
@@ -187,7 +199,9 @@ class PieTheme {
       buttonTheme: buttonTheme ?? this.buttonTheme,
       buttonThemeHovered: buttonThemeHovered ?? this.buttonThemeHovered,
       iconSize: iconSize ?? this.iconSize,
-      distance: distance ?? this.distance,
+      radius: radius ?? this.radius,
+      spacing: spacing ?? this.spacing,
+      customAngleDiff: customAngleDiff ?? this.customAngleDiff,
       angleOffset: angleOffset ?? this.angleOffset,
       customAngle: customAngle ?? this.customAngle,
       customAngleAnchor: customAngleAnchor ?? this.customAngleAnchor,

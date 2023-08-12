@@ -157,9 +157,16 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   double get px => _pointerOffset.dx - _canvasOffset.dx;
   double get py => _pointerOffset.dy - _canvasOffset.dy;
 
-  double get _angleDiff => 7.4 * _theme.buttonSize / sqrt(_theme.distance);
+  double get _angleDiff {
+    final customAngleDiff = _theme.customAngleDiff;
+    if (customAngleDiff != null) return customAngleDiff;
 
-  double get _safeDistance => _theme.distance + _theme.buttonSize;
+    final tangent = (_theme.buttonSize / 2 + _theme.spacing) / _theme.radius;
+    final angleInRadians = 2 * asin(tangent);
+    return degrees(angleInRadians);
+  }
+
+  double get _safeDistance => _theme.radius + _theme.buttonSize;
 
   var _baseAngle = 0.0;
 
@@ -170,8 +177,8 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   Offset _getActionOffset(int index) {
     final angle = _getActionAngle(index);
     return Offset(
-      _pointerOffset.dx + _theme.distance * cos(angle),
-      _pointerOffset.dy - _theme.distance * sin(angle),
+      _pointerOffset.dx + _theme.radius * cos(angle),
+      _pointerOffset.dy - _theme.radius * sin(angle),
     );
   }
 
@@ -387,6 +394,11 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     return (_pointerOffset - offset).distance > _theme.pointerSize / 2;
   }
 
+  double _angleBetween(Offset o1, Offset o2) {
+    final slope = (o2.dy - o1.dy) / (o2.dx - o1.dx);
+    return degrees(atan(slope));
+  }
+
   double _calculateBaseAngle() {
     final arc = (_actions.length - 1) * _angleDiff;
     final customAngle = _theme.customAngle;
@@ -402,21 +414,16 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
       }
     }
 
-    double angleBetween(Offset o1, Offset o2) {
-      final slope = (o2.dy - o1.dy) / (o2.dx - o1.dx);
-      return degrees(atan(slope));
-    }
-
     final p = Offset(px, py);
     final distanceFactor = min(1, (cw / 2 - px) / (cw / 2));
 
     if (py < _safeDistance) {
       final o = px < cw / 2 ? const Offset(0, 0) : Offset(cw, 0);
-      return arc / 2 - 90 + angleBetween(o, p);
+      return arc / 2 - 90 + _angleBetween(o, p);
     } else if (py > ch - _safeDistance &&
         (px < cw * 2 / 5 || px > cw * 3 / 5)) {
       final o = px < cw / 2 ? Offset(0, ch) : Offset(cw, ch);
-      return arc / 2 + 90 + angleBetween(o, p);
+      return arc / 2 + 90 + _angleBetween(o, p);
     } else {
       return arc / 2 + 90 - 90 * distanceFactor;
     }
@@ -534,22 +541,36 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
 
   void _pointerMove(Offset offset) {
     if (menuActive) {
-      for (var i = 0; i < _actions.length; i++) {
-        final action = _actions[i];
-        final actionOffset = _getActionOffset(i);
-        if ((actionOffset - offset).distance <
-            _theme.buttonSize / 2 + sqrt(_theme.buttonSize)) {
-          if (_hoveredAction != i) {
-            setState(() {
-              _hoveredAction = i;
-              _tooltip = action.tooltip;
-            });
-          }
-          return;
+      void hover(int? action) {
+        if (_hoveredAction != action) {
+          setState(() {
+            _hoveredAction = action;
+            if (action != null) {
+              _tooltip = _actions[action].tooltip;
+            }
+          });
         }
       }
-      if (_hoveredAction != null) {
-        setState(() => _hoveredAction = null);
+
+      final pointerDistance = (_pointerOffset - offset).distance;
+
+      if (pointerDistance < _theme.radius - _theme.buttonSize * 0.5 ||
+          pointerDistance > _theme.radius + _theme.buttonSize * 0.8) {
+        hover(null);
+      } else {
+        var closestDistance = double.infinity;
+        var closestAction = 0;
+
+        for (var i = 0; i < _actions.length; i++) {
+          final actionOffset = _getActionOffset(i);
+          final distance = (actionOffset - offset).distance;
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestAction = i;
+          }
+        }
+
+        hover(closestDistance < _theme.buttonSize * 0.8 ? closestAction : null);
       }
     } else if (_pressed && _isBeyondPointerBounds(offset)) {
       _detachMenu(afterDelay: false);

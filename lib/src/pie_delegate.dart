@@ -47,7 +47,7 @@ class PieDelegate extends FlowDelegate {
     final dy = pointerOffset.dy - canvasOffset.dy;
     final count = context.childCount;
 
-    for (int i = 0; i < count; ++i) {
+    for (var i = 0; i < count; ++i) {
       final size = context.getChildSize(i)!;
       final angleInRadians =
           radians(baseAngle - theme.angleOffset - angleDiff * (i - 1));
@@ -66,10 +66,10 @@ class PieDelegate extends FlowDelegate {
           transform: Matrix4.translationValues(
             dx -
                 size.width / 2 +
-                theme.distance * cos(angleInRadians) * bounceAnimation.value,
+                theme.radius * cos(angleInRadians) * bounceAnimation.value,
             dy -
                 size.height / 2 -
-                theme.distance * sin(angleInRadians) * bounceAnimation.value,
+                theme.radius * sin(angleInRadians) * bounceAnimation.value,
             0,
           ),
         );
@@ -80,9 +80,7 @@ class PieDelegate extends FlowDelegate {
   @override
   BoxConstraints getConstraintsForChild(int i, BoxConstraints constraints) {
     return BoxConstraints.tight(
-      i == 0
-          ? Size(theme.pointerSize, theme.pointerSize)
-          : Size(theme.buttonSize, theme.buttonSize),
+      Size.square(i == 0 ? theme.pointerSize : theme.buttonSize),
     );
   }
 }
