@@ -207,9 +207,9 @@ class StylingPage extends StatelessWidget {
                             tooltipStyle: const TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              color: Colors.white,
                             ),
-                            overlayColor: Colors.teal.withOpacity(0.5),
+                            overlayColor: Colors.teal.withOpacity(0.7),
                             pointerSize: 40,
                             pointerDecoration: BoxDecoration(
                               shape: BoxShape.circle,
@@ -236,27 +236,27 @@ class StylingPage extends StatelessWidget {
                           },
                           actions: [
                             PieAction(
+                              tooltip: const Text('Available on pub.dev'),
+                              onSelect: () {
+                                launchUrlExternally(
+                                    'https://pub.dev/packages/pie_menu');
+                              },
+                              child: const FaIcon(FontAwesomeIcons.boxOpen),
+                            ),
+                            PieAction(
                               tooltip: const Text('Like the package'),
                               onSelect: () {
                                 launchUrlExternally(
                                     'https://pub.dev/packages/pie_menu');
                               },
-                              child:
-                                  const FaIcon(FontAwesomeIcons.solidThumbsUp),
-                            ),
-                            PieAction(
-                              tooltip: const Text('Import to your app'),
 
                               /// Custom background color
                               buttonTheme: PieButtonTheme(
                                 backgroundColor: Colors.black.withOpacity(0.7),
                                 iconColor: Colors.white,
                               ),
-                              onSelect: () {
-                                launchUrlExternally(
-                                    'https://pub.dev/packages/pie_menu');
-                              },
-                              child: const FaIcon(FontAwesomeIcons.download),
+                              child:
+                                  const FaIcon(FontAwesomeIcons.solidThumbsUp),
                             ),
                             PieAction(
                               tooltip:
@@ -387,7 +387,7 @@ class _ListViewPageState extends State<ListViewPage> {
               ],
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Colors.deepOrangeAccent,
+                  color: Colors.orangeAccent,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Center(
@@ -439,7 +439,20 @@ class AboutPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const FlutterLogo(size: 200),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FlutterLogo(size: 100),
+                  SizedBox(width: 16),
+                  Text(
+                    '🥧',
+                    style: TextStyle(
+                      fontSize: 100,
+                      height: 0.8,
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 32),
               Center(
                 child: PieMenu(
@@ -494,11 +507,11 @@ class AboutPage extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'Raşit Ayaz.',
+                          'Raşit Ayaz',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w900,
-                            fontSize: 48,
+                            fontSize: 40,
                           ),
                         ),
                       ],
