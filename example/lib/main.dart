@@ -471,7 +471,7 @@ class AboutPage extends StatelessWidget {
                       tooltip: const Text('linkedin/rasitayaz'),
                       onSelect: () {
                         launchUrlExternally(
-                          'https://www.linkedin.com/in/rasitayaz/',
+                          'https://linkedin.com/in/rasitayaz/',
                         );
                       },
                       child: const FaIcon(FontAwesomeIcons.linkedinIn),
@@ -487,7 +487,7 @@ class AboutPage extends StatelessWidget {
                       tooltip: const Text('buy me a coffee'),
                       onSelect: () {
                         launchUrlExternally(
-                          'https://www.buymeacoffee.com/rasitayaz',
+                          'https://buymeacoffee.com/rasitayaz',
                         );
                       },
                       child: const FaIcon(FontAwesomeIcons.mugSaucer, size: 20),
