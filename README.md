@@ -8,7 +8,7 @@
 
 A Flutter package that provides a highly customizable circular/radial context menu similar to Pinterest's
 
-|![](https://raw.githubusercontent.com/rasitayaz/flutter-pie-menu/main/showcase/screenshot-1.jpg)|![](https://raw.githubusercontent.com/rasitayaz/flutter-pie-menu/main/showcase/example-1.gif)|![](https://raw.githubusercontent.com/rasitayaz/flutter-pie-menu/main/showcase/example-2.gif)|
+|![](https://raw.githubusercontent.com/rasitayaz/flutter-pie-menu/showcase/preview/screenshot-1.jpg)|![](https://raw.githubusercontent.com/rasitayaz/flutter-pie-menu/showcase/preview/example-1.gif)|![](https://raw.githubusercontent.com/rasitayaz/flutter-pie-menu/showcase/preview/example-2.gif)|
 |:-:|:-:|:-:|
 
 ## Usage
