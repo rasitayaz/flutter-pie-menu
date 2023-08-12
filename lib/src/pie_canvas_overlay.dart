@@ -161,56 +161,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
 
   double get _safeDistance => _theme.distance + _theme.buttonSize;
 
-  double get _baseAngle {
-    final arc = (_actions.length - 1) * _angleDiff;
-    final customAngle = _theme.customAngle;
-
-    if (customAngle != null) {
-      switch (_theme.customAngleAnchor) {
-        case PieAnchor.start:
-          return customAngle;
-        case PieAnchor.center:
-          return customAngle + arc / 2;
-        case PieAnchor.end:
-          return customAngle + arc;
-      }
-    }
-
-    final distanceFactor = min(1, (cw / 2 - px) / (cw / 2));
-
-    final p = Offset(px, py);
-
-    double angleBetween(Offset o1, Offset o2) {
-      final slope = (o2.dy - o1.dy) / (o2.dx - o1.dx);
-      return degrees(atan(slope));
-    }
-
-    if ((p - const Offset(0, 0)).distance < _safeDistance) {
-      final o = Offset(_safeDistance, _safeDistance);
-      return arc / 2 - angleBetween(o, p);
-    } else if ((p - Offset(cw, 0)).distance < _safeDistance) {
-      final o = Offset(cw - _safeDistance, _safeDistance);
-      return arc / 2 + 180 - angleBetween(o, p);
-    } else if ((p - Offset(0, ch)).distance < _safeDistance) {
-      final o = Offset(_safeDistance, ch - _safeDistance);
-      return arc / 2 - angleBetween(o, p);
-    } else if ((p - Offset(cw, ch)).distance < _safeDistance) {
-      final o = Offset(cw - _safeDistance, ch - _safeDistance);
-      return arc / 2 + 180 - angleBetween(o, p);
-    } else if (py < _safeDistance) {
-      final o = Offset(cw / 2, max(cw, ch));
-      return px > cw / 2
-          ? arc / 2 - 180 - angleBetween(o, p)
-          : arc / 2 - angleBetween(o, p);
-    } else if (py > ch - _safeDistance / 2) {
-      final o = Offset(cw / 2, min(0, ch - cw));
-      return px > cw / 2
-          ? arc / 2 - 180 - angleBetween(o, p)
-          : arc / 2 - angleBetween(o, p);
-    } else {
-      return arc / 2 + 90 - 90 * distanceFactor;
-    }
-  }
+  var _baseAngle = 0.0;
 
   double _getActionAngle(int index) {
     return radians(_baseAngle - _theme.angleOffset - _angleDiff * index);
@@ -392,8 +343,43 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     }
   }
 
-  bool isOutsideOfPointerArea(Offset offset) {
+  bool _isBeyondPointerBounds(Offset offset) {
     return (_pointerOffset - offset).distance > _theme.pointerSize / 2;
+  }
+
+  double _calculateBaseAngle() {
+    final arc = (_actions.length - 1) * _angleDiff;
+    final customAngle = _theme.customAngle;
+
+    if (customAngle != null) {
+      switch (_theme.customAngleAnchor) {
+        case PieAnchor.start:
+          return customAngle;
+        case PieAnchor.center:
+          return customAngle + arc / 2;
+        case PieAnchor.end:
+          return customAngle + arc;
+      }
+    }
+
+    final distanceFactor = min(1, (cw / 2 - px) / (cw / 2));
+
+    final p = Offset(px, py);
+
+    double angleBetween(Offset o1, Offset o2) {
+      final slope = (o2.dy - o1.dy) / (o2.dx - o1.dx);
+      return degrees(atan(slope));
+    }
+
+    if (py < _safeDistance) {
+      final o = px < cw / 2 ? const Offset(0, 0) : Offset(cw, 0);
+      return arc / 2 - 90 + angleBetween(o, p);
+    } else if (py > ch - _safeDistance) {
+      final o = px < cw / 2 ? Offset(0, ch) : Offset(cw, ch);
+      return arc / 2 + 90 + angleBetween(o, p);
+    } else {
+      return arc / 2 + 90 - 90 * distanceFactor;
+    }
   }
 
   void attachMenu({
@@ -432,6 +418,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
           _detachTimer?.cancel();
           _bounceController.forward(from: 0);
           setState(() {
+            _baseAngle = _calculateBaseAngle();
             menuActive = true;
             _hoveredAction = null;
           });
@@ -484,7 +471,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     _attachTimer?.cancel();
 
     if (menuActive) {
-      if (isOutsideOfPointerArea(offset) || _pressedAgain) {
+      if (_isBeyondPointerBounds(offset) || _pressedAgain) {
         final hoveredAction = _hoveredAction;
 
         if (hoveredAction != null) {
@@ -528,7 +515,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
       if (_hoveredAction != null) {
         setState(() => _hoveredAction = null);
       }
-    } else if (_pressed && isOutsideOfPointerArea(offset)) {
+    } else if (_pressed && _isBeyondPointerBounds(offset)) {
       _detachMenu(afterDelay: false);
     }
   }
