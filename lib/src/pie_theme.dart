@@ -11,17 +11,16 @@ enum PieAnchor { start, center, end }
 class PieTheme {
   /// Creates a [PieTheme] to configure [PieMenu]s.
   const PieTheme({
-    this.bouncingMenu = true,
     this.brightness = Brightness.light,
     this.overlayColor,
-    this.pointerColor,
+    this.pointerDecoration,
     this.buttonTheme = const PieButtonTheme(
       backgroundColor: Colors.blue,
       iconColor: Colors.white,
     ),
     this.buttonThemeHovered = const PieButtonTheme(
-      backgroundColor: Colors.lime,
-      iconColor: Colors.black,
+      backgroundColor: Colors.green,
+      iconColor: Colors.white,
     ),
     this.iconSize,
     this.distance = 96,
@@ -29,22 +28,23 @@ class PieTheme {
     this.customAngle,
     this.customAngleAnchor = PieAnchor.center,
     this.buttonSize = 56,
-    this.pointerSize = 42,
+    this.pointerSize = 40,
     this.tooltipPadding = const EdgeInsets.symmetric(horizontal: 32),
     this.tooltipStyle,
     this.tooltipTextAlign,
     this.tooltipAlignment,
     this.pieBounceDuration = const Duration(seconds: 1),
-    this.menuBounceDuration = const Duration(milliseconds: 120),
-    this.menuBounceDistance = 24,
-    this.menuBounceCurve = Curves.decelerate,
-    this.menuBounceReverseCurve,
+    this.childBounce = true,
+    this.childBounceDuration = const Duration(milliseconds: 120),
+    this.childBounceDistance = 24,
+    this.childBounceCurve = Curves.decelerate,
+    this.childBounceReverseCurve,
     this.fadeDuration = const Duration(milliseconds: 250),
     this.hoverDuration = const Duration(milliseconds: 250),
     this.delayDuration = const Duration(milliseconds: 350),
+    this.leftClickShowsMenu = true,
+    this.rightClickShowsMenu = false,
   });
-
-  final bool bouncingMenu;
 
   /// How the background and tooltip widgets should be displayed
   /// if they are not specified explicitly.
@@ -54,8 +54,8 @@ class PieTheme {
   /// under the menu child, and on top of the other widgets.
   final Color? overlayColor;
 
-  /// Color of the widget displayed in the center of [PieMenu].
-  final Color? pointerColor;
+  /// Decoration for the widget displayed in the center of [PieMenu].
+  final Decoration? pointerDecoration;
 
   /// Theme of [PieButton].
   final PieButtonTheme buttonTheme;
@@ -99,17 +99,20 @@ class PieTheme {
   /// Duration of [PieButton] bounce animation.
   final Duration pieBounceDuration;
 
-  /// Duration of [PieMenu] bounce animation.
-  final Duration menuBounceDuration;
+  /// Whether to bounce the [PieMenu] child on press.
+  final bool childBounce;
 
-  /// Distance of [PieMenu] bounce animation.
-  final double menuBounceDistance;
+  /// Duration of menu child bounce animation.
+  final Duration childBounceDuration;
 
-  /// Curve for the menu bounce animation.
-  final Curve menuBounceCurve;
+  /// Distance of menu child bounce animation.
+  final double childBounceDistance;
 
-  /// Reverse curve for the menu bounce animation.
-  final Curve? menuBounceReverseCurve;
+  /// Curve for the menu child bounce animation.
+  final Curve childBounceCurve;
+
+  /// Reverse curve for the menu child bounce animation.
+  final Curve? childBounceReverseCurve;
 
   /// Duration of [PieMenu] fade animation.
   final Duration fadeDuration;
@@ -122,6 +125,12 @@ class PieTheme {
   /// Can be set to [Duration.zero] to display the menu immediately on tap.
   final Duration delayDuration;
 
+  /// Whether to display the menu on left mouse click.
+  final bool leftClickShowsMenu;
+
+  /// Whether to display the menu on right mouse click.
+  final bool rightClickShowsMenu;
+
   /// Displacement distance of [PieButton]s when hovered.
   double get hoverDisplacement => buttonSize / 8;
 
@@ -133,10 +142,10 @@ class PieTheme {
   /// Creates a copy of this theme but with the
   /// given fields replaced with the new values.
   PieTheme copyWith({
-    bool? bouncingMenu,
+    bool? childBounce,
     Brightness? brightness,
     Color? overlayColor,
-    Color? pointerColor,
+    Decoration? pointerDecoration,
     PieButtonTheme? buttonTheme,
     PieButtonTheme? buttonThemeHovered,
     double? iconSize,
@@ -151,19 +160,20 @@ class PieTheme {
     TextAlign? tooltipTextAlign,
     Alignment? tooltipAlignment,
     Duration? pieBounceDuration,
-    Duration? menuBounceDuration,
-    double? menuBounceDistance,
-    Curve? menuBounceCurve,
-    Curve? menuBounceReverseCurve,
+    Duration? childBounceDuration,
+    double? childBounceDistance,
+    Curve? childBounceCurve,
+    Curve? childBounceReverseCurve,
     Duration? fadeDuration,
     Duration? hoverDuration,
     Duration? delayDuration,
+    bool? leftClickShowsMenu,
+    bool? rightClickShowsMenu,
   }) {
     return PieTheme(
-      bouncingMenu: bouncingMenu ?? this.bouncingMenu,
       brightness: brightness ?? this.brightness,
       overlayColor: overlayColor ?? this.overlayColor,
-      pointerColor: pointerColor ?? this.pointerColor,
+      pointerDecoration: pointerDecoration ?? this.pointerDecoration,
       buttonTheme: buttonTheme ?? this.buttonTheme,
       buttonThemeHovered: buttonThemeHovered ?? this.buttonThemeHovered,
       iconSize: iconSize ?? this.iconSize,
@@ -178,14 +188,17 @@ class PieTheme {
       tooltipTextAlign: tooltipTextAlign ?? this.tooltipTextAlign,
       tooltipAlignment: tooltipAlignment ?? this.tooltipAlignment,
       pieBounceDuration: pieBounceDuration ?? this.pieBounceDuration,
-      menuBounceDuration: menuBounceDuration ?? this.menuBounceDuration,
-      menuBounceDistance: menuBounceDistance ?? this.menuBounceDistance,
-      menuBounceCurve: menuBounceCurve ?? this.menuBounceCurve,
-      menuBounceReverseCurve:
-          menuBounceReverseCurve ?? this.menuBounceReverseCurve,
+      childBounce: childBounce ?? this.childBounce,
+      childBounceDuration: childBounceDuration ?? this.childBounceDuration,
+      childBounceDistance: childBounceDistance ?? this.childBounceDistance,
+      childBounceCurve: childBounceCurve ?? this.childBounceCurve,
+      childBounceReverseCurve:
+          childBounceReverseCurve ?? this.childBounceReverseCurve,
       fadeDuration: fadeDuration ?? this.fadeDuration,
       hoverDuration: hoverDuration ?? this.hoverDuration,
       delayDuration: delayDuration ?? this.delayDuration,
+      leftClickShowsMenu: leftClickShowsMenu ?? this.leftClickShowsMenu,
+      rightClickShowsMenu: rightClickShowsMenu ?? this.rightClickShowsMenu,
     );
   }
 }

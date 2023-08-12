@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -137,8 +138,8 @@ class StylingPage extends StatelessWidget {
                             ),
                           ],
                           child: _buildCard(
-                            color: Colors.deepOrangeAccent,
-                            iconData: FontAwesomeIcons.video,
+                            color: Colors.orangeAccent,
+                            iconData: FontAwesomeIcons.solidSun,
                           ),
                         ),
                       ),
@@ -151,7 +152,7 @@ class StylingPage extends StatelessWidget {
                               iconColor: Colors.white,
                             ),
                             buttonThemeHovered: const PieButtonTheme(
-                              backgroundColor: Colors.orange,
+                              backgroundColor: Colors.orangeAccent,
                               iconColor: Colors.black,
                             ),
                             brightness: Brightness.dark,
@@ -208,10 +209,14 @@ class StylingPage extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                               color: Colors.black,
                             ),
-                            pointerColor: Colors.red.withOpacity(0.5),
-                            overlayColor: Colors.lightGreen.withOpacity(0.7),
+                            overlayColor: Colors.teal.withOpacity(0.5),
+                            pointerSize: 40,
+                            pointerDecoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.red.withOpacity(0.5),
+                            ),
                             buttonTheme: const PieButtonTheme(
-                              backgroundColor: Colors.red,
+                              backgroundColor: Colors.black,
                               iconColor: Colors.white,
                             ),
                             buttonThemeHovered: const PieButtonTheme(
@@ -219,7 +224,16 @@ class StylingPage extends StatelessWidget {
                               iconColor: Colors.black,
                             ),
                             buttonSize: 84,
+                            leftClickShowsMenu: false,
+                            rightClickShowsMenu: true,
                           ),
+                          onPressedWithDevice: (kind) {
+                            if (kind == PointerDeviceKind.mouse) {
+                              context.showSnackBar(
+                                'Right click to show the menu',
+                              );
+                            }
+                          },
                           actions: [
                             PieAction(
                               tooltip: const Text('Like the package'),
@@ -234,8 +248,8 @@ class StylingPage extends StatelessWidget {
                               tooltip: const Text('Import to your app'),
 
                               /// Custom background color
-                              buttonTheme: const PieButtonTheme(
-                                backgroundColor: Colors.deepOrange,
+                              buttonTheme: PieButtonTheme(
+                                backgroundColor: Colors.black.withOpacity(0.7),
                                 iconColor: Colors.white,
                               ),
                               onSelect: () {
@@ -247,8 +261,8 @@ class StylingPage extends StatelessWidget {
                             PieAction(
                               tooltip:
                                   const Text('Share with other developers'),
-                              buttonTheme: const PieButtonTheme(
-                                backgroundColor: Colors.orange,
+                              buttonTheme: PieButtonTheme(
+                                backgroundColor: Colors.black.withOpacity(0.5),
                                 iconColor: Colors.white,
                               ),
                               onSelect: () {
@@ -259,8 +273,8 @@ class StylingPage extends StatelessWidget {
                             ),
                           ],
                           child: _buildCard(
-                            color: Colors.blue,
-                            iconData: FontAwesomeIcons.magnifyingGlassPlus,
+                            color: Colors.teal,
+                            iconData: FontAwesomeIcons.computerMouse,
                           ),
                         ),
                       ),
@@ -325,6 +339,9 @@ class _ListViewPageState extends State<ListViewPage> {
       onMenuToggle: (active) {
         setState(() => _menuActive = active);
       },
+      theme: const PieTheme(
+        rightClickShowsMenu: true,
+      ),
       child: ListView.separated(
         padding: EdgeInsets.only(
           top: spacing,
@@ -341,8 +358,10 @@ class _ListViewPageState extends State<ListViewPage> {
           return SizedBox(
             height: 200,
             child: PieMenu(
-              onTap: () {
-                context.showSnackBar('Tap #$index (Long press for Pie Menu)');
+              onPressed: () {
+                context.showSnackBar(
+                  '#$index — Long press or right click to show the menu',
+                );
               },
               actions: [
                 PieAction(
@@ -412,7 +431,7 @@ class AboutPage extends StatelessWidget {
           backgroundColor: Colors.lime[200],
           iconColor: Colors.black,
         ),
-        overlayColor: Colors.blue[200]!.withOpacity(0.5),
+        overlayColor: Colors.blue[200]?.withOpacity(0.5),
       ),
       child: Center(
         child: SingleChildScrollView(

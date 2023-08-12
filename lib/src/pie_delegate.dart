@@ -14,7 +14,7 @@ class PieDelegate extends FlowDelegate {
     required this.pointerOffset,
     required this.canvasOffset,
     required this.baseAngle,
-    required this.angleDifference,
+    required this.angleDiff,
     required this.theme,
   }) : super(repaint: bounceAnimation);
 
@@ -31,7 +31,7 @@ class PieDelegate extends FlowDelegate {
   final double baseAngle;
 
   /// Angle difference between the [PieButton]s in degrees.
-  final double angleDifference;
+  final double angleDiff;
 
   /// Theme to use for the [PieMenu].
   final PieTheme theme;
@@ -50,7 +50,7 @@ class PieDelegate extends FlowDelegate {
     for (int i = 0; i < count; ++i) {
       final size = context.getChildSize(i)!;
       final angleInRadians =
-          radians(baseAngle - theme.angleOffset - angleDifference * (i - 1));
+          radians(baseAngle - theme.angleOffset - angleDiff * (i - 1));
       if (i == 0) {
         context.paintChild(
           i,
