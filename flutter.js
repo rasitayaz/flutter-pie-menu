@@ -10,7 +10,7 @@ _flutter.loader = null;
 (function () {
   "use strict";
 
-  const baseUri = ensureTrailingSlash(getBaseURI()) + "demo/web/";
+  const baseUri = ensureTrailingSlash(getBaseURI());
 
   function getBaseURI() {
     const base = document.querySelector("base");
