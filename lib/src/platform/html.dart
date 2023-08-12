@@ -5,11 +5,12 @@ import 'base.dart';
 
 BasePlatform getPlatform() => _HtmlPlatform();
 
+/// HTML implementation of [BasePlatform].
 class _HtmlPlatform implements BasePlatform {
   @override
-  dynamic listenContextMenu({required bool preventDefault}) {
+  dynamic listenContextMenu({required bool shouldPreventDefault}) {
     return document.onContextMenu.listen((event) {
-      if (preventDefault) {
+      if (shouldPreventDefault) {
         event.preventDefault();
       }
     });

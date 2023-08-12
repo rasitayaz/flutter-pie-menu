@@ -100,7 +100,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
 
   /// Functional callback that is triggered when
   /// the active [PieMenu] is opened and closed.
-  Function(bool active)? _onActiveMenuToggle;
+  Function(bool active)? _onMenuToggle;
 
   RenderBox? get _renderBox {
     final object = context.findRenderObject();
@@ -381,7 +381,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   }
 
   void toggleMenu(bool active) {
-    _onActiveMenuToggle?.call(active);
+    _onMenuToggle?.call(active);
     widget.onMenuToggle?.call(active);
     if (active) {
       WidgetsBinding.instance.addPostFrameCallback((duration) {
@@ -407,7 +407,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     required Function(bool menuActive)? onMenuToggle,
   }) {
     _contextMenuSubscription = _platform.listenContextMenu(
-      preventDefault: rightClicked,
+      shouldPreventDefault: rightClicked,
     );
 
     _attachTimer?.cancel();
@@ -415,7 +415,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     _menuState?.setVisibility(true);
 
     _menuAttached = true;
-    _onActiveMenuToggle = onMenuToggle;
+    _onMenuToggle = onMenuToggle;
     _theme = theme ?? widget.theme;
     _actions = actions;
     _menuState = state;

@@ -34,7 +34,7 @@ class PieTheme {
     this.tooltipTextAlign,
     this.tooltipAlignment,
     this.pieBounceDuration = const Duration(seconds: 1),
-    this.childBounce = true,
+    this.childBounceEnabled = true,
     this.childBounceDuration = const Duration(milliseconds: 120),
     this.childBounceDistance = 24,
     this.childBounceCurve = Curves.decelerate,
@@ -100,7 +100,7 @@ class PieTheme {
   final Duration pieBounceDuration;
 
   /// Whether to bounce the [PieMenu] child on press.
-  final bool childBounce;
+  final bool childBounceEnabled;
 
   /// Duration of menu child bounce animation.
   final Duration childBounceDuration;
@@ -142,7 +142,6 @@ class PieTheme {
   /// Creates a copy of this theme but with the
   /// given fields replaced with the new values.
   PieTheme copyWith({
-    bool? childBounce,
     Brightness? brightness,
     Color? overlayColor,
     Decoration? pointerDecoration,
@@ -160,6 +159,7 @@ class PieTheme {
     TextAlign? tooltipTextAlign,
     Alignment? tooltipAlignment,
     Duration? pieBounceDuration,
+    bool? childBounceEnabled,
     Duration? childBounceDuration,
     double? childBounceDistance,
     Curve? childBounceCurve,
@@ -188,7 +188,7 @@ class PieTheme {
       tooltipTextAlign: tooltipTextAlign ?? this.tooltipTextAlign,
       tooltipAlignment: tooltipAlignment ?? this.tooltipAlignment,
       pieBounceDuration: pieBounceDuration ?? this.pieBounceDuration,
-      childBounce: childBounce ?? this.childBounce,
+      childBounceEnabled: childBounceEnabled ?? this.childBounceEnabled,
       childBounceDuration: childBounceDuration ?? this.childBounceDuration,
       childBounceDistance: childBounceDistance ?? this.childBounceDistance,
       childBounceCurve: childBounceCurve ?? this.childBounceCurve,

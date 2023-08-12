@@ -42,6 +42,8 @@ class PieMenu extends StatefulWidget {
 
   /// Functional callback with [PointerDeviceKind] details
   /// that is triggered on press.
+  ///
+  /// Can be useful to distinguish between mouse and touch events.
   final Function(PointerDeviceKind kind)? onPressedWithDevice;
 
   @override
@@ -114,7 +116,7 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
   }
 
   void debounce() {
-    if (!mounted || !_theme.childBounce) return;
+    if (!mounted || !_theme.childBounceEnabled) return;
 
     if (_bouncing) {
       _bouncing = false;
@@ -181,7 +183,7 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
             return;
           }
 
-          if (_theme.childBounce) {
+          if (_theme.childBounceEnabled) {
             _bouncing = true;
             _bounceStopwatch.start();
             _bounceController.forward();
