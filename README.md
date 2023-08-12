@@ -13,27 +13,27 @@ A Flutter package that provides a customizable circular/radial context menu simi
 
 ## Usage
 
-Wrap the widget that will react to gestures with `PieMenu` widget, and give the menu a list of `PieAction`s to display as menu buttons.
+Wrap the widget that should respond to gestures with the `PieMenu` widget, and provide the menu with an array of `PieAction`s to display as menu buttons.
 
 ```dart
 PieMenu(
-  onTap: () => print('tap'),
+  onPressed: () => print('pressed'),
   actions: [
     PieAction(
-      tooltip: 'like',
+      tooltip: const Text('like'),
       onSelect: () => print('liked'),
-      child: const Icon(Icons.favorite), // Not necessarily an icon widget
+      child: const Icon(Icons.favorite), // Can be any widget
     ),
   ],
-  child: YourWidget(),
+  child: ChildWidget(),
 ),
 ```
 
-> 💡 Note that you can only use `PieMenu` in the sub-hierarchy of a `PieCanvas` widget.
+> 💡 Note that you can only use the `PieMenu` within the sub-hierarchy of a `PieCanvas` widget.
 
-Wrap your page (or any other widget you want to draw pie buttons and background overlay on) with `PieCanvas` widget.
+Wrap your page (or any other desired widget for drawing pie buttons and a background overlay) with `PieCanvas` widget.
 
-For example, if you want the menu to be displayed at the forefront, you can wrap your `Scaffold` with a `PieCanvas` like following:
+For instance, if you want the menu to be displayed at the forefront, you can wrap your `Scaffold` with a `PieCanvas` like following:
 
 ```dart
 PieCanvas(
@@ -49,15 +49,15 @@ PieCanvas(
 
 ## Using with scrollable and interactive widgets
 
-> ⚠️ If you want to use `PieMenu` inside a scrollable view like a `ListView`, or your widget is already interactive (e.g. it is clickable), you may need to **pay attention to this section.**
+> ⚠️ If you want to use `PieMenu` inside a scrollable view like a `ListView`, or your widget is already interactive with other gestures, you might need to **pay attention to this section.**
 
 `PieCanvas` and `PieMenu` widgets have functional callbacks named `onMenuToggle` and `onToggle` respectively, which are triggered when `PieMenu` visibility changed. Using these callbacks, you can prevent your scrollable or interactive widget's default behavior in order to give the control to `PieMenu`.
 
-> 💡 You can use `onTap` callback defined in `PieMenu` to handle tap events without using an additional widget like `GestureDetector`.
+> 💡 You can utilize the `onPressed` callback defined in `PieMenu` to manage tap events without the need for an extra widget such as `GestureDetector`.
 
 > 💡 As for the scrollables, there is an issue with Flutter framework related to `ScrollConfiguration`, so automatically disabling scroll may not be an option until [this issue](https://github.com/flutter/flutter/issues/111170) is resolved.
 
-Store the `active` parameter of the callbacks in your state.
+Store the `active` parameter of the callbacks in your state and use it whenever you need to.
 
 ```dart
 bool _menuActive = false;
@@ -90,7 +90,7 @@ ListView(
 
 You can customize the appearance and behavior of menus using `PieTheme`.
 
-Using the `theme` attribute of `PieCanvas` widget, you can specify a theme for all the `PieMenu`s that inherit the canvas.
+Using the `theme` attribute of `PieCanvas` widget, you can specify a theme for all the `PieMenu` widgets that inherit the canvas.
 
 ```dart
 PieCanvas(
@@ -111,7 +111,7 @@ PieMenu(
 ),
 ```
 
-It is also possible to copy the canvas theme with custom parameters, but make sure you are accessing it with the right `context`.
+It is also possible to copy the canvas theme with additional parameters, but make sure you are accessing it with the right `context`.
 
 ```dart
 PieMenu(
@@ -132,13 +132,21 @@ PieTheme(
 ),
 ```
 
+You can even give the buttons custom styles using `decoration` property of `PieButtonTheme`.
+
+```dart
+PieButtonTheme(
+  decoration: BoxDecoration(),
+),
+```
+
 ### Custom button widgets
 
 If you wish to use custom widgets inside buttons instead of just icons, it is recommended to use `PieAction.builder()` with a `builder` which provides whether the action is hovered or not.
 
 ```dart
 PieAction.builder(
-  tooltip: 'like',
+  tooltip: const Text('like'),
   onSelect: () => print('liked'),
   builder: (hovered) {
     return Text(
@@ -160,3 +168,31 @@ PieTheme(
   delayDuration: Duration.zero,
 ),
 ```
+
+### Display the menu on right click
+
+Using `rightClickShowsMenu` and `leftClickShowsMenu` attributes of `PieTheme`, you can customize the mouse button behavior.
+
+```dart
+PieTheme(
+  rightClickShowsMenu: true,
+  leftClickShowsMenu: false,
+),
+```
+
+### Adjust display angle of menu buttons
+
+If you don't want the dynamic angle calculation and have the menu appear at a fixed angle, you can set `customAngle` and `customAngleAnchor` attributes of `PieTheme`.
+
+```dart
+PieTheme(
+  customAngle: 90, // In degrees
+  customAngleAnchor: PieAnchor.center, // start, center, end
+),
+```
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+[GitHub Repository](https://github.com/rasitayaz/flutter-pie-menu)
