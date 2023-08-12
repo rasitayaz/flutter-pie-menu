@@ -121,10 +121,12 @@ class StylingPage extends StatelessWidget {
                             PieAction(
                               tooltip: const Text('Play'),
                               onSelect: () => context.showSnackBar('Play'),
-                              child: const FaIcon(FontAwesomeIcons.play),
 
                               /// Optical correction
-                              padding: const EdgeInsets.only(left: 4),
+                              child: const Padding(
+                                padding: EdgeInsets.only(left: 4),
+                                child: FaIcon(FontAwesomeIcons.play),
+                              ),
                             ),
                             PieAction(
                               tooltip: const Text('Like'),
