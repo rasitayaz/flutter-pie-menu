@@ -248,7 +248,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                   /// Tooltip
                   if (tooltip != null)
                     () {
-                      final tooltipAlignment = _theme.tooltipAlignment;
+                      final tooltipAlignment = _theme.tooltipCanvasAlignment;
 
                       final child = AnimatedOpacity(
                         opacity: menuActive && _hoveredAction != null ? 1 : 0,
@@ -261,7 +261,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                                 (px < cw / 2
                                     ? TextAlign.right
                                     : TextAlign.left),
-                            style: _theme.tooltipStyle ??
+                            style: _theme.tooltipTextStyle ??
                                 TextStyle(
                                   fontSize: 32,
                                   fontWeight: FontWeight.bold,
@@ -342,9 +342,10 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                             BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: _theme.brightness == Brightness.light
-                                    ? Colors.black.withOpacity(0.35)
-                                    : Colors.white.withOpacity(0.5),
+                                color: _theme.pointerColor ??
+                                    (_theme.brightness == Brightness.light
+                                        ? Colors.black.withOpacity(0.35)
+                                        : Colors.white.withOpacity(0.5)),
                                 width: 4,
                               ),
                             ),

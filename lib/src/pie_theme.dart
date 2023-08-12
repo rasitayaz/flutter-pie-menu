@@ -13,6 +13,7 @@ class PieTheme {
   const PieTheme({
     this.brightness = Brightness.light,
     this.overlayColor,
+    this.pointerColor,
     this.pointerDecoration,
     this.buttonTheme = const PieButtonTheme(
       backgroundColor: Colors.blue,
@@ -30,9 +31,9 @@ class PieTheme {
     this.buttonSize = 56,
     this.pointerSize = 40,
     this.tooltipPadding = const EdgeInsets.all(32),
-    this.tooltipStyle,
+    this.tooltipTextStyle,
     this.tooltipTextAlign,
-    this.tooltipAlignment,
+    this.tooltipCanvasAlignment,
     this.pieBounceDuration = const Duration(seconds: 1),
     this.childBounceEnabled = true,
     this.childBounceDuration = const Duration(milliseconds: 120),
@@ -54,7 +55,12 @@ class PieTheme {
   /// under the menu child, and on top of the other widgets.
   final Color? overlayColor;
 
+  /// Custom color for the widget displayed in the center of [PieMenu].
+  final Color? pointerColor;
+
   /// Decoration for the widget displayed in the center of [PieMenu].
+  ///
+  /// If specified, [pointerColor] will be ignored.
   final Decoration? pointerDecoration;
 
   /// Theme of [PieButton].
@@ -88,13 +94,15 @@ class PieTheme {
   final EdgeInsets tooltipPadding;
 
   /// Default text style for the tooltip widget.
-  final TextStyle? tooltipStyle;
+  final TextStyle? tooltipTextStyle;
 
   /// Text alignment of the tooltip widget.
   final TextAlign? tooltipTextAlign;
 
   /// Alignment of the tooltip in the [PieCanvas].
-  final Alignment? tooltipAlignment;
+  ///
+  /// Setting this property will disable dynamic tooltip positioning.
+  final Alignment? tooltipCanvasAlignment;
 
   /// Duration of [PieButton] bounce animation.
   final Duration pieBounceDuration;
@@ -144,6 +152,7 @@ class PieTheme {
   PieTheme copyWith({
     Brightness? brightness,
     Color? overlayColor,
+    Color? pointerColor,
     Decoration? pointerDecoration,
     PieButtonTheme? buttonTheme,
     PieButtonTheme? buttonThemeHovered,
@@ -157,7 +166,7 @@ class PieTheme {
     EdgeInsets? tooltipPadding,
     TextStyle? tooltipStyle,
     TextAlign? tooltipTextAlign,
-    Alignment? tooltipAlignment,
+    Alignment? tooltipCanvasAlignment,
     Duration? pieBounceDuration,
     bool? childBounceEnabled,
     Duration? childBounceDuration,
@@ -173,6 +182,7 @@ class PieTheme {
     return PieTheme(
       brightness: brightness ?? this.brightness,
       overlayColor: overlayColor ?? this.overlayColor,
+      pointerColor: pointerColor ?? this.pointerColor,
       pointerDecoration: pointerDecoration ?? this.pointerDecoration,
       buttonTheme: buttonTheme ?? this.buttonTheme,
       buttonThemeHovered: buttonThemeHovered ?? this.buttonThemeHovered,
@@ -184,9 +194,10 @@ class PieTheme {
       buttonSize: buttonSize ?? this.buttonSize,
       pointerSize: pointerSize ?? this.pointerSize,
       tooltipPadding: tooltipPadding ?? this.tooltipPadding,
-      tooltipStyle: tooltipStyle ?? this.tooltipStyle,
+      tooltipTextStyle: tooltipStyle ?? tooltipTextStyle,
       tooltipTextAlign: tooltipTextAlign ?? this.tooltipTextAlign,
-      tooltipAlignment: tooltipAlignment ?? this.tooltipAlignment,
+      tooltipCanvasAlignment:
+          tooltipCanvasAlignment ?? this.tooltipCanvasAlignment,
       pieBounceDuration: pieBounceDuration ?? this.pieBounceDuration,
       childBounceEnabled: childBounceEnabled ?? this.childBounceEnabled,
       childBounceDuration: childBounceDuration ?? this.childBounceDuration,
