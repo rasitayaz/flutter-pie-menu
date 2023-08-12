@@ -375,11 +375,9 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
       return arc / 2 - 90 + angleBetween(o, p);
     } else if (py > ch - _safeDistance &&
         (px < cw * 2 / 5 || px > cw * 3 / 5)) {
-      print('bottom');
       final o = px < cw / 2 ? Offset(0, ch) : Offset(cw, ch);
       return arc / 2 + 90 + angleBetween(o, p);
     } else {
-      print('normal');
       return arc / 2 + 90 - 90 * distanceFactor;
     }
   }
