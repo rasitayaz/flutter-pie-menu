@@ -10,7 +10,7 @@ _flutter.loader = null;
 (function () {
   "use strict";
 
-  const baseUri = ensureTrailingSlash(getBaseURI()) + "flutter-pie-menu/demo/web/";
+  const baseUri = ensureTrailingSlash(getBaseURI()) + "demo/web/";
 
   function getBaseURI() {
     const base = document.querySelector("base");
