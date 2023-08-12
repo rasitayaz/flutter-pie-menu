@@ -421,7 +421,7 @@ class AboutPage extends StatelessWidget {
     return PieCanvas(
       theme: PieTheme(
         delayDuration: Duration.zero,
-        tooltipStyle: const TextStyle(
+        tooltipTextStyle: const TextStyle(
           color: Colors.black,
           fontSize: 24,
           fontWeight: FontWeight.w900,
