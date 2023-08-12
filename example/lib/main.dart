@@ -127,9 +127,10 @@ class StylingPage extends StatelessWidget {
                               padding: const EdgeInsets.only(left: 4),
                             ),
                             PieAction(
-                              tooltip: const Text('Download'),
-                              onSelect: () => context.showSnackBar('Download'),
-                              child: const FaIcon(FontAwesomeIcons.download),
+                              tooltip: const Text('Like'),
+                              onSelect: () => context.showSnackBar('Like'),
+                              child:
+                                  const FaIcon(FontAwesomeIcons.solidThumbsUp),
                             ),
                             PieAction(
                               tooltip: const Text('Share'),
@@ -244,7 +245,7 @@ class StylingPage extends StatelessWidget {
                               child: const FaIcon(FontAwesomeIcons.boxOpen),
                             ),
                             PieAction(
-                              tooltip: const Text('Like the package'),
+                              tooltip: const Text('Highly customizable'),
                               onSelect: () {
                                 launchUrlExternally(
                                     'https://pub.dev/packages/pie_menu');
@@ -255,12 +256,11 @@ class StylingPage extends StatelessWidget {
                                 backgroundColor: Colors.black.withOpacity(0.7),
                                 iconColor: Colors.white,
                               ),
-                              child:
-                                  const FaIcon(FontAwesomeIcons.solidThumbsUp),
+                              child: const FaIcon(FontAwesomeIcons.palette),
                             ),
                             PieAction(
                               tooltip:
-                                  const Text('Share with other developers'),
+                                  const Text('Now with right click support!'),
                               buttonTheme: PieButtonTheme(
                                 backgroundColor: Colors.black.withOpacity(0.5),
                                 iconColor: Colors.white,
@@ -269,12 +269,13 @@ class StylingPage extends StatelessWidget {
                                 launchUrlExternally(
                                     'https://pub.dev/packages/pie_menu');
                               },
-                              child: const FaIcon(FontAwesomeIcons.share),
+                              child:
+                                  const FaIcon(FontAwesomeIcons.computerMouse),
                             ),
                           ],
                           child: _buildCard(
                             color: Colors.teal,
-                            iconData: FontAwesomeIcons.computerMouse,
+                            iconData: FontAwesomeIcons.solidHeart,
                           ),
                         ),
                       ),
@@ -458,14 +459,14 @@ class AboutPage extends StatelessWidget {
                 child: PieMenu(
                   actions: [
                     PieAction(
-                      tooltip: const Text('github.com/rasitayaz'),
+                      tooltip: const Text('github/rasitayaz'),
                       onSelect: () {
                         launchUrlExternally('https://github.com/rasitayaz');
                       },
                       child: const FaIcon(FontAwesomeIcons.github),
                     ),
                     PieAction(
-                      tooltip: const Text('in/rasitayaz'),
+                      tooltip: const Text('linkedin/rasitayaz'),
                       onSelect: () {
                         launchUrlExternally(
                           'https://www.linkedin.com/in/rasitayaz/',
@@ -481,7 +482,7 @@ class AboutPage extends StatelessWidget {
                       child: const FaIcon(FontAwesomeIcons.solidEnvelope),
                     ),
                     PieAction(
-                      tooltip: const Text('Buy me a coffee'),
+                      tooltip: const Text('buy me a coffee'),
                       onSelect: () {
                         launchUrlExternally(
                           'https://www.buymeacoffee.com/rasitayaz',
