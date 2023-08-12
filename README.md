@@ -11,6 +11,17 @@ A Flutter package that provides a highly customizable circular/radial context me
 |![](https://raw.githubusercontent.com/rasitayaz/flutter-pie-menu/showcase/preview/screenshot-1.jpg)|![](https://raw.githubusercontent.com/rasitayaz/flutter-pie-menu/showcase/preview/example-1.gif)|![](https://raw.githubusercontent.com/rasitayaz/flutter-pie-menu/showcase/preview/example-2.gif)|
 |:-:|:-:|:-:|
 
+- [Flutter Pie Menu 🥧](#flutter-pie-menu-)
+  - [Usage](#usage)
+    - [Using with scrollable and interactive widgets](#using-with-scrollable-and-interactive-widgets)
+  - [Customization](#customization)
+    - [Button themes](#button-themes)
+    - [Custom button widgets](#custom-button-widgets)
+    - [Display the menu on tap instead of long press](#display-the-menu-on-tap-instead-of-long-press)
+    - [Display the menu on right click](#display-the-menu-on-right-click)
+    - [Adjust display angle of menu buttons](#adjust-display-angle-of-menu-buttons)
+  - [Contributing](#contributing)
+
 ## Usage
 
 Wrap the widget that should respond to gestures with the `PieMenu` widget, and provide the menu with an array of `PieAction`s to display as menu buttons.
@@ -47,7 +58,7 @@ PieCanvas(
 ),
 ```
 
-## Using with scrollable and interactive widgets
+### Using with scrollable and interactive widgets
 
 > ⚠️ If you want to use `PieMenu` inside a scrollable view like a `ListView`, or your widget is already interactive with other gestures, you might need to **pay attention to this section.**
 
