@@ -29,7 +29,7 @@ class PieTheme {
     this.customAngleAnchor = PieAnchor.center,
     this.buttonSize = 56,
     this.pointerSize = 40,
-    this.tooltipPadding = const EdgeInsets.symmetric(horizontal: 32),
+    this.tooltipPadding = const EdgeInsets.all(32),
     this.tooltipStyle,
     this.tooltipTextAlign,
     this.tooltipAlignment,

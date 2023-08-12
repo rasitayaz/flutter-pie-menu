@@ -167,6 +167,14 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     return radians(_baseAngle - _theme.angleOffset - _angleDiff * index);
   }
 
+  Offset _getActionOffset(int index) {
+    final angle = _getActionAngle(index);
+    return Offset(
+      _pointerOffset.dx + _theme.distance * cos(angle),
+      _pointerOffset.dy - _theme.distance * sin(angle),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final tooltip = _tooltip;
@@ -272,9 +280,40 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                           child: child,
                         );
                       } else {
+                        final offsets = [
+                          _pointerOffset,
+                          for (var i = 0; i < _actions.length; i++)
+                            _getActionOffset(i),
+                        ];
+
+                        double? getTopDistance() {
+                          if (py >= ch / 2) return null;
+
+                          final dyMax = offsets
+                              .map((o) => o.dy)
+                              .reduce((dy1, dy2) => max(dy1, dy2));
+
+                          return dyMax -
+                              _canvasOffset.dy +
+                              _theme.buttonSize / 2;
+                        }
+
+                        double? getBottomDistance() {
+                          if (py < ch / 2) return null;
+
+                          final dyMin = offsets
+                              .map((o) => o.dy)
+                              .reduce((dy1, dy2) => min(dy1, dy2));
+
+                          return ch -
+                              dyMin +
+                              _canvasOffset.dy +
+                              _theme.buttonSize / 2;
+                        }
+
                         return Positioned(
-                          top: py < ch / 2 ? py + _safeDistance : null,
-                          bottom: py >= ch / 2 ? ch - py + _safeDistance : null,
+                          top: getTopDistance(),
+                          bottom: getBottomDistance(),
                           left: 0,
                           right: 0,
                           child: Align(
@@ -494,13 +533,9 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
 
   void _pointerMove(Offset offset) {
     if (menuActive) {
-      for (int i = 0; i < _actions.length; i++) {
-        PieAction action = _actions[i];
-        final angle = _getActionAngle(i);
-        Offset actionOffset = Offset(
-          _pointerOffset.dx + _theme.distance * cos(angle),
-          _pointerOffset.dy - _theme.distance * sin(angle),
-        );
+      for (var i = 0; i < _actions.length; i++) {
+        final action = _actions[i];
+        final actionOffset = _getActionOffset(i);
         if ((actionOffset - offset).distance <
             _theme.buttonSize / 2 + sqrt(_theme.buttonSize)) {
           if (_hoveredAction != i) {
