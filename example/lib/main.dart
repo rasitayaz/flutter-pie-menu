@@ -437,7 +437,7 @@ class AboutPage extends StatelessWidget {
       theme: PieTheme(
         delayDuration: Duration.zero,
         tooltipTextStyle: const TextStyle(
-          fontSize: 32,
+          fontSize: 24,
           fontWeight: FontWeight.w600,
         ),
         buttonTheme: const PieButtonTheme(
