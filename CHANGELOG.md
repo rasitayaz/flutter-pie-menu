@@ -2,6 +2,8 @@
 
 Desktop and web experience is significantly improved with this update. Check [new features](#new-features-and-enhancements) and [updated readme](https://pub.dev/packages/pie_menu) for details.
 
+* Added live Flutter web demo, [check it out!](https://rasitayaz.github.io/flutter-pie-menu)
+
 ### Breaking changes
 
 #### Inside `PieTheme`
