@@ -471,6 +471,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
           _detachTimer?.cancel();
           _bounceController.forward(from: 0);
           setState(() {
+            _forceClose = false;
             _baseAngle = _calculateBaseAngle();
             menuActive = true;
             _hoveredAction = null;
