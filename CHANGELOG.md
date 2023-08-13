@@ -30,6 +30,7 @@ Desktop and web experience is significantly improved with this update. Check [ne
 * Hovering over the buttons with mouse highlights them now. Also, cursor changes when the menu or buttons are hovered. [#16](https://github.com/rasitayaz/flutter-pie-menu/issues/16)
 * Improved dynamic menu angle calculation (again).
 * Improved dynamic tooltip positioning.
+* Fixed text style related issues, menu, canvas and default styles are now being merged properly.
 * Other performance improvements and bug fixes.
 
 ## 1.3.0
