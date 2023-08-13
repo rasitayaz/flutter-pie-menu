@@ -1,4 +1,4 @@
-name: example
+name: pie_menu_example
 description: An example project for Flutter Pie Menu.
 publish_to: 'none'
 version: 1.0.0+1
@@ -25,3 +25,12 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/poppins/Poppins-Regular.ttf
+        - asset: assets/fonts/poppins/Poppins-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/poppins/Poppins-ExtraBold.ttf
+          weight: 800

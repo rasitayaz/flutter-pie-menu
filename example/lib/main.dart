@@ -38,9 +38,18 @@ class SandboxApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Pie Menu Example',
+      title: 'Flutter Pie Menu',
       home: const HomePage(),
-      theme: ThemeData(),
+      theme: ThemeData(
+        fontFamily: 'Poppins',
+        textTheme: const TextTheme().apply(fontFamily: 'Poppins'),
+        snackBarTheme: const SnackBarThemeData(
+          contentTextStyle: TextStyle(
+            fontFamily: 'Poppins',
+            color: Colors.white,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -61,7 +70,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text(
           'Flutter Pie Menu 🥧',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
       body: IndexedStack(
@@ -105,6 +114,10 @@ class StylingPage extends StatelessWidget {
     return PieCanvas(
       theme: const PieTheme(
         delayDuration: Duration.zero,
+        tooltipTextStyle: TextStyle(
+          fontSize: 32,
+          fontWeight: FontWeight.w600,
+        ),
       ),
       child: Builder(builder: (context) {
         return SafeArea(
@@ -207,9 +220,7 @@ class StylingPage extends StatelessWidget {
                       Expanded(
                         child: PieMenu(
                           theme: PieTheme.of(context).copyWith(
-                            tooltipStyle: const TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
+                            tooltipTextStyle: const TextStyle(
                               color: Colors.white,
                             ),
                             overlayColor: Colors.teal.withOpacity(0.7),
@@ -317,7 +328,7 @@ class StylingPage extends StatelessWidget {
       style: TextStyle(
         color: hovered ? Colors.black : Colors.white,
         fontSize: 20,
-        fontWeight: FontWeight.bold,
+        fontWeight: FontWeight.w600,
       ),
     );
   }
@@ -344,6 +355,10 @@ class _ListViewPageState extends State<ListViewPage> {
       },
       theme: const PieTheme(
         rightClickShowsMenu: true,
+        tooltipTextStyle: TextStyle(
+          fontSize: 32,
+          fontWeight: FontWeight.w600,
+        ),
       ),
       child: ListView.separated(
         padding: EdgeInsets.only(
@@ -398,7 +413,7 @@ class _ListViewPageState extends State<ListViewPage> {
                     '#$index',
                     style: const TextStyle(
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                       fontSize: 64,
                     ),
                   ),
@@ -422,9 +437,8 @@ class AboutPage extends StatelessWidget {
       theme: PieTheme(
         delayDuration: Duration.zero,
         tooltipTextStyle: const TextStyle(
-          color: Colors.black,
-          fontSize: 24,
-          fontWeight: FontWeight.w900,
+          fontSize: 32,
+          fontWeight: FontWeight.w600,
         ),
         buttonTheme: const PieButtonTheme(
           backgroundColor: Colors.black,
@@ -434,7 +448,8 @@ class AboutPage extends StatelessWidget {
           backgroundColor: Colors.lime[200],
           iconColor: Colors.black,
         ),
-        overlayColor: Colors.blue[200]?.withOpacity(0.5),
+        overlayColor: Colors.blue[200]?.withOpacity(0.7),
+        rightClickShowsMenu: true,
       ),
       child: Center(
         child: SingleChildScrollView(
@@ -513,7 +528,7 @@ class AboutPage extends StatelessWidget {
                           'Raşit Ayaz',
                           style: TextStyle(
                             color: Colors.white,
-                            fontWeight: FontWeight.w900,
+                            fontWeight: FontWeight.w800,
                             fontSize: 40,
                           ),
                         ),
