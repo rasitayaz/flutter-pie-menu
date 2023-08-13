@@ -176,7 +176,7 @@ class PieTheme {
     double? buttonSize,
     double? pointerSize,
     EdgeInsets? tooltipPadding,
-    TextStyle? tooltipStyle,
+    TextStyle? tooltipTextStyle,
     TextAlign? tooltipTextAlign,
     Alignment? tooltipCanvasAlignment,
     Duration? pieBounceDuration,
@@ -208,7 +208,7 @@ class PieTheme {
       buttonSize: buttonSize ?? this.buttonSize,
       pointerSize: pointerSize ?? this.pointerSize,
       tooltipPadding: tooltipPadding ?? this.tooltipPadding,
-      tooltipTextStyle: tooltipStyle ?? tooltipTextStyle,
+      tooltipTextStyle: tooltipTextStyle ?? this.tooltipTextStyle,
       tooltipTextAlign: tooltipTextAlign ?? this.tooltipTextAlign,
       tooltipCanvasAlignment:
           tooltipCanvasAlignment ?? this.tooltipCanvasAlignment,

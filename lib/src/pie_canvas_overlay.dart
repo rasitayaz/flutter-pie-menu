@@ -102,6 +102,8 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   /// the active [PieMenu] is opened and closed.
   Function(bool active)? _onMenuToggle;
 
+  var _forceClose = false;
+
   RenderBox? get _renderBox {
     final object = context.findRenderObject();
     return object is RenderBox && object.hasSize ? object : null;
@@ -146,7 +148,10 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
       final prevSize = _size;
       _size = PlatformDispatcher.instance.views.first.physicalSize;
       if (prevSize != _size) {
-        setState(() => menuActive = false);
+        setState(() {
+          menuActive = false;
+          _forceClose = true;
+        });
         _menuState?.setChildVisibility(true);
         _notifyMenuState(false);
         _detachMenu();
@@ -214,7 +219,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
           ),
           IgnorePointer(
             child: AnimatedOpacity(
-              duration: _theme.fadeDuration,
+              duration: _forceClose ? Duration.zero : _theme.fadeDuration,
               opacity: menuActive ? 1 : 0,
               curve: Curves.ease,
               child: Stack(
@@ -263,19 +268,20 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                         curve: Curves.ease,
                         child: Padding(
                           padding: _theme.tooltipPadding,
-                          child: DefaultTextStyle(
+                          child: DefaultTextStyle.merge(
                             textAlign: _theme.tooltipTextAlign ??
                                 (px < cw / 2
                                     ? TextAlign.right
                                     : TextAlign.left),
-                            style: _theme.tooltipTextStyle ??
-                                TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
-                                  color: _theme.brightness == Brightness.light
-                                      ? Colors.black
-                                      : Colors.white,
-                                ),
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: _theme.brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white,
+                            )
+                                .merge(widget.theme.tooltipTextStyle)
+                                .merge(_theme.tooltipTextStyle),
                             child: tooltip,
                           ),
                         ),
@@ -492,6 +498,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
         _attachTimer?.cancel();
         if (_menuAttached) {
           setState(() {
+            _forceClose = false;
             _pressed = false;
             _pressedAgain = false;
             _tooltip = null;
