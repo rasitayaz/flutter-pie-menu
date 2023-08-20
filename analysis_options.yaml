@@ -8,3 +8,4 @@ linter:
     prefer_single_quotes: true
     unnecessary_parenthesis: true
     sort_constructors_first: true
+    require_trailing_commas: true

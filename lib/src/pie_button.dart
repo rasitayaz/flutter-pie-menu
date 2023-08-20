@@ -54,10 +54,12 @@ class _PieButtonState extends State<PieButton>
   late final Animation _animation = Tween(
     begin: 0.0,
     end: 1.0,
-  ).animate(CurvedAnimation(
-    parent: _controller,
-    curve: Curves.ease,
-  ));
+  ).animate(
+    CurvedAnimation(
+      parent: _controller,
+      curve: Curves.ease,
+    ),
+  );
 
   /// Whether the [PieButton] is visible.
   bool visible = false;

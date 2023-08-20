@@ -79,11 +79,13 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
     return Tween(
       begin: 1.0,
       end: depth,
-    ).animate(CurvedAnimation(
-      parent: _bounceController,
-      curve: _theme.childBounceCurve,
-      reverseCurve: _theme.childBounceReverseCurve,
-    ));
+    ).animate(
+      CurvedAnimation(
+        parent: _bounceController,
+        curve: _theme.childBounceCurve,
+        reverseCurve: _theme.childBounceReverseCurve,
+      ),
+    );
   }
 
   /// Bouncing animation for [PieMenu].

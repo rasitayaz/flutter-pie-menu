@@ -53,10 +53,12 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   late final Animation _bounceAnimation = Tween(
     begin: 0.0,
     end: 1.0,
-  ).animate(CurvedAnimation(
-    parent: _bounceController,
-    curve: Curves.elasticOut,
-  ));
+  ).animate(
+    CurvedAnimation(
+      parent: _bounceController,
+      curve: Curves.elasticOut,
+    ),
+  );
 
   /// Whether [_menuChild] is currently pressed.
   bool _pressed = false;
