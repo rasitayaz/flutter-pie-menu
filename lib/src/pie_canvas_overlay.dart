@@ -425,7 +425,8 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     final p = Offset(px, py);
     final distanceFactor = min(1, (cw / 2 - px) / (cw / 2));
 
-    if (py < _safeDistance) {
+    if ((ch >= 2 * _safeDistance && py < _safeDistance) ||
+        (ch < 2 * _safeDistance && py < ch / 2)) {
       final o = px < cw / 2 ? const Offset(0, 0) : Offset(cw, 0);
       return arc / 2 - 90 + _angleBetween(o, p);
     } else if (py > ch - _safeDistance &&
