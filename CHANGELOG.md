@@ -23,9 +23,10 @@ Desktop and web experience is significantly improved with this update. Check [ne
 #### Inside `PieTheme`
 
 * Added `rightClickShowsMenu` and `leftClickShowsMenu` attributes to customize the mouse behavior. [#13](https://github.com/rasitayaz/flutter-pie-menu/issues/13)
-* Added `customAngle` and `customAngleAnchor` attributes to `PieTheme` to set a fixed positioning for the buttons. [#34](https://github.com/rasitayaz/flutter-pie-menu/issues/34)
-* Added `tooltipCanvasAlignment` to `PieTheme` specify a custom alignment for the tooltip in the canvas. [#35](https://github.com/rasitayaz/flutter-pie-menu/pull/35)
-* Added `pointerDecoration` inside `PieTheme`, allowing you to style the widget at the center of the menu.
+* Added `customAngle` and `customAngleAnchor` attributes to set a fixed positioning for the buttons. [#34](https://github.com/rasitayaz/flutter-pie-menu/issues/34)
+* Added `tooltipCanvasAlignment` to specify a custom alignment for the tooltip in the canvas. [#35](https://github.com/rasitayaz/flutter-pie-menu/pull/35)
+* Added `tooltipUseFittedBox` to allow the tooltip to be resized to fit the text into a single line.
+* Added `pointerDecoration`, allowing you to style the widget at the center of the menu.
 
 #### Other
 
