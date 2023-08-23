@@ -31,16 +31,10 @@
 build/
 
 # Example project
-**/android/**
-**/ios/**
-**/windows/**
-**/linux/**
-**/macos/**
-**/web/**
+example/android/
+example/ios/
+example/windows/
+example/linux/
+example/macos/
+example/web/
 example/.metadata
-example/demo.apk
-example/demo-windows.zip
-example/demo-macos.zip
-
-# Showcase images
-showcase/**

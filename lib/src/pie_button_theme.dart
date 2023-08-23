@@ -17,6 +17,6 @@ class PieButtonTheme {
 
   /// Container decoration of [PieButton].
   ///
-  /// Note that a custom decoration ignores [backgroundColor].
+  /// Note that a custom decoration will ignore [backgroundColor].
   final Decoration? decoration;
 }

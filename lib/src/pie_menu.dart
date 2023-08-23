@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:pie_menu/src/pie_action.dart';
 import 'package:pie_menu/src/pie_button.dart';
@@ -16,7 +17,8 @@ class PieMenu extends StatefulWidget {
     this.theme,
     this.actions = const [],
     this.onToggle,
-    this.onTap,
+    this.onPressed,
+    this.onPressedWithDevice,
     required this.child,
   });
 
@@ -33,7 +35,16 @@ class PieMenu extends StatefulWidget {
   /// this [PieMenu] is opened and closed.
   final Function(bool active)? onToggle;
 
-  final VoidCallback? onTap;
+  /// Functional callback that is triggered on press.
+  ///
+  /// You can also use [onPressedWithDevice] if you need [PointerDeviceKind].
+  final Function()? onPressed;
+
+  /// Functional callback with [PointerDeviceKind] details
+  /// that is triggered on press.
+  ///
+  /// Can be useful to distinguish between mouse and touch events.
+  final Function(PointerDeviceKind kind)? onPressedWithDevice;
 
   @override
   State<PieMenu> createState() => PieMenuState();
@@ -42,12 +53,11 @@ class PieMenu extends StatefulWidget {
 class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
   var _childVisible = true;
 
-  var _offset = Offset.zero;
+  var _pressedOffset = Offset.zero;
+  var _pressedButton = 0;
 
   var _bouncing = false;
   final _bounceStopwatch = Stopwatch();
-
-  var _canTap = true;
 
   PieCanvasProvider get _canvasProvider => PieCanvasProvider.of(context);
 
@@ -57,7 +67,7 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
 
   Size? _size;
 
-  Duration get _bounceDuration => _theme.menuBounceDuration;
+  Duration get _bounceDuration => _theme.childBounceDuration;
 
   /// Controls [_bounceAnimation].
   late final AnimationController _bounceController = AnimationController(
@@ -69,11 +79,13 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
     return Tween(
       begin: 1.0,
       end: depth,
-    ).animate(CurvedAnimation(
-      parent: _bounceController,
-      curve: _theme.menuBounceCurve,
-      reverseCurve: _theme.menuBounceReverseCurve,
-    ));
+    ).animate(
+      CurvedAnimation(
+        parent: _bounceController,
+        curve: _theme.childBounceCurve,
+        reverseCurve: _theme.childBounceReverseCurve,
+      ),
+    );
   }
 
   /// Bouncing animation for [PieMenu].
@@ -86,16 +98,27 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
     );
   }
 
-  void setVisibility(bool visible) {
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
+  void dispose() {
+    _bounceController.dispose();
+    super.dispose();
+  }
+
+  void setChildVisibility(bool visible) {
     if (visible != _childVisible) {
       setState(() => _childVisible = visible);
     }
   }
 
   void debounce() {
-    _canTap = false;
-
-    if (!mounted || !_theme.bouncingMenu) return;
+    if (!mounted || !_theme.childBounceEnabled) return;
 
     if (_bouncing) {
       _bouncing = false;
@@ -116,19 +139,6 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
   }
 
   @override
-  void setState(fn) {
-    if (mounted) {
-      super.setState(fn);
-    }
-  }
-
-  @override
-  void dispose() {
-    _bounceController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (mounted) {
@@ -139,7 +149,7 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
 
           final effectiveSize = max(size.width, size.height);
           final depth = max(
-            (effectiveSize - _theme.menuBounceDistance) / effectiveSize,
+            (effectiveSize - _theme.childBounceDistance) / effectiveSize,
             0.0,
           );
 
@@ -148,26 +158,44 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
       }
     });
 
-    return Listener(
-      behavior: HitTestBehavior.translucent,
-      onPointerDown: (event) {
-        _canTap = true;
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: Listener(
+        behavior: HitTestBehavior.translucent,
+        onPointerDown: (event) {
+          _pressedOffset = event.position;
+          _pressedButton = event.buttons;
 
-        _offset = event.position;
+          if (_canvas.menuActive) return;
 
-        if (!_canvas.menuActive) {
-          if (_theme.delayDuration == Duration.zero) {
-            widget.onTap?.call();
+          final isMouseEvent = event.kind == PointerDeviceKind.mouse;
+          final leftClicked =
+              isMouseEvent && _pressedButton == kPrimaryMouseButton;
+          final rightClicked =
+              isMouseEvent && _pressedButton == kSecondaryMouseButton;
+
+          if (isMouseEvent && !leftClicked && !rightClicked) return;
+
+          if (rightClicked && !_theme.rightClickShowsMenu) return;
+
+          if (leftClicked &&
+              !_theme.leftClickShowsMenu &&
+              widget.onPressed == null &&
+              widget.onPressedWithDevice == null) {
+            return;
           }
 
-          if (_theme.bouncingMenu) {
+          if (_theme.childBounceEnabled) {
             _bouncing = true;
             _bounceStopwatch.start();
             _bounceController.forward();
           }
 
+          if (leftClicked && !_theme.leftClickShowsMenu) return;
+
           _canvas.attachMenu(
-            offset: _offset,
+            rightClicked: rightClicked,
+            offset: _pressedOffset,
             state: this,
             child: _bouncingChild,
             renderBox: context.findRenderObject() as RenderBox,
@@ -175,22 +203,32 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
             theme: widget.theme,
             onMenuToggle: widget.onToggle,
           );
-        }
-      },
-      onPointerMove: (event) {
-        if ((event.position - _offset).distance > _theme.pointerSize / 2) {
+        },
+        onPointerMove: (event) {
+          if ((event.position - _pressedOffset).distance >
+              _theme.pointerSize / 2) {
+            debounce();
+          }
+        },
+        onPointerUp: (event) {
           debounce();
-        }
-      },
-      onPointerUp: (event) {
-        if (_canTap && _offset == event.position) {
-          widget.onTap?.call();
-        }
-        debounce();
-      },
-      child: Opacity(
-        opacity: _childVisible ? 1 : 0,
-        child: _bouncingChild,
+
+          if ((_pressedOffset - event.position).distance > 8) return;
+          if (_canvas.menuActive && _theme.delayDuration != Duration.zero) {
+            return;
+          }
+          if (event.kind == PointerDeviceKind.mouse &&
+              _pressedButton != kPrimaryMouseButton) {
+            return;
+          }
+
+          widget.onPressed?.call();
+          widget.onPressedWithDevice?.call(event.kind);
+        },
+        child: Opacity(
+          opacity: _childVisible ? 1 : 0,
+          child: _bouncingChild,
+        ),
       ),
     );
   }

@@ -1,3 +1,41 @@
+## 2.0.0
+
+Desktop and web experience is significantly improved with this update. Check [new features](#new-features-and-enhancements) and [updated readme](https://pub.dev/packages/pie_menu) for details.
+
+* Added live Flutter web demo, [check it out!](https://rasitayaz.github.io/flutter-pie-menu)
+
+### Breaking changes
+
+#### Inside `PieTheme`
+
+* Changed `tooltip` type from `String` to `Widget`, you can now use custom widgets as tooltips.
+* Renamed `tooltipStyle` to `tooltipTextStyle`.
+* Renamed `distance` to `radius`.
+* `bouncingMenu` is renamed to `childBounceEnabled`, and all the related attributes that starts with `menuBounce...` are renamed to `childBounce...` to avoid confusion.
+
+#### Other
+
+* `onTap` callback inside `PieMenu` is renamed to `onPressed`. Also added a new `onPressedWithDevice` callback that provides `PointerDeviceKind`, allowing you to distinguish between mouse and touch events.
+* Removed `padding` from `PieAction` since it already has a `child` that can be wrapped with a `Padding` widget.
+
+### New features and enhancements
+
+#### Inside `PieTheme`
+
+* Added `rightClickShowsMenu` and `leftClickShowsMenu` attributes to customize the mouse behavior. [#13](https://github.com/rasitayaz/flutter-pie-menu/issues/13)
+* Added `customAngle` and `customAngleAnchor` attributes to set a fixed positioning for the buttons. [#34](https://github.com/rasitayaz/flutter-pie-menu/issues/34)
+* Added `tooltipCanvasAlignment` to specify a custom alignment for the tooltip in the canvas. [#35](https://github.com/rasitayaz/flutter-pie-menu/pull/35)
+* Added `tooltipUseFittedBox` to allow the tooltip to be resized to fit the text into a single line.
+* Added `pointerDecoration`, allowing you to style the widget at the center of the menu.
+
+#### Other
+
+* Hovering over the buttons with mouse highlights them now. Also, cursor changes when the menu or buttons are hovered. [#16](https://github.com/rasitayaz/flutter-pie-menu/issues/16)
+* Improved dynamic menu angle calculation (again).
+* Improved dynamic tooltip positioning.
+* Fixed text style related issues. Menu, canvas and default text styles are now being merged properly.
+* Other performance improvements and bug fixes.
+
 ## 1.3.0
 
 * Improved menu angle calculation, the menu is now displayed at a better angle when opened from the corners of the screen.
@@ -10,7 +48,7 @@
 ## 1.2.5
 
 * Replaced `menuBounceDepth` with `menuBounceDistance` in `PieTheme` and improved default bounce animation.
-* Fixed [#28](https://github.com/rasitayaz/flutter-pie-menu/issues/28)
+* Fixed [#28](https://github.com/rasitayaz/flutter-pie-menu/issues/28).
 
 ## 1.2.4
 
@@ -23,7 +61,7 @@
 
 ## 1.2.2
 
-* Fixed menu not displaying and child disappearing on iOS devices: [#23](https://github.com/rasitayaz/flutter-pie-menu/issues/23)
+* Fixed menu not displaying and child disappearing on iOS devices. [#23](https://github.com/rasitayaz/flutter-pie-menu/issues/23)
 * Fixed menu being able to be activated from blank canvas areas.
 
 ## 1.2.1
@@ -32,7 +70,7 @@
 
 ## 1.2.0
 
-* Added `ScrollConfiguration` to disable scrolling automatically when a `PieMenu` is visible, but it is not working properly at the moment due to [an issue with Flutter framework](https://github.com/flutter/flutter/issues/111170).
+* Added `ScrollConfiguration` to disable scrolling automatically when a `PieMenu` is visible, but it is not working properly at the moment because of [this issue with Flutter framework](https://github.com/flutter/flutter/issues/111170).
 * Added missing `copyWith()` parameters in `PieTheme`.
 * Added `PieTheme.of(context)` function to access `PieCanvas` theme from `PieMenu` and customize it easily.
 * Removed `childHovered` parameter from `PieAction`, you can use `PieAction.builder()` and its `builder` parameter for custom hovered buttons.
@@ -98,4 +136,4 @@
 
 ## 0.0.1
 
-Initial version
+* Initial release.

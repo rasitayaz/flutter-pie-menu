@@ -3,43 +3,54 @@ import 'package:pie_menu/pie_menu.dart';
 import 'package:pie_menu/src/pie_button.dart';
 import 'package:pie_menu/src/pie_canvas_provider.dart';
 
+/// Action display anchor point for the specified custom angle in [PieTheme].
+enum PieAnchor { start, center, end }
+
 /// Defines the behavior and the appearance
 /// of [PieCanvas] and [PieMenu] widgets.
 class PieTheme {
   /// Creates a [PieTheme] to configure [PieMenu]s.
   const PieTheme({
-    this.bouncingMenu = true,
     this.brightness = Brightness.light,
     this.overlayColor,
     this.pointerColor,
+    this.pointerDecoration,
     this.buttonTheme = const PieButtonTheme(
       backgroundColor: Colors.blue,
       iconColor: Colors.white,
     ),
     this.buttonThemeHovered = const PieButtonTheme(
-      backgroundColor: Colors.lime,
-      iconColor: Colors.black,
+      backgroundColor: Colors.green,
+      iconColor: Colors.white,
     ),
     this.iconSize,
-    this.distance = 96,
+    this.radius = 96,
+    this.spacing = 6,
+    this.customAngleDiff,
     this.angleOffset = 0,
+    this.customAngle,
+    this.customAngleAnchor = PieAnchor.center,
     this.buttonSize = 56,
-    this.pointerSize = 42,
-    this.tooltipPadding = const EdgeInsets.symmetric(horizontal: 32),
-    this.tooltipStyle,
+    this.pointerSize = 40,
+    this.tooltipPadding = const EdgeInsets.all(32),
+    this.tooltipTextStyle,
+    this.tooltipTextAlign,
+    this.tooltipCanvasAlignment,
+    this.tooltipUseFittedBox = false,
     this.pieBounceDuration = const Duration(seconds: 1),
-    this.menuBounceDuration = const Duration(milliseconds: 120),
-    this.menuBounceDistance = 24,
-    this.menuBounceCurve = Curves.decelerate,
-    this.menuBounceReverseCurve,
+    this.childBounceEnabled = true,
+    this.childBounceDuration = const Duration(milliseconds: 120),
+    this.childBounceDistance = 24,
+    this.childBounceCurve = Curves.decelerate,
+    this.childBounceReverseCurve,
     this.fadeDuration = const Duration(milliseconds: 250),
     this.hoverDuration = const Duration(milliseconds: 250),
     this.delayDuration = const Duration(milliseconds: 350),
+    this.leftClickShowsMenu = true,
+    this.rightClickShowsMenu = false,
   });
 
-  final bool bouncingMenu;
-
-  /// How the background and tooltip texts should be displayed
+  /// How the background and tooltip widgets should be displayed
   /// if they are not specified explicitly.
   final Brightness brightness;
 
@@ -47,8 +58,13 @@ class PieTheme {
   /// under the menu child, and on top of the other widgets.
   final Color? overlayColor;
 
-  /// Color of the widget displayed in the center of [PieMenu].
+  /// Custom color for the widget displayed in the center of [PieMenu].
   final Color? pointerColor;
+
+  /// Decoration for the widget displayed in the center of [PieMenu].
+  ///
+  /// If specified, [pointerColor] will be ignored.
+  final Decoration? pointerDecoration;
 
   /// Theme of [PieButton].
   final PieButtonTheme buttonTheme;
@@ -60,10 +76,24 @@ class PieTheme {
   final double? iconSize;
 
   /// Distance between the [PieButton] and the center of [PieMenu].
-  final double distance;
+  final double radius;
 
-  /// Angle offset of the first [PieButton] displayed.
+  /// Spacing between the [PieButton]s.
+  final double spacing;
+
+  /// Angle difference between the [PieButton]s in degrees.
+  ///
+  /// If specified, [spacing] will be ignored.
+  final double? customAngleDiff;
+
+  /// Angle offset in degrees for the actions.
   final double angleOffset;
+
+  /// Display the menu actions in a specific angle in degrees.
+  final double? customAngle;
+
+  /// Action display alignment for the specified [customAngle].
+  final PieAnchor customAngleAnchor;
 
   /// Size of [PieButton] circle.
   final double buttonSize;
@@ -74,23 +104,39 @@ class PieTheme {
   /// Padding value of the tooltip at the edges of [PieCanvas].
   final EdgeInsets tooltipPadding;
 
-  /// Style of the tooltip text.
-  final TextStyle? tooltipStyle;
+  /// Default text style for the tooltip widget.
+  final TextStyle? tooltipTextStyle;
+
+  /// Text alignment of the tooltip widget.
+  final TextAlign? tooltipTextAlign;
+
+  /// Alignment of the tooltip in the [PieCanvas].
+  ///
+  /// Setting this property will disable dynamic tooltip positioning.
+  final Alignment? tooltipCanvasAlignment;
+
+  /// Whether to wrap the tooltip with [FittedBox] widget.
+  ///
+  /// Can be used to display long tooltip texts in a single line.
+  final bool tooltipUseFittedBox;
 
   /// Duration of [PieButton] bounce animation.
   final Duration pieBounceDuration;
 
-  /// Duration of [PieMenu] bounce animation.
-  final Duration menuBounceDuration;
+  /// Whether to bounce the [PieMenu] child on press.
+  final bool childBounceEnabled;
 
-  /// Distance of [PieMenu] bounce animation.
-  final double menuBounceDistance;
+  /// Duration of menu child bounce animation.
+  final Duration childBounceDuration;
 
-  /// Curve for the menu bounce animation.
-  final Curve menuBounceCurve;
+  /// Distance of menu child bounce animation.
+  final double childBounceDistance;
 
-  /// Reverse curve for the menu bounce animation.
-  final Curve? menuBounceReverseCurve;
+  /// Curve for the menu child bounce animation.
+  final Curve childBounceCurve;
+
+  /// Reverse curve for the menu child bounce animation.
+  final Curve? childBounceReverseCurve;
 
   /// Duration of [PieMenu] fade animation.
   final Duration fadeDuration;
@@ -103,6 +149,12 @@ class PieTheme {
   /// Can be set to [Duration.zero] to display the menu immediately on tap.
   final Duration delayDuration;
 
+  /// Whether to display the menu on left mouse click.
+  final bool leftClickShowsMenu;
+
+  /// Whether to display the menu on right mouse click.
+  final bool rightClickShowsMenu;
+
   /// Displacement distance of [PieButton]s when hovered.
   double get hoverDisplacement => buttonSize / 8;
 
@@ -114,51 +166,72 @@ class PieTheme {
   /// Creates a copy of this theme but with the
   /// given fields replaced with the new values.
   PieTheme copyWith({
-    bool? bouncingMenu,
     Brightness? brightness,
     Color? overlayColor,
     Color? pointerColor,
+    Decoration? pointerDecoration,
     PieButtonTheme? buttonTheme,
     PieButtonTheme? buttonThemeHovered,
     double? iconSize,
-    double? distance,
+    double? radius,
+    double? spacing,
+    double? customAngleDiff,
     double? angleOffset,
+    double? customAngle,
+    PieAnchor? customAngleAnchor,
     double? buttonSize,
     double? pointerSize,
     EdgeInsets? tooltipPadding,
-    TextStyle? tooltipStyle,
+    TextStyle? tooltipTextStyle,
+    TextAlign? tooltipTextAlign,
+    Alignment? tooltipCanvasAlignment,
+    bool? tooltipUseFittedBox,
     Duration? pieBounceDuration,
-    Duration? menuBounceDuration,
-    double? menuBounceDistance,
-    Curve? menuBounceCurve,
-    Curve? menuBounceReverseCurve,
+    bool? childBounceEnabled,
+    Duration? childBounceDuration,
+    double? childBounceDistance,
+    Curve? childBounceCurve,
+    Curve? childBounceReverseCurve,
     Duration? fadeDuration,
     Duration? hoverDuration,
     Duration? delayDuration,
+    bool? leftClickShowsMenu,
+    bool? rightClickShowsMenu,
   }) {
     return PieTheme(
-      bouncingMenu: bouncingMenu ?? this.bouncingMenu,
       brightness: brightness ?? this.brightness,
       overlayColor: overlayColor ?? this.overlayColor,
       pointerColor: pointerColor ?? this.pointerColor,
+      pointerDecoration: pointerDecoration ?? this.pointerDecoration,
       buttonTheme: buttonTheme ?? this.buttonTheme,
       buttonThemeHovered: buttonThemeHovered ?? this.buttonThemeHovered,
       iconSize: iconSize ?? this.iconSize,
-      distance: distance ?? this.distance,
+      radius: radius ?? this.radius,
+      spacing: spacing ?? this.spacing,
+      customAngleDiff: customAngleDiff ?? this.customAngleDiff,
       angleOffset: angleOffset ?? this.angleOffset,
+      customAngle: customAngle ?? this.customAngle,
+      customAngleAnchor: customAngleAnchor ?? this.customAngleAnchor,
       buttonSize: buttonSize ?? this.buttonSize,
       pointerSize: pointerSize ?? this.pointerSize,
       tooltipPadding: tooltipPadding ?? this.tooltipPadding,
-      tooltipStyle: tooltipStyle ?? this.tooltipStyle,
+      tooltipTextStyle: tooltipTextStyle ?? this.tooltipTextStyle,
+      tooltipTextAlign: tooltipTextAlign ?? this.tooltipTextAlign,
+      tooltipCanvasAlignment:
+          tooltipCanvasAlignment ?? this.tooltipCanvasAlignment,
+      tooltipUseFittedBox: tooltipUseFittedBox ?? this.tooltipUseFittedBox,
       pieBounceDuration: pieBounceDuration ?? this.pieBounceDuration,
-      menuBounceDuration: menuBounceDuration ?? this.menuBounceDuration,
-      menuBounceDistance: menuBounceDistance ?? this.menuBounceDistance,
-      menuBounceCurve: menuBounceCurve ?? this.menuBounceCurve,
-      menuBounceReverseCurve:
-          menuBounceReverseCurve ?? this.menuBounceReverseCurve,
+      childBounceEnabled: childBounceEnabled ?? this.childBounceEnabled,
+      childBounceDuration: childBounceDuration ?? this.childBounceDuration,
+      childBounceDistance: childBounceDistance ?? this.childBounceDistance,
+      childBounceCurve: childBounceCurve ?? this.childBounceCurve,
+      childBounceReverseCurve:
+          childBounceReverseCurve ?? this.childBounceReverseCurve,
       fadeDuration: fadeDuration ?? this.fadeDuration,
       hoverDuration: hoverDuration ?? this.hoverDuration,
       delayDuration: delayDuration ?? this.delayDuration,
+      leftClickShowsMenu: leftClickShowsMenu ?? this.leftClickShowsMenu,
+      rightClickShowsMenu: rightClickShowsMenu ?? this.rightClickShowsMenu,
     );
   }
 }
