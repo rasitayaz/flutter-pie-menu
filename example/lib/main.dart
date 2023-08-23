@@ -437,9 +437,10 @@ class AboutPage extends StatelessWidget {
       theme: PieTheme(
         delayDuration: Duration.zero,
         tooltipTextStyle: const TextStyle(
-          fontSize: 24,
+          fontSize: 32,
           fontWeight: FontWeight.w600,
         ),
+        tooltipUseFittedBox: true,
         buttonTheme: const PieButtonTheme(
           backgroundColor: Colors.black,
           iconColor: Colors.white,
@@ -508,31 +509,33 @@ class AboutPage extends StatelessWidget {
                       child: const FaIcon(FontAwesomeIcons.mugSaucer, size: 20),
                     ),
                   ],
-                  child: Container(
-                    padding: const EdgeInsets.all(32),
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'created by',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 36,
+                  child: FittedBox(
+                    child: Container(
+                      padding: const EdgeInsets.all(32),
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'created by',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 36,
+                            ),
                           ),
-                        ),
-                        Text(
-                          'Raşit Ayaz',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w800,
-                            fontSize: 40,
+                          Text(
+                            'Raşit Ayaz',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 40,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
