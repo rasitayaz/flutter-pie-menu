@@ -264,7 +264,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                     () {
                       final tooltipAlignment = _theme.tooltipCanvasAlignment;
 
-                      final child = AnimatedOpacity(
+                      Widget child = AnimatedOpacity(
                         opacity: menuActive && _hoveredAction != null ? 1 : 0,
                         duration: _theme.hoverDuration,
                         curve: Curves.ease,
@@ -288,6 +288,10 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                           ),
                         ),
                       );
+
+                      if (_theme.tooltipUseFittedBox) {
+                        child = FittedBox(child: child);
+                      }
 
                       if (tooltipAlignment != null) {
                         return Align(

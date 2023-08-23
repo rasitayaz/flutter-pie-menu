@@ -36,6 +36,7 @@ class PieTheme {
     this.tooltipTextStyle,
     this.tooltipTextAlign,
     this.tooltipCanvasAlignment,
+    this.tooltipUseFittedBox = false,
     this.pieBounceDuration = const Duration(seconds: 1),
     this.childBounceEnabled = true,
     this.childBounceDuration = const Duration(milliseconds: 120),
@@ -114,6 +115,11 @@ class PieTheme {
   /// Setting this property will disable dynamic tooltip positioning.
   final Alignment? tooltipCanvasAlignment;
 
+  /// Whether to wrap the tooltip with [FittedBox] widget.
+  ///
+  /// Can be used to display long tooltip texts in a single line.
+  final bool tooltipUseFittedBox;
+
   /// Duration of [PieButton] bounce animation.
   final Duration pieBounceDuration;
 
@@ -179,6 +185,7 @@ class PieTheme {
     TextStyle? tooltipTextStyle,
     TextAlign? tooltipTextAlign,
     Alignment? tooltipCanvasAlignment,
+    bool? tooltipUseFittedBox,
     Duration? pieBounceDuration,
     bool? childBounceEnabled,
     Duration? childBounceDuration,
@@ -212,6 +219,7 @@ class PieTheme {
       tooltipTextAlign: tooltipTextAlign ?? this.tooltipTextAlign,
       tooltipCanvasAlignment:
           tooltipCanvasAlignment ?? this.tooltipCanvasAlignment,
+      tooltipUseFittedBox: tooltipUseFittedBox ?? this.tooltipUseFittedBox,
       pieBounceDuration: pieBounceDuration ?? this.pieBounceDuration,
       childBounceEnabled: childBounceEnabled ?? this.childBounceEnabled,
       childBounceDuration: childBounceDuration ?? this.childBounceDuration,
