@@ -1,6 +1,7 @@
 # Flutter Pie Menu 🥧
 
-[![pub](https://img.shields.io/pub/v/pie_menu.svg?style=popout)](https://pub.dartlang.org/packages/pie_menu)
+![Pub Version (including pre-releases)](https://badges.genua.fr/pub/v/pie_menu)
+![Pub Likes](https://badges.genua.fr/pub/likes/pie_menu)
 [![web](https://img.shields.io/badge/live-web&nbsp;demo-white.svg)](https://rasitayaz.github.io/flutter-pie-menu)
 [![apk](https://img.shields.io/badge/apk-android&nbsp;demo-teal.svg)](https://github.com/rasitayaz/flutter-pie-menu/raw/showcase/demo/android.zip)
 [![app](https://img.shields.io/badge/app-macos&nbsp;demo-blueviolet)](https://github.com/rasitayaz/flutter-pie-menu/raw/showcase/demo/macos.zip)
@@ -14,7 +15,10 @@ A Flutter package that provides a highly customizable circular/radial context me
 |![](https://raw.githubusercontent.com/rasitayaz/flutter-pie-menu/showcase/preview/screenshot-1.jpg)|![](https://raw.githubusercontent.com/rasitayaz/flutter-pie-menu/showcase/preview/example-1.gif)|![](https://raw.githubusercontent.com/rasitayaz/flutter-pie-menu/showcase/preview/example-2.gif)|
 |:-:|:-:|:-:|
 
+## Table of Contents
+
 - [Flutter Pie Menu 🥧](#flutter-pie-menu-)
+  - [Table of Contents](#table-of-contents)
   - [Usage](#usage)
     - [Using with scrollable and interactive widgets](#using-with-scrollable-and-interactive-widgets)
   - [Customization](#customization)
