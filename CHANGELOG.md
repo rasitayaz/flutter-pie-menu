@@ -1,4 +1,8 @@
-# 2.0.1
+## 2.0.2
+
+* Fixed changelog typos.
+
+## 2.0.1
 
 * Wrapped canvas with a transparent `Material` to be able to use it outside `Scaffold`.
 
