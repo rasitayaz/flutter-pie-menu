@@ -1,26 +1,29 @@
+# 2.0.1
+
+* Wrapped canvas with a transparent `Material` to be able to use it outside `Scaffold`.
+
 ## 2.0.0
 
-Desktop and web experience is significantly improved with this update. Check [new features](#new-features-and-enhancements) and [updated readme](https://pub.dev/packages/pie_menu) for details.
-
-* Added live Flutter web demo, [check it out!](https://rasitayaz.github.io/flutter-pie-menu)
+* Desktop and web experience is significantly improved with this update. Check [new features](#new-features-and-enhancements) and [updated readme](https://pub.dev/packages/pie_menu) for details.
+* Added live Flutter web demo, [give it a try!](https://rasitayaz.github.io/flutter-pie-menu)
 
 ### Breaking changes
 
-#### Inside `PieTheme`
+**Inside `PieTheme`;**
 
 * Changed `tooltip` type from `String` to `Widget`, you can now use custom widgets as tooltips.
 * Renamed `tooltipStyle` to `tooltipTextStyle`.
 * Renamed `distance` to `radius`.
 * `bouncingMenu` is renamed to `childBounceEnabled`, and all the related attributes that starts with `menuBounce...` are renamed to `childBounce...` to avoid confusion.
 
-#### Other
+**Other;**
 
 * `onTap` callback inside `PieMenu` is renamed to `onPressed`. Also added a new `onPressedWithDevice` callback that provides `PointerDeviceKind`, allowing you to distinguish between mouse and touch events.
 * Removed `padding` from `PieAction` since it already has a `child` that can be wrapped with a `Padding` widget.
 
 ### New features and enhancements
 
-#### Inside `PieTheme`
+**Inside `PieTheme`;**
 
 * Added `rightClickShowsMenu` and `leftClickShowsMenu` attributes to customize the mouse behavior. [#13](https://github.com/rasitayaz/flutter-pie-menu/issues/13)
 * Added `customAngle` and `customAngleAnchor` attributes to set a fixed positioning for the buttons. [#34](https://github.com/rasitayaz/flutter-pie-menu/issues/34)
@@ -28,7 +31,7 @@ Desktop and web experience is significantly improved with this update. Check [ne
 * Added `tooltipUseFittedBox` to allow the tooltip to be resized to fit the text into a single line.
 * Added `pointerDecoration`, allowing you to style the widget at the center of the menu.
 
-#### Other
+**Other;**
 
 * Hovering over the buttons with mouse highlights them now. Also, cursor changes when the menu or buttons are hovered. [#16](https://github.com/rasitayaz/flutter-pie-menu/issues/16)
 * Improved dynamic menu angle calculation (again).
