@@ -24,10 +24,12 @@ void launchUrlExternally(String url) {
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    systemNavigationBarColor: Colors.transparent,
-  ));
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+    ),
+  );
   runApp(const SandboxApp());
 }
 
@@ -119,187 +121,196 @@ class StylingPage extends StatelessWidget {
           fontWeight: FontWeight.w600,
         ),
       ),
-      child: Builder(builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(spacing),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: PieMenu(
-                          actions: [
-                            PieAction(
-                              tooltip: const Text('Play'),
-                              onSelect: () => context.showSnackBar('Play'),
+      child: Builder(
+        builder: (context) {
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(spacing),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: PieMenu(
+                            actions: [
+                              PieAction(
+                                tooltip: const Text('Play'),
+                                onSelect: () => context.showSnackBar('Play'),
 
-                              /// Optical correction
-                              child: const Padding(
-                                padding: EdgeInsets.only(left: 4),
-                                child: FaIcon(FontAwesomeIcons.play),
+                                /// Optical correction
+                                child: const Padding(
+                                  padding: EdgeInsets.only(left: 4),
+                                  child: FaIcon(FontAwesomeIcons.play),
+                                ),
                               ),
+                              PieAction(
+                                tooltip: const Text('Like'),
+                                onSelect: () => context.showSnackBar('Like'),
+                                child: const FaIcon(
+                                  FontAwesomeIcons.solidThumbsUp,
+                                ),
+                              ),
+                              PieAction(
+                                tooltip: const Text('Share'),
+                                onSelect: () => context.showSnackBar('Share'),
+                                child: const FaIcon(FontAwesomeIcons.share),
+                              ),
+                            ],
+                            child: _buildCard(
+                              color: Colors.orangeAccent,
+                              iconData: FontAwesomeIcons.solidSun,
                             ),
-                            PieAction(
-                              tooltip: const Text('Like'),
-                              onSelect: () => context.showSnackBar('Like'),
-                              child:
-                                  const FaIcon(FontAwesomeIcons.solidThumbsUp),
-                            ),
-                            PieAction(
-                              tooltip: const Text('Share'),
-                              onSelect: () => context.showSnackBar('Share'),
-                              child: const FaIcon(FontAwesomeIcons.share),
-                            ),
-                          ],
-                          child: _buildCard(
-                            color: Colors.orangeAccent,
-                            iconData: FontAwesomeIcons.solidSun,
                           ),
                         ),
-                      ),
-                      const SizedBox(height: spacing),
-                      Expanded(
-                        child: PieMenu(
-                          theme: PieTheme.of(context).copyWith(
-                            buttonTheme: const PieButtonTheme(
-                              backgroundColor: Colors.deepOrange,
-                              iconColor: Colors.white,
-                            ),
-                            buttonThemeHovered: const PieButtonTheme(
-                              backgroundColor: Colors.orangeAccent,
-                              iconColor: Colors.black,
-                            ),
-                            brightness: Brightness.dark,
-                          ),
-                          actions: [
-                            PieAction.builder(
-                              tooltip: const Text('how'),
-                              onSelect: () => context.showSnackBar('1'),
-                              builder: (hovered) {
-                                return _buildTextButton('1', hovered);
-                              },
-                            ),
-                            PieAction.builder(
-                              tooltip: const Text('cool'),
-                              onSelect: () => context.showSnackBar('2'),
-                              builder: (hovered) {
-                                return _buildTextButton('2', hovered);
-                              },
-                            ),
-                            PieAction.builder(
-                              tooltip: const Text('is'),
-                              onSelect: () => context.showSnackBar('3'),
-                              builder: (hovered) {
-                                return _buildTextButton('3', hovered);
-                              },
-                            ),
-                            PieAction.builder(
-                              tooltip: const Text('this?!'),
-                              onSelect: () =>
-                                  context.showSnackBar('Pretty cool :)'),
-                              builder: (hovered) {
-                                return _buildTextButton('4', hovered);
-                              },
-                            ),
-                          ],
-                          child: _buildCard(
-                            color: Colors.deepPurple,
-                            iconData: FontAwesomeIcons.solidMoon,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: spacing),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: PieMenu(
-                          theme: PieTheme.of(context).copyWith(
-                            tooltipTextStyle: const TextStyle(
-                              color: Colors.white,
-                            ),
-                            overlayColor: Colors.teal.withOpacity(0.7),
-                            pointerSize: 40,
-                            pointerDecoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.red.withOpacity(0.5),
-                            ),
-                            buttonTheme: const PieButtonTheme(
-                              backgroundColor: Colors.black,
-                              iconColor: Colors.white,
-                            ),
-                            buttonThemeHovered: const PieButtonTheme(
-                              backgroundColor: Colors.white,
-                              iconColor: Colors.black,
-                            ),
-                            buttonSize: 84,
-                            leftClickShowsMenu: false,
-                            rightClickShowsMenu: true,
-                          ),
-                          onPressedWithDevice: (kind) {
-                            if (kind == PointerDeviceKind.mouse) {
-                              context.showSnackBar(
-                                'Right click to show the menu',
-                              );
-                            }
-                          },
-                          actions: [
-                            PieAction(
-                              tooltip: const Text('Available on pub.dev'),
-                              onSelect: () {
-                                launchUrlExternally(
-                                    'https://pub.dev/packages/pie_menu');
-                              },
-                              child: const FaIcon(FontAwesomeIcons.boxOpen),
-                            ),
-                            PieAction(
-                              tooltip: const Text('Highly customizable'),
-                              onSelect: () {
-                                launchUrlExternally(
-                                    'https://pub.dev/packages/pie_menu');
-                              },
-
-                              /// Custom background color
-                              buttonTheme: PieButtonTheme(
-                                backgroundColor: Colors.black.withOpacity(0.7),
+                        const SizedBox(height: spacing),
+                        Expanded(
+                          child: PieMenu(
+                            theme: PieTheme.of(context).copyWith(
+                              buttonTheme: const PieButtonTheme(
+                                backgroundColor: Colors.deepOrange,
                                 iconColor: Colors.white,
                               ),
-                              child: const FaIcon(FontAwesomeIcons.palette),
-                            ),
-                            PieAction(
-                              tooltip:
-                                  const Text('Now with right click support!'),
-                              buttonTheme: PieButtonTheme(
-                                backgroundColor: Colors.black.withOpacity(0.5),
-                                iconColor: Colors.white,
+                              buttonThemeHovered: const PieButtonTheme(
+                                backgroundColor: Colors.orangeAccent,
+                                iconColor: Colors.black,
                               ),
-                              onSelect: () {
-                                launchUrlExternally(
-                                    'https://pub.dev/packages/pie_menu');
-                              },
-                              child:
-                                  const FaIcon(FontAwesomeIcons.computerMouse),
+                              brightness: Brightness.dark,
                             ),
-                          ],
-                          child: _buildCard(
-                            color: Colors.teal,
-                            iconData: FontAwesomeIcons.solidHeart,
+                            actions: [
+                              PieAction.builder(
+                                tooltip: const Text('how'),
+                                onSelect: () => context.showSnackBar('1'),
+                                builder: (hovered) {
+                                  return _buildTextButton('1', hovered);
+                                },
+                              ),
+                              PieAction.builder(
+                                tooltip: const Text('cool'),
+                                onSelect: () => context.showSnackBar('2'),
+                                builder: (hovered) {
+                                  return _buildTextButton('2', hovered);
+                                },
+                              ),
+                              PieAction.builder(
+                                tooltip: const Text('is'),
+                                onSelect: () => context.showSnackBar('3'),
+                                builder: (hovered) {
+                                  return _buildTextButton('3', hovered);
+                                },
+                              ),
+                              PieAction.builder(
+                                tooltip: const Text('this?!'),
+                                onSelect: () =>
+                                    context.showSnackBar('Pretty cool :)'),
+                                builder: (hovered) {
+                                  return _buildTextButton('4', hovered);
+                                },
+                              ),
+                            ],
+                            child: _buildCard(
+                              color: Colors.deepPurple,
+                              iconData: FontAwesomeIcons.solidMoon,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: spacing),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: PieMenu(
+                            theme: PieTheme.of(context).copyWith(
+                              tooltipTextStyle: const TextStyle(
+                                color: Colors.white,
+                              ),
+                              overlayColor: Colors.teal.withOpacity(0.7),
+                              pointerSize: 40,
+                              pointerDecoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.red.withOpacity(0.5),
+                              ),
+                              buttonTheme: const PieButtonTheme(
+                                backgroundColor: Colors.black,
+                                iconColor: Colors.white,
+                              ),
+                              buttonThemeHovered: const PieButtonTheme(
+                                backgroundColor: Colors.white,
+                                iconColor: Colors.black,
+                              ),
+                              buttonSize: 84,
+                              leftClickShowsMenu: false,
+                              rightClickShowsMenu: true,
+                            ),
+                            onPressedWithDevice: (kind) {
+                              if (kind == PointerDeviceKind.mouse) {
+                                context.showSnackBar(
+                                  'Right click to show the menu',
+                                );
+                              }
+                            },
+                            actions: [
+                              PieAction(
+                                tooltip: const Text('Available on pub.dev'),
+                                onSelect: () {
+                                  launchUrlExternally(
+                                    'https://pub.dev/packages/pie_menu',
+                                  );
+                                },
+                                child: const FaIcon(FontAwesomeIcons.boxOpen),
+                              ),
+                              PieAction(
+                                tooltip: const Text('Highly customizable'),
+                                onSelect: () {
+                                  launchUrlExternally(
+                                    'https://pub.dev/packages/pie_menu',
+                                  );
+                                },
+
+                                /// Custom background color
+                                buttonTheme: PieButtonTheme(
+                                  backgroundColor:
+                                      Colors.black.withOpacity(0.7),
+                                  iconColor: Colors.white,
+                                ),
+                                child: const FaIcon(FontAwesomeIcons.palette),
+                              ),
+                              PieAction(
+                                tooltip:
+                                    const Text('Now with right click support!'),
+                                buttonTheme: PieButtonTheme(
+                                  backgroundColor:
+                                      Colors.black.withOpacity(0.5),
+                                  iconColor: Colors.white,
+                                ),
+                                onSelect: () {
+                                  launchUrlExternally(
+                                    'https://pub.dev/packages/pie_menu',
+                                  );
+                                },
+                                child: const FaIcon(
+                                  FontAwesomeIcons.computerMouse,
+                                ),
+                              ),
+                            ],
+                            child: _buildCard(
+                              color: Colors.teal,
+                              iconData: FontAwesomeIcons.solidHeart,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      }),
+          );
+        },
+      ),
     );
   }
 
