@@ -1,7 +1,7 @@
 # Flutter Pie Menu 🥧
 
-![Pub Version (including pre-releases)](https://badges.genua.fr/pub/v/pie_menu)
-![Pub Likes](https://badges.genua.fr/pub/likes/pie_menu)
+[![pub](https://badges.genua.fr/pub/v/pie_menu)](https://pub.dev/packages/pie_menu)
+[![pub likes](https://badges.genua.fr/pub/likes/pie_menu)](https://pub.dev/packages/pie_menu)
 [![web](https://img.shields.io/badge/live-web&nbsp;demo-white.svg)](https://rasitayaz.github.io/flutter-pie-menu)
 [![apk](https://img.shields.io/badge/apk-android&nbsp;demo-teal.svg)](https://github.com/rasitayaz/flutter-pie-menu/raw/showcase/demo/android.zip)
 [![app](https://img.shields.io/badge/app-macos&nbsp;demo-blueviolet)](https://github.com/rasitayaz/flutter-pie-menu/raw/showcase/demo/macos.zip)
