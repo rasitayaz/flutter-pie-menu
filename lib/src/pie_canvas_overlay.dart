@@ -210,15 +210,9 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
               onPointerHover:
                   menuActive ? (event) => _pointerMove(event.position) : null,
               onPointerUp: (event) => _pointerUp(event.position),
-              child: ScrollConfiguration(
-                behavior: ScrollConfiguration.of(context).copyWith(
-                  physics:
-                      menuActive ? const NeverScrollableScrollPhysics() : null,
-                ),
-                child: IgnorePointer(
-                  ignoring: menuActive,
-                  child: widget.child,
-                ),
+              child: IgnorePointer(
+                ignoring: menuActive,
+                child: widget.child,
               ),
             ),
             IgnorePointer(

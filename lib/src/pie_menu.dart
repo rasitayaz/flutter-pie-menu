@@ -203,6 +203,12 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
             theme: widget.theme,
             onMenuToggle: widget.onToggle,
           );
+
+          final recognizer = LongPressGestureRecognizer(
+            duration: _theme.delayDuration,
+          );
+          recognizer.onLongPressUp = () {};
+          recognizer.addPointer(event);
         },
         onPointerMove: (event) {
           if ((event.position - _pressedOffset).distance >

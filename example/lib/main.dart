@@ -354,16 +354,11 @@ class ListViewPage extends StatefulWidget {
 }
 
 class _ListViewPageState extends State<ListViewPage> {
-  bool _menuActive = false;
-
   static const double spacing = 20;
 
   @override
   Widget build(BuildContext context) {
     return PieCanvas(
-      onMenuToggle: (active) {
-        setState(() => _menuActive = active);
-      },
       theme: const PieTheme(
         rightClickShowsMenu: true,
         tooltipTextStyle: TextStyle(
@@ -378,9 +373,7 @@ class _ListViewPageState extends State<ListViewPage> {
           left: MediaQuery.of(context).padding.left + spacing,
           right: MediaQuery.of(context).padding.right + spacing,
         ),
-        physics: _menuActive
-            ? const NeverScrollableScrollPhysics()
-            : const BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         itemCount: 16,
         separatorBuilder: (context, index) => const SizedBox(height: spacing),
         itemBuilder: (context, index) {
