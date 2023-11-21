@@ -1,3 +1,5 @@
+* Other gestures are now automatically cancelled when a `PieMenu` becomes visible. You no longer have to use `NeverScrollableScrollPhysics` to disable scrolling or disable the functionality of your interactive menu child. [#41](https://github.com/rasitayaz/flutter-pie-menu/issues/41)
+
 ## 2.0.2
 
 * Fixed changelog typos.
