@@ -20,7 +20,6 @@ A Flutter package that provides a highly customizable circular/radial context me
 - [Flutter Pie Menu 🥧](#flutter-pie-menu-)
   - [Table of Contents](#table-of-contents)
   - [Usage](#usage)
-    - [Using with scrollable and interactive widgets](#using-with-scrollable-and-interactive-widgets)
   - [Customization](#customization)
     - [Button themes](#button-themes)
     - [Custom button widgets](#custom-button-widgets)
@@ -65,44 +64,7 @@ PieCanvas(
 ),
 ```
 
-### Using with scrollable and interactive widgets
-
-> ⚠️ If you want to use `PieMenu` inside a scrollable view like a `ListView`, or your widget is already interactive with other gestures, you might need to **pay attention to this section.**
-
-`PieCanvas` and `PieMenu` widgets have functional callbacks named `onMenuToggle` and `onToggle` respectively, which are triggered when `PieMenu` visibility changed. Using these callbacks, you can prevent your scrollable or interactive widget's default behavior in order to give the control to `PieMenu`.
-
 > 💡 You can utilize the `onPressed` callback defined in `PieMenu` to manage tap events without the need for an extra widget such as `GestureDetector`.
-
-> 💡 As for the scrollables, there is an issue with Flutter framework related to `ScrollConfiguration`, so automatically disabling scroll may not be an option until [this issue](https://github.com/flutter/flutter/issues/111170) is resolved.
-
-Store the `active` parameter of the callbacks in your state and use it whenever you need to.
-
-```dart
-bool _menuActive = false;
-
-@override
-Widget build(BuildContext context) {
-  return PieCanvas(
-    onMenuToggle: (active) {
-      setState(() => _menuActive = active);
-    },
-    ...
-  );
-}
-```
-
-For example, you can decide whether scrolling should be enabled or not using this variable.
-
-
-```dart
-ListView(
-  // Disable scrolling if a PieMenu is active
-  physics: _menuActive
-      ? NeverScrollableScrollPhysics()
-      : null, // Uses the default physics
-  ...
-);
-```
 
 ## Customization
 
