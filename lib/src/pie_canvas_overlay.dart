@@ -236,60 +236,9 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                           ),
                         );
                       }.call(),
-                    /* () {
-                        final menuOffset =
-                            menuRenderBox.localToGlobal(Offset.zero);
-
-                        return Positioned.fill(
-                          child: ColorFiltered(
-                            colorFilter: ColorFilter.mode(
-                              _theme.effectiveOverlayColor,
-                              BlendMode.srcOut,
-                            ),
-                            child: ColoredBox(
-                              color: Colors.black.withOpacity(0.002),
-                              child: Stack(
-                                children: [
-                                  Positioned(
-                                    top: menuOffset.dy - _canvasOffset.dy,
-                                    left: menuOffset.dx - _canvasOffset.dx,
-                                    child: SizedBox.fromSize(
-                                      size: menuRenderBox.size,
-                                      child: const ColoredBox(
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      }.call(), */
                     //* overlay end *//
 
-                    /// Pie Menu child
-                    /* if (menuRenderBox != null && menuRenderBox.attached)
-                      () {
-                        final menuOffset =
-                            menuRenderBox.localToGlobal(Offset.zero);
-
-                        return Positioned(
-                          top: menuOffset.dy - _canvasOffset.dy,
-                          left: menuOffset.dx - _canvasOffset.dx,
-                          child: AnimatedOpacity(
-                            opacity: _hoveredAction != null ? 0.5 : 1,
-                            duration: _theme.hoverDuration,
-                            curve: Curves.ease,
-                            child: SizedBox.fromSize(
-                              size: menuRenderBox.size,
-                              child: menuChild,
-                            ),
-                          ),
-                        );
-                      }.call(), */
-
-                    /// Tooltip
+                    //* tooltip start *//
                     if (tooltip != null)
                       () {
                         final tooltipAlignment = _theme.tooltipCanvasAlignment;
@@ -374,8 +323,9 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                           );
                         }
                       }.call(),
+                    //* tooltip end *//
 
-                    /// Action buttons
+                    //* action buttons start *//
                     Flow(
                       delegate: PieDelegate(
                         bounceAnimation: _bounceAnimation,
@@ -411,6 +361,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                           ),
                       ],
                     ),
+                    //* action buttons end *//
                   ],
                 ),
               ),
