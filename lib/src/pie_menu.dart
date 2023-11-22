@@ -1,6 +1,3 @@
-import 'dart:async';
-import 'dart:math';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:pie_menu/src/pie_action.dart';
@@ -56,47 +53,11 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
   var _pressedOffset = Offset.zero;
   var _pressedButton = 0;
 
-  var _bouncing = false;
-  final _bounceStopwatch = Stopwatch();
-
   PieCanvasProvider get _canvasProvider => PieCanvasProvider.of(context);
 
   PieTheme get _theme => widget.theme ?? _canvasProvider.theme;
 
   PieCanvasOverlayState get _canvas => _canvasProvider.canvasKey.currentState!;
-
-  Size? _size;
-
-  Duration get _bounceDuration => _theme.childBounceDuration;
-
-  /// Controls [_bounceAnimation].
-  late final AnimationController _bounceController = AnimationController(
-    duration: _bounceDuration,
-    vsync: this,
-  );
-
-  Animation<double> _getAnimation(double depth) {
-    return Tween(
-      begin: 1.0,
-      end: depth,
-    ).animate(
-      CurvedAnimation(
-        parent: _bounceController,
-        curve: _theme.childBounceCurve,
-        reverseCurve: _theme.childBounceReverseCurve,
-      ),
-    );
-  }
-
-  /// Bouncing animation for [PieMenu].
-  late Animation<double> _bounceAnimation = _getAnimation(1);
-
-  Widget get _bouncingChild {
-    return ScaleTransition(
-      scale: _bounceAnimation,
-      child: widget.child,
-    );
-  }
 
   @override
   void setState(fn) {
@@ -105,59 +66,14 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
     }
   }
 
-  @override
-  void dispose() {
-    _bounceController.dispose();
-    super.dispose();
-  }
-
   void setChildVisibility(bool visible) {
     if (visible != _childVisible) {
       setState(() => _childVisible = visible);
     }
   }
 
-  void debounce() {
-    if (!mounted || !_theme.childBounceEnabled) return;
-
-    if (_bouncing) {
-      _bouncing = false;
-
-      if (_bounceStopwatch.elapsed > _bounceDuration || !_canvas.menuActive) {
-        _bounceController.reverse();
-      } else {
-        Future.delayed(_bounceDuration - _bounceStopwatch.elapsed, () {
-          if (mounted) {
-            _bounceController.reverse();
-          }
-        });
-      }
-
-      _bounceStopwatch.stop();
-      _bounceStopwatch.reset();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (mounted) {
-        final size = context.size;
-
-        if (_size != size && size != null && !size.isEmpty) {
-          _size = context.size;
-
-          final effectiveSize = max(size.width, size.height);
-          final depth = max(
-            (effectiveSize - _theme.childBounceDistance) / effectiveSize,
-            0.0,
-          );
-
-          setState(() => _bounceAnimation = _getAnimation(depth));
-        }
-      }
-    });
-
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: Listener(
@@ -185,19 +101,13 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
             return;
           }
 
-          if (_theme.childBounceEnabled) {
-            _bouncing = true;
-            _bounceStopwatch.start();
-            _bounceController.forward();
-          }
-
           if (leftClicked && !_theme.leftClickShowsMenu) return;
 
           _canvas.attachMenu(
             rightClicked: rightClicked,
             offset: _pressedOffset,
             state: this,
-            child: _bouncingChild,
+            child: widget.child,
             renderBox: context.findRenderObject() as RenderBox,
             actions: widget.actions,
             theme: widget.theme,
@@ -211,18 +121,18 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
           recognizer.addPointer(event);
         },
         onPointerMove: (event) {
-          if ((event.position - _pressedOffset).distance >
-              _theme.pointerSize / 2) {
-            debounce();
-          }
+          /* if ((event.position - _pressedOffset).distance >
+              _theme.pointerSize / 2) {} */
         },
         onPointerUp: (event) {
-          debounce();
+          if ((_pressedOffset - event.position).distance > 8) {
+            return;
+          }
 
-          if ((_pressedOffset - event.position).distance > 8) return;
           if (_canvas.menuActive && _theme.delayDuration != Duration.zero) {
             return;
           }
+
           if (event.kind == PointerDeviceKind.mouse &&
               _pressedButton != kPrimaryMouseButton) {
             return;
@@ -231,9 +141,19 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
           widget.onPressed?.call();
           widget.onPressedWithDevice?.call(event.kind);
         },
-        child: Opacity(
-          opacity: _childVisible ? 1 : 0,
-          child: _bouncingChild,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: AnimatedOpacity(
+                opacity: _canvas.menuActive ? 1 : 0,
+                duration:
+                    _canvas.forceClose ? Duration.zero : _theme.fadeDuration,
+                curve: Curves.ease,
+                child: ColoredBox(color: _theme.effectiveOverlayColor),
+              ),
+            ),
+            widget.child,
+          ],
         ),
       ),
     );

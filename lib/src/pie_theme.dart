@@ -38,11 +38,6 @@ class PieTheme {
     this.tooltipCanvasAlignment,
     this.tooltipUseFittedBox = false,
     this.pieBounceDuration = const Duration(seconds: 1),
-    this.childBounceEnabled = true,
-    this.childBounceDuration = const Duration(milliseconds: 120),
-    this.childBounceDistance = 24,
-    this.childBounceCurve = Curves.decelerate,
-    this.childBounceReverseCurve,
     this.fadeDuration = const Duration(milliseconds: 250),
     this.hoverDuration = const Duration(milliseconds: 250),
     this.delayDuration = const Duration(milliseconds: 350),
@@ -123,21 +118,6 @@ class PieTheme {
   /// Duration of [PieButton] bounce animation.
   final Duration pieBounceDuration;
 
-  /// Whether to bounce the [PieMenu] child on press.
-  final bool childBounceEnabled;
-
-  /// Duration of menu child bounce animation.
-  final Duration childBounceDuration;
-
-  /// Distance of menu child bounce animation.
-  final double childBounceDistance;
-
-  /// Curve for the menu child bounce animation.
-  final Curve childBounceCurve;
-
-  /// Reverse curve for the menu child bounce animation.
-  final Curve? childBounceReverseCurve;
-
   /// Duration of [PieMenu] fade animation.
   final Duration fadeDuration;
 
@@ -157,6 +137,13 @@ class PieTheme {
 
   /// Displacement distance of [PieButton]s when hovered.
   double get hoverDisplacement => buttonSize / 8;
+
+  Color get effectiveOverlayColor {
+    return overlayColor ??
+        (brightness == Brightness.light
+            ? Colors.white.withOpacity(0.8)
+            : Colors.black.withOpacity(0.8));
+  }
 
   /// Returns the [PieTheme] defined in the closest [PieCanvas].
   static PieTheme of(BuildContext context) {
@@ -221,12 +208,6 @@ class PieTheme {
           tooltipCanvasAlignment ?? this.tooltipCanvasAlignment,
       tooltipUseFittedBox: tooltipUseFittedBox ?? this.tooltipUseFittedBox,
       pieBounceDuration: pieBounceDuration ?? this.pieBounceDuration,
-      childBounceEnabled: childBounceEnabled ?? this.childBounceEnabled,
-      childBounceDuration: childBounceDuration ?? this.childBounceDuration,
-      childBounceDistance: childBounceDistance ?? this.childBounceDistance,
-      childBounceCurve: childBounceCurve ?? this.childBounceCurve,
-      childBounceReverseCurve:
-          childBounceReverseCurve ?? this.childBounceReverseCurve,
       fadeDuration: fadeDuration ?? this.fadeDuration,
       hoverDuration: hoverDuration ?? this.hoverDuration,
       delayDuration: delayDuration ?? this.delayDuration,

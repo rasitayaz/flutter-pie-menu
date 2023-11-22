@@ -60,10 +60,10 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     ),
   );
 
-  /// Whether [_menuChild] is currently pressed.
+  /// Whether menu child is currently pressed.
   bool _pressed = false;
 
-  /// Whether [_menuChild] is pressed again when the menu is active.
+  /// Whether menu child is pressed again when the menu is active.
   bool _pressedAgain = false;
 
   /// Whether [PieMenu] is currently active.
@@ -75,10 +75,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   /// State of [PieMenu].
   PieMenuState? _menuState;
 
-  /// Child widget of [PieMenu].
-  Widget? _menuChild;
-
-  /// Render box of [_menuChild].
+  /// Render box of menu child.
   RenderBox? _menuRenderBox;
 
   /// Currently pressed pointer offset.
@@ -104,7 +101,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   /// the active [PieMenu] is opened and closed.
   Function(bool active)? _onMenuToggle;
 
-  var _forceClose = false;
+  var forceClose = false;
 
   RenderBox? get _renderBox {
     final object = context.findRenderObject();
@@ -152,10 +149,9 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
       if (prevSize != _size) {
         setState(() {
           menuActive = false;
-          _forceClose = true;
+          forceClose = true;
         });
-        _menuState?.setChildVisibility(true);
-        _notifyMenuState(false);
+        _notifyMenuState(active: false);
         _detachMenu();
       }
     }
@@ -193,7 +189,6 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   Widget build(BuildContext context) {
     final tooltip = _tooltip;
     final menuRenderBox = _menuRenderBox;
-    final menuChild = _menuChild;
 
     return Material(
       type: MaterialType.transparency,
@@ -217,25 +212,64 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
             ),
             IgnorePointer(
               child: AnimatedOpacity(
-                duration: _forceClose ? Duration.zero : _theme.fadeDuration,
+                duration: forceClose ? Duration.zero : _theme.fadeDuration,
                 opacity: menuActive ? 1 : 0,
                 curve: Curves.ease,
                 child: Stack(
                   children: [
-                    /// Overlay
-                    Positioned.fill(
-                      child: ColoredBox(
-                        color: _theme.overlayColor ??
-                            (_theme.brightness == Brightness.light
-                                ? Colors.white.withOpacity(0.8)
-                                : Colors.black.withOpacity(0.8)),
-                      ),
-                    ),
+                    //* overlay start *//
+                    if (menuRenderBox != null && menuRenderBox.attached)
+                      () {
+                        final menuOffset =
+                            menuRenderBox.localToGlobal(Offset.zero);
+
+                        return Positioned.fill(
+                          child: CustomPaint(
+                            painter: OverlayPainter(
+                              color: _theme.effectiveOverlayColor,
+                              menuOffset: Offset(
+                                menuOffset.dx - _canvasOffset.dx,
+                                menuOffset.dy - _canvasOffset.dy,
+                              ),
+                              menuSize: menuRenderBox.size,
+                            ),
+                          ),
+                        );
+                      }.call(),
+                    /* () {
+                        final menuOffset =
+                            menuRenderBox.localToGlobal(Offset.zero);
+
+                        return Positioned.fill(
+                          child: ColorFiltered(
+                            colorFilter: ColorFilter.mode(
+                              _theme.effectiveOverlayColor,
+                              BlendMode.srcOut,
+                            ),
+                            child: ColoredBox(
+                              color: Colors.black.withOpacity(0.002),
+                              child: Stack(
+                                children: [
+                                  Positioned(
+                                    top: menuOffset.dy - _canvasOffset.dy,
+                                    left: menuOffset.dx - _canvasOffset.dx,
+                                    child: SizedBox.fromSize(
+                                      size: menuRenderBox.size,
+                                      child: const ColoredBox(
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }.call(), */
+                    //* overlay end *//
 
                     /// Pie Menu child
-                    if (menuRenderBox != null &&
-                        menuRenderBox.attached &&
-                        menuChild != null)
+                    /* if (menuRenderBox != null && menuRenderBox.attached)
                       () {
                         final menuOffset =
                             menuRenderBox.localToGlobal(Offset.zero);
@@ -253,7 +287,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                             ),
                           ),
                         );
-                      }.call(),
+                      }.call(), */
 
                     /// Tooltip
                     if (tooltip != null)
@@ -387,9 +421,11 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     );
   }
 
-  void _notifyMenuState(bool active) {
+  void _notifyMenuState({required bool active}) {
     _onMenuToggle?.call(active);
     widget.onMenuToggle?.call(active);
+    print('menu state: $active');
+    _menuState?.setState(() {});
     if (active) {
       WidgetsBinding.instance.addPostFrameCallback((duration) {
         /// This rebuild prevents menu child being displayed
@@ -461,8 +497,8 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     _onMenuToggle = onMenuToggle;
     _theme = theme ?? widget.theme;
     _actions = actions;
+    print('new menu state');
     _menuState = state;
-    _menuChild = child;
     _menuRenderBox = renderBox;
 
     if (!_pressed) {
@@ -475,14 +511,14 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
           _detachTimer?.cancel();
           _bounceController.forward(from: 0);
           setState(() {
-            _forceClose = false;
+            forceClose = false;
             _baseAngle = _calculateBaseAngle();
             menuActive = true;
             _hoveredAction = null;
           });
-          _notifyMenuState(true);
+          print('notify from attach menu');
+          _notifyMenuState(active: true);
 
-          _menuState?.debounce();
           Future.delayed(_theme.fadeDuration, () {
             if (!(_detachTimer?.isActive ?? false)) {
               _menuState?.setChildVisibility(false);
@@ -503,14 +539,13 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
         _attachTimer?.cancel();
         if (_menuAttached) {
           setState(() {
-            _forceClose = false;
+            forceClose = false;
             _pressed = false;
             _pressedAgain = false;
             _tooltip = null;
             _hoveredAction = null;
             _menuState = null;
             _menuRenderBox = null;
-            _menuChild = null;
             _menuAttached = false;
             menuActive = false;
           });
@@ -537,9 +572,9 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
           _actions[hoveredAction].onSelect();
         }
 
-        _menuState?.setChildVisibility(true);
-        _notifyMenuState(false);
         setState(() => menuActive = false);
+        print('notify from pointer up');
+        _notifyMenuState(active: false);
 
         _detachMenu();
       }
@@ -588,4 +623,35 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
       _detachMenu(afterDelay: false);
     }
   }
+}
+
+class OverlayPainter extends CustomPainter {
+  const OverlayPainter({
+    required this.color,
+    required this.menuOffset,
+    required this.menuSize,
+  });
+
+  final Color color;
+  final Offset menuOffset;
+  final Size menuSize;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+
+    canvas.drawPath(
+      Path.combine(
+        PathOperation.difference,
+        Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height)),
+        Path()
+          ..addRect(menuOffset & menuSize)
+          ..close(),
+      ),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
