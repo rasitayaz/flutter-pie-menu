@@ -1,3 +1,4 @@
+import 'package:bounce/bounce.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -115,7 +116,7 @@ class StylingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return PieCanvas(
       theme: const PieTheme(
-        delayDuration: Duration.zero,
+        delayDuration: Duration(milliseconds: 200),
         tooltipTextStyle: TextStyle(
           fontSize: 32,
           fontWeight: FontWeight.w600,
@@ -318,16 +319,19 @@ class StylingPage extends StatelessWidget {
     Color? color,
     required IconData iconData,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Center(
-        child: FaIcon(
-          iconData,
-          color: Colors.white,
-          size: 64,
+    return Bounce(
+      scaleFactor: 0.9,
+      child: Container(
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Center(
+          child: FaIcon(
+            iconData,
+            color: Colors.white,
+            size: 64,
+          ),
         ),
       ),
     );
@@ -407,18 +411,21 @@ class _ListViewPageState extends State<ListViewPage> {
                   child: const FaIcon(FontAwesomeIcons.share),
                 ),
               ],
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Colors.orangeAccent,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Center(
-                  child: Text(
-                    '#$index',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 64,
+              child: Bounce(
+                scaleFactor: 0.9,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.orangeAccent,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '#$index',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 64,
+                      ),
                     ),
                   ),
                 ),

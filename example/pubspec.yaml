@@ -15,6 +15,9 @@ dependencies:
 
   url_launcher: ^6.2.1
   font_awesome_flutter: ^10.6.0
+  bounce:
+    git:
+      url: https://github.com/rasitayaz/flutter-bounce.git
 
 dev_dependencies:
   flutter_test:
