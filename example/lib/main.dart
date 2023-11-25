@@ -116,7 +116,7 @@ class StylingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return PieCanvas(
       theme: const PieTheme(
-        delayDuration: Duration(milliseconds: 200),
+        delayDuration: Duration(milliseconds: 250),
         tooltipTextStyle: TextStyle(
           fontSize: 32,
           fontWeight: FontWeight.w600,
@@ -320,7 +320,6 @@ class StylingPage extends StatelessWidget {
     required IconData iconData,
   }) {
     return Bounce(
-      scaleFactor: 0.9,
       child: Container(
         decoration: BoxDecoration(
           color: color,
@@ -412,7 +411,6 @@ class _ListViewPageState extends State<ListViewPage> {
                 ),
               ],
               child: Bounce(
-                scaleFactor: 0.9,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     color: Colors.orangeAccent,
