@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pie_menu/src/pie_canvas_overlay.dart';
-import 'package:pie_menu/src/pie_canvas_provider.dart';
 import 'package:pie_menu/src/pie_menu.dart';
+import 'package:pie_menu/src/pie_provider.dart';
 import 'package:pie_menu/src/pie_theme.dart';
 
 /// An overlay widget that displays the [PieMenu]s physically
@@ -35,13 +35,41 @@ class PieCanvas extends StatefulWidget {
 }
 
 class _PieCanvasState extends State<PieCanvas> {
-  final _canvasKey = GlobalKey<PieCanvasOverlayState>();
+  final _canvasOverlayKey = GlobalKey<PieCanvasOverlayState>();
+
+  late var _state = PieState(
+    active: false,
+    forceClose: false,
+    theme: widget.theme,
+    menuRenderBox: null,
+    menuKey: null,
+  );
+
+  void _emit({
+    bool? active,
+    bool? forceClose,
+    PieTheme? theme,
+    RenderBox? menuRenderBox,
+    Key? menuKey,
+  }) {
+    setState(() {
+      _state = PieState(
+        active: active ?? _state.active,
+        forceClose: forceClose ?? false,
+        theme: theme ?? _state.theme,
+        menuRenderBox: menuRenderBox ?? _state.menuRenderBox,
+        menuKey: menuKey ?? _state.menuKey,
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return PieCanvasProvider(
-      canvasKey: _canvasKey,
-      theme: widget.theme,
+    return PieProvider(
+      canvasOverlayKey: _canvasOverlayKey,
+      canvasTheme: widget.theme,
+      state: _state,
+      emit: _emit,
       onMenuToggle: widget.onMenuToggle,
       child: widget.child,
     );

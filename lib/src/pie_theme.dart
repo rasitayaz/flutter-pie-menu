@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pie_menu/pie_menu.dart';
 import 'package:pie_menu/src/pie_button.dart';
-import 'package:pie_menu/src/pie_canvas_provider.dart';
+import 'package:pie_menu/src/pie_provider.dart';
 
 /// Action display anchor point for the specified custom angle in [PieTheme].
 enum PieAnchor { start, center, end }
@@ -147,7 +147,7 @@ class PieTheme {
 
   /// Returns the [PieTheme] defined in the closest [PieCanvas].
   static PieTheme of(BuildContext context) {
-    return PieCanvasProvider.of(context).theme;
+    return PieProvider.of(context).canvasTheme;
   }
 
   /// Creates a copy of this theme but with the

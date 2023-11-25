@@ -4,7 +4,7 @@ import 'package:pie_menu/src/pie_action.dart';
 import 'package:pie_menu/src/pie_button.dart';
 import 'package:pie_menu/src/pie_canvas.dart';
 import 'package:pie_menu/src/pie_canvas_overlay.dart';
-import 'package:pie_menu/src/pie_canvas_provider.dart';
+import 'package:pie_menu/src/pie_provider.dart';
 import 'package:pie_menu/src/pie_theme.dart';
 
 /// Widget that displays [PieAction]s as circular buttons for its child.
@@ -44,31 +44,26 @@ class PieMenu extends StatefulWidget {
   final Function(PointerDeviceKind kind)? onPressedWithDevice;
 
   @override
-  State<PieMenu> createState() => PieMenuState();
+  State<PieMenu> createState() => _PieMenuState();
 }
 
-class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
-  var _childVisible = true;
+class _PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
+  final _uniqueKey = UniqueKey();
 
   var _pressedOffset = Offset.zero;
   var _pressedButton = 0;
 
-  PieCanvasProvider get _canvasProvider => PieCanvasProvider.of(context);
+  PieProvider get _provider => PieProvider.of(context);
 
-  PieTheme get _theme => widget.theme ?? _canvasProvider.theme;
+  PieTheme get _theme => widget.theme ?? _provider.canvasTheme;
+  PieState get _state => _provider.state;
 
-  PieCanvasOverlayState get _canvas => _canvasProvider.canvasKey.currentState!;
+  PieCanvasOverlayState get _overlayState => _provider.overlayState;
 
   @override
   void setState(fn) {
     if (mounted) {
       super.setState(fn);
-    }
-  }
-
-  void setChildVisibility(bool visible) {
-    if (visible != _childVisible) {
-      setState(() => _childVisible = visible);
     }
   }
 
@@ -82,7 +77,7 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
           _pressedOffset = event.position;
           _pressedButton = event.buttons;
 
-          if (_canvas.menuActive) return;
+          if (_state.active) return;
 
           final isMouseEvent = event.kind == PointerDeviceKind.mouse;
           final leftClicked =
@@ -103,12 +98,11 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
 
           if (leftClicked && !_theme.leftClickShowsMenu) return;
 
-          _canvas.attachMenu(
+          _overlayState.attachMenu(
             rightClicked: rightClicked,
             offset: _pressedOffset,
-            state: this,
-            child: widget.child,
             renderBox: context.findRenderObject() as RenderBox,
+            menuKey: _uniqueKey,
             actions: widget.actions,
             theme: widget.theme,
             onMenuToggle: widget.onToggle,
@@ -129,7 +123,7 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
             return;
           }
 
-          if (_canvas.menuActive && _theme.delayDuration != Duration.zero) {
+          if (_state.active && _theme.delayDuration != Duration.zero) {
             return;
           }
 
@@ -145,9 +139,10 @@ class PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
           children: [
             Positioned.fill(
               child: AnimatedOpacity(
-                opacity: _canvas.menuActive ? 1 : 0,
-                duration:
-                    _canvas.forceClose ? Duration.zero : _theme.fadeDuration,
+                opacity: _state.active && _state.menuKey == _uniqueKey ? 1 : 0,
+                duration: _state.forceClose || _state.menuKey != _uniqueKey
+                    ? Duration.zero
+                    : _theme.fadeDuration,
                 curve: Curves.ease,
                 child: ColoredBox(color: _theme.effectiveOverlayColor),
               ),

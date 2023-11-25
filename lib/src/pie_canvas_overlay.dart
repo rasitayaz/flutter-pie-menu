@@ -8,6 +8,7 @@ import 'package:pie_menu/src/pie_button.dart';
 import 'package:pie_menu/src/pie_canvas.dart';
 import 'package:pie_menu/src/pie_delegate.dart';
 import 'package:pie_menu/src/pie_menu.dart';
+import 'package:pie_menu/src/pie_provider.dart';
 import 'package:pie_menu/src/pie_theme.dart';
 import 'package:pie_menu/src/platform/base.dart';
 import 'package:vector_math/vector_math.dart' hide Colors;
@@ -35,11 +36,6 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
 
   final _platform = BasePlatform();
 
-  /// Theme of [PieMenu].
-  ///
-  /// If [PieMenu] does not have a theme, [PieCanvas] theme is displayed.
-  late PieTheme _theme = widget.theme;
-
   /// Actions of [PieMenu].
   List<PieAction> _actions = [];
 
@@ -66,17 +62,8 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   /// Whether menu child is pressed again when the menu is active.
   bool _pressedAgain = false;
 
-  /// Whether [PieMenu] is currently active.
-  bool menuActive = false;
-
   /// Whether a [PieMenu] is attached.
   bool _menuAttached = false;
-
-  /// State of [PieMenu].
-  PieMenuState? _menuState;
-
-  /// Render box of menu child.
-  RenderBox? _menuRenderBox;
 
   /// Currently pressed pointer offset.
   Offset _pointerOffset = Offset.zero;
@@ -100,8 +87,6 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   /// Functional callback that is triggered when
   /// the active [PieMenu] is opened and closed.
   Function(bool active)? _onMenuToggle;
-
-  var forceClose = false;
 
   RenderBox? get _renderBox {
     final object = context.findRenderObject();
@@ -143,15 +128,12 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   @override
   void didChangeMetrics() {
     super.didChangeMetrics();
-    if (mounted && menuActive) {
+    if (mounted && _state.active) {
       final prevSize = _size;
       _size = PlatformDispatcher.instance.views.first.physicalSize;
       if (prevSize != _size) {
-        setState(() {
-          menuActive = false;
-          forceClose = true;
-        });
-        _notifyMenuState(active: false);
+        _provider.emit(active: false, forceClose: true);
+        _notifyToggleListeners(active: false);
         _detachMenu();
       }
     }
@@ -185,10 +167,17 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     );
   }
 
+  PieProvider get _provider => PieProvider.of(context);
+  PieState get _state => _provider.state;
+
+  /// Theme of [PieMenu].
+  ///
+  /// If [PieMenu] does not have a theme, [PieCanvas] theme is displayed.
+  PieTheme get _theme => _state.theme;
+
   @override
   Widget build(BuildContext context) {
-    final tooltip = _tooltip;
-    final menuRenderBox = _menuRenderBox;
+    final menuRenderBox = _state.menuRenderBox;
 
     return Material(
       type: MaterialType.transparency,
@@ -202,18 +191,20 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
               behavior: HitTestBehavior.translucent,
               onPointerDown: (event) => _pointerDown(event.position),
               onPointerMove: (event) => _pointerMove(event.position),
-              onPointerHover:
-                  menuActive ? (event) => _pointerMove(event.position) : null,
+              onPointerHover: _state.active
+                  ? (event) => _pointerMove(event.position)
+                  : null,
               onPointerUp: (event) => _pointerUp(event.position),
               child: IgnorePointer(
-                ignoring: menuActive,
+                ignoring: _state.active,
                 child: widget.child,
               ),
             ),
             IgnorePointer(
               child: AnimatedOpacity(
-                duration: forceClose ? Duration.zero : _theme.fadeDuration,
-                opacity: menuActive ? 1 : 0,
+                duration:
+                    _state.forceClose ? Duration.zero : _theme.fadeDuration,
+                opacity: _state.active ? 1 : 0,
                 curve: Curves.ease,
                 child: Stack(
                   children: [
@@ -239,90 +230,92 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                     //* overlay end *//
 
                     //* tooltip start *//
-                    if (tooltip != null)
-                      () {
-                        final tooltipAlignment = _theme.tooltipCanvasAlignment;
+                    () {
+                      final tooltipAlignment = _theme.tooltipCanvasAlignment;
 
-                        Widget child = AnimatedOpacity(
-                          opacity: menuActive && _hoveredAction != null ? 1 : 0,
-                          duration: _theme.hoverDuration,
-                          curve: Curves.ease,
-                          child: Padding(
-                            padding: _theme.tooltipPadding,
-                            child: DefaultTextStyle.merge(
-                              textAlign: _theme.tooltipTextAlign ??
-                                  (px < cw / 2
-                                      ? TextAlign.right
-                                      : TextAlign.left),
-                              style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: _theme.brightness == Brightness.light
-                                    ? Colors.black
-                                    : Colors.white,
-                              )
-                                  .merge(widget.theme.tooltipTextStyle)
-                                  .merge(_theme.tooltipTextStyle),
-                              child: tooltip,
-                            ),
+                      Widget child = AnimatedOpacity(
+                        opacity:
+                            _state.active && _hoveredAction != null ? 1 : 0,
+                        duration: _state.active
+                            ? _theme.hoverDuration
+                            : Duration.zero,
+                        curve: Curves.ease,
+                        child: Padding(
+                          padding: _theme.tooltipPadding,
+                          child: DefaultTextStyle.merge(
+                            textAlign: _theme.tooltipTextAlign ??
+                                (px < cw / 2
+                                    ? TextAlign.right
+                                    : TextAlign.left),
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: _theme.brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white,
+                            )
+                                .merge(widget.theme.tooltipTextStyle)
+                                .merge(_theme.tooltipTextStyle),
+                            child: _tooltip ?? const SizedBox(),
+                          ),
+                        ),
+                      );
+
+                      if (_theme.tooltipUseFittedBox) {
+                        child = FittedBox(child: child);
+                      }
+
+                      if (tooltipAlignment != null) {
+                        return Align(
+                          alignment: tooltipAlignment,
+                          child: child,
+                        );
+                      } else {
+                        final offsets = [
+                          _pointerOffset,
+                          for (var i = 0; i < _actions.length; i++)
+                            _getActionOffset(i),
+                        ];
+
+                        double? getTopDistance() {
+                          if (py >= ch / 2) return null;
+
+                          final dyMax = offsets
+                              .map((o) => o.dy)
+                              .reduce((dy1, dy2) => max(dy1, dy2));
+
+                          return dyMax -
+                              _canvasOffset.dy +
+                              _theme.buttonSize / 2;
+                        }
+
+                        double? getBottomDistance() {
+                          if (py < ch / 2) return null;
+
+                          final dyMin = offsets
+                              .map((o) => o.dy)
+                              .reduce((dy1, dy2) => min(dy1, dy2));
+
+                          return ch -
+                              dyMin +
+                              _canvasOffset.dy +
+                              _theme.buttonSize / 2;
+                        }
+
+                        return Positioned(
+                          top: getTopDistance(),
+                          bottom: getBottomDistance(),
+                          left: 0,
+                          right: 0,
+                          child: Align(
+                            alignment: px < cw / 2
+                                ? Alignment.centerRight
+                                : Alignment.centerLeft,
+                            child: child,
                           ),
                         );
-
-                        if (_theme.tooltipUseFittedBox) {
-                          child = FittedBox(child: child);
-                        }
-
-                        if (tooltipAlignment != null) {
-                          return Align(
-                            alignment: tooltipAlignment,
-                            child: child,
-                          );
-                        } else {
-                          final offsets = [
-                            _pointerOffset,
-                            for (var i = 0; i < _actions.length; i++)
-                              _getActionOffset(i),
-                          ];
-
-                          double? getTopDistance() {
-                            if (py >= ch / 2) return null;
-
-                            final dyMax = offsets
-                                .map((o) => o.dy)
-                                .reduce((dy1, dy2) => max(dy1, dy2));
-
-                            return dyMax -
-                                _canvasOffset.dy +
-                                _theme.buttonSize / 2;
-                          }
-
-                          double? getBottomDistance() {
-                            if (py < ch / 2) return null;
-
-                            final dyMin = offsets
-                                .map((o) => o.dy)
-                                .reduce((dy1, dy2) => min(dy1, dy2));
-
-                            return ch -
-                                dyMin +
-                                _canvasOffset.dy +
-                                _theme.buttonSize / 2;
-                          }
-
-                          return Positioned(
-                            top: getTopDistance(),
-                            bottom: getBottomDistance(),
-                            left: 0,
-                            right: 0,
-                            child: Align(
-                              alignment: px < cw / 2
-                                  ? Alignment.centerRight
-                                  : Alignment.centerLeft,
-                              child: child,
-                            ),
-                          );
-                        }
-                      }.call(),
+                      }
+                    }.call(),
                     //* tooltip end *//
 
                     //* action buttons start *//
@@ -353,7 +346,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
                           PieButton(
                             action: _actions[i],
                             angle: _getActionAngle(i),
-                            menuActive: menuActive,
+                            menuActive: _state.active,
                             hovered: i == _hoveredAction,
                             theme: _theme,
                             fadeDuration: _theme.fadeDuration,
@@ -372,18 +365,16 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
     );
   }
 
-  void _notifyMenuState({required bool active}) {
+  void _notifyToggleListeners({required bool active}) {
     _onMenuToggle?.call(active);
     widget.onMenuToggle?.call(active);
-    print('menu state: $active');
-    _menuState?.setState(() {});
-    if (active) {
+    /* if (active) {
       WidgetsBinding.instance.addPostFrameCallback((duration) {
         /// This rebuild prevents menu child being displayed
         /// in the wrong offset when the scrollable swiped fast.
         setState(() {});
       });
-    }
+    } */
   }
 
   bool _isBeyondPointerBounds(Offset offset) {
@@ -429,9 +420,8 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   void attachMenu({
     required bool rightClicked,
     required Offset offset,
-    required PieMenuState state,
-    required Widget child,
     required RenderBox renderBox,
+    required Key menuKey,
     required List<PieAction> actions,
     required PieTheme? theme,
     required Function(bool menuActive)? onMenuToggle,
@@ -442,15 +432,16 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
 
     _attachTimer?.cancel();
     _detachTimer?.cancel();
-    _menuState?.setChildVisibility(true);
 
     _menuAttached = true;
     _onMenuToggle = onMenuToggle;
-    _theme = theme ?? widget.theme;
     _actions = actions;
-    print('new menu state');
-    _menuState = state;
-    _menuRenderBox = renderBox;
+
+    _provider.emit(
+      theme: theme ?? widget.theme,
+      menuRenderBox: renderBox,
+      menuKey: menuKey,
+    );
 
     if (!_pressed) {
       _pressed = true;
@@ -461,20 +452,12 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
         () {
           _detachTimer?.cancel();
           _bounceController.forward(from: 0);
-          setState(() {
-            forceClose = false;
-            _baseAngle = _calculateBaseAngle();
-            menuActive = true;
-            _hoveredAction = null;
-          });
-          print('notify from attach menu');
-          _notifyMenuState(active: true);
 
-          Future.delayed(_theme.fadeDuration, () {
-            if (!(_detachTimer?.isActive ?? false)) {
-              _menuState?.setChildVisibility(false);
-            }
-          });
+          _baseAngle = _calculateBaseAngle();
+          _hoveredAction = null;
+
+          _provider.emit(active: true);
+          _notifyToggleListeners(active: true);
         },
       );
     }
@@ -489,24 +472,20 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
       () {
         _attachTimer?.cancel();
         if (_menuAttached) {
-          setState(() {
-            forceClose = false;
-            _pressed = false;
-            _pressedAgain = false;
-            _tooltip = null;
-            _hoveredAction = null;
-            _menuState = null;
-            _menuRenderBox = null;
-            _menuAttached = false;
-            menuActive = false;
-          });
+          _pressed = false;
+          _pressedAgain = false;
+          _tooltip = null;
+          _hoveredAction = null;
+          _menuAttached = false;
+
+          _provider.emit(active: false);
         }
       },
     );
   }
 
   void _pointerDown(Offset offset) {
-    if (menuActive) {
+    if (_state.active) {
       _pressedAgain = true;
       _pointerMove(offset);
     }
@@ -515,7 +494,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   void _pointerUp(Offset offset) {
     _attachTimer?.cancel();
 
-    if (menuActive) {
+    if (_state.active) {
       if (_isBeyondPointerBounds(offset) || _pressedAgain) {
         final hoveredAction = _hoveredAction;
 
@@ -523,9 +502,8 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
           _actions[hoveredAction].onSelect();
         }
 
-        setState(() => menuActive = false);
-        print('notify from pointer up');
-        _notifyMenuState(active: false);
+        _provider.emit(active: false);
+        _notifyToggleListeners(active: false);
 
         _detachMenu();
       }
@@ -538,7 +516,7 @@ class PieCanvasOverlayState extends State<PieCanvasOverlay>
   }
 
   void _pointerMove(Offset offset) {
-    if (menuActive) {
+    if (_state.active) {
       void hover(int? action) {
         if (_hoveredAction != action) {
           setState(() {
