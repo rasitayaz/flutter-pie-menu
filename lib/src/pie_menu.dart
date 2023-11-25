@@ -53,12 +53,11 @@ class _PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
   var _pressedOffset = Offset.zero;
   var _pressedButton = 0;
 
-  PieProvider get _provider => PieProvider.of(context);
+  PieState get _state => PieState.of(context);
 
-  PieTheme get _theme => widget.theme ?? _provider.canvasTheme;
-  PieState get _state => _provider.state;
+  PieTheme get _theme => widget.theme ?? _state.canvasTheme;
 
-  PieCanvasOverlayState get _overlayState => _provider.overlayState;
+  PieCanvasOverlayState get _overlayState => _state.overlayState;
 
   @override
   void setState(fn) {
@@ -69,73 +68,10 @@ class _PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: Listener(
-        behavior: HitTestBehavior.translucent,
-        onPointerDown: (event) {
-          _pressedOffset = event.position;
-          _pressedButton = event.buttons;
-
-          if (_state.active) return;
-
-          final isMouseEvent = event.kind == PointerDeviceKind.mouse;
-          final leftClicked =
-              isMouseEvent && _pressedButton == kPrimaryMouseButton;
-          final rightClicked =
-              isMouseEvent && _pressedButton == kSecondaryMouseButton;
-
-          if (isMouseEvent && !leftClicked && !rightClicked) return;
-
-          if (rightClicked && !_theme.rightClickShowsMenu) return;
-
-          if (leftClicked &&
-              !_theme.leftClickShowsMenu &&
-              widget.onPressed == null &&
-              widget.onPressedWithDevice == null) {
-            return;
-          }
-
-          if (leftClicked && !_theme.leftClickShowsMenu) return;
-
-          _overlayState.attachMenu(
-            rightClicked: rightClicked,
-            offset: _pressedOffset,
-            renderBox: context.findRenderObject() as RenderBox,
-            menuKey: _uniqueKey,
-            actions: widget.actions,
-            theme: widget.theme,
-            onMenuToggle: widget.onToggle,
-          );
-
-          final recognizer = LongPressGestureRecognizer(
-            duration: _theme.delayDuration,
-          );
-          recognizer.onLongPressUp = () {};
-          recognizer.addPointer(event);
-        },
-        onPointerMove: (event) {
-          /* if ((event.position - _pressedOffset).distance >
-              _theme.pointerSize / 2) {} */
-        },
-        onPointerUp: (event) {
-          if ((_pressedOffset - event.position).distance > 8) {
-            return;
-          }
-
-          if (_state.active && _theme.delayDuration != Duration.zero) {
-            return;
-          }
-
-          if (event.kind == PointerDeviceKind.mouse &&
-              _pressedButton != kPrimaryMouseButton) {
-            return;
-          }
-
-          widget.onPressed?.call();
-          widget.onPressedWithDevice?.call(event.kind);
-        },
-        child: Stack(
+    return ListenableBuilder(
+      listenable: _state,
+      builder: (context, child) {
+        return Stack(
           children: [
             Positioned.fill(
               child: AnimatedOpacity(
@@ -147,10 +83,76 @@ class _PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
                 child: ColoredBox(color: _theme.effectiveOverlayColor),
               ),
             ),
-            widget.child,
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: Listener(
+                onPointerDown: _pointerDown,
+                onPointerUp: _pointerUp,
+                child: widget.child,
+              ),
+            ),
           ],
-        ),
-      ),
+        );
+      },
     );
+  }
+
+  void _pointerDown(PointerDownEvent event) async {
+    _pressedOffset = event.position;
+    _pressedButton = event.buttons;
+
+    if (_state.active) return;
+
+    final isMouseEvent = event.kind == PointerDeviceKind.mouse;
+    final leftClicked = isMouseEvent && _pressedButton == kPrimaryMouseButton;
+    final rightClicked =
+        isMouseEvent && _pressedButton == kSecondaryMouseButton;
+
+    if (isMouseEvent && !leftClicked && !rightClicked) return;
+
+    if (rightClicked && !_theme.rightClickShowsMenu) return;
+
+    if (leftClicked &&
+        !_theme.leftClickShowsMenu &&
+        widget.onPressed == null &&
+        widget.onPressedWithDevice == null) {
+      return;
+    }
+
+    if (leftClicked && !_theme.leftClickShowsMenu) return;
+
+    _overlayState.attachMenu(
+      rightClicked: rightClicked,
+      offset: _pressedOffset,
+      renderBox: context.findRenderObject() as RenderBox,
+      menuKey: _uniqueKey,
+      actions: widget.actions,
+      theme: widget.theme,
+      onMenuToggle: widget.onToggle,
+    );
+
+    final recognizer = LongPressGestureRecognizer(
+      duration: _theme.delayDuration,
+    );
+    recognizer.onLongPressUp = () {};
+    recognizer.addPointer(event);
+  }
+
+  void _pointerUp(PointerUpEvent event) {
+    if ((_pressedOffset - event.position).distance > 8) {
+      return;
+    }
+
+    if (_state.active && _theme.delayDuration != Duration.zero) {
+      return;
+    }
+
+    if (event.kind == PointerDeviceKind.mouse &&
+        _pressedButton != kPrimaryMouseButton) {
+      return;
+    }
+
+    widget.onPressed?.call();
+    widget.onPressedWithDevice?.call(event.kind);
   }
 }
