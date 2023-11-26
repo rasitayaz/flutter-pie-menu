@@ -102,6 +102,11 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   /// Size of the screen. Used to close the menu when the screen size changes.
   var _size = PlatformDispatcher.instance.views.first.physicalSize;
 
+  /// Theme of the current [PieMenu].
+  ///
+  /// If the [PieMenu] does not have a theme, [PieCanvas] theme is used.
+  late var _theme = _notifier.canvasTheme;
+
   /// Stream subscription for right-clicks.
   dynamic _contextMenuSubscription;
 
@@ -110,11 +115,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
   /// Current shared state.
   PieState get _state => _notifier.state;
-
-  /// Theme of the current [PieMenu].
-  ///
-  /// If the [PieMenu] does not have a theme, [PieCanvas] theme is used.
-  PieTheme get _theme => _state.theme;
 
   /// RenderBox of the canvas.
   RenderBox? get _renderBox {
@@ -397,6 +397,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                         ),
                         for (int i = 0; i < _actions.length; i++)
                           PieButton(
+                            theme: _theme,
                             action: _actions[i],
                             angle: _getActionAngle(i),
                             hovered: i == _hoveredAction,
@@ -432,6 +433,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     required PieTheme theme,
     required Function(bool menuActive)? onMenuToggle,
   }) {
+    _theme = theme;
+
     _contextMenuSubscription = _platform.listenContextMenu(
       shouldPreventDefault: rightClicked,
     );
@@ -458,7 +461,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
           _notifier.update(
             active: true,
-            theme: theme,
             menuRenderBox: renderBox,
             menuKey: menuKey,
           );

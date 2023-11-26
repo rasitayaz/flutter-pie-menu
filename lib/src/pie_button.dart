@@ -13,10 +13,14 @@ class PieButton extends StatefulWidget {
   /// Creates a [PieButton] specialized for a [PieAction].
   const PieButton({
     super.key,
+    required this.theme,
     required this.action,
     required this.hovered,
     required this.angle,
   });
+
+  /// Theme of the current [PieMenu].
+  final PieTheme theme;
 
   /// Action to display.
   final PieAction action;
@@ -74,7 +78,7 @@ class _PieButtonState extends State<PieButton>
   /// Theme of the current [PieMenu].
   ///
   /// If the [PieMenu] does not have a theme, [PieCanvas] theme is used.
-  PieTheme get _theme => _state.theme;
+  PieTheme get _theme => widget.theme;
 
   @override
   void dispose() {
