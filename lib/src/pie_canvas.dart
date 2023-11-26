@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pie_menu/src/pie_canvas_overlay.dart';
+import 'package:pie_menu/src/pie_canvas_core.dart';
 import 'package:pie_menu/src/pie_menu.dart';
 import 'package:pie_menu/src/pie_provider.dart';
 import 'package:pie_menu/src/pie_theme.dart';
@@ -29,25 +29,27 @@ class PieCanvas extends StatefulWidget {
 }
 
 class _PieCanvasState extends State<PieCanvas> {
-  final _canvasOverlayKey = GlobalKey<PieCanvasOverlayState>();
+  final _canvasCoreKey = GlobalKey<PieCanvasCoreState>();
 
   @override
   Widget build(BuildContext context) {
     return PieProvider(
       state: PieState(
-        canvasOverlayKey: _canvasOverlayKey,
+        canvasCoreKey: _canvasCoreKey,
         theme: widget.theme,
         active: false,
         forceClose: false,
         menuRenderBox: null,
         menuKey: null,
       ),
-      child: PieCanvasOverlay(
-        key: _canvasOverlayKey,
-        theme: widget.theme,
-        onMenuToggle: widget.onMenuToggle,
-        child: widget.child,
-      ),
+      builder: (state) {
+        return PieCanvasCore(
+          key: _canvasCoreKey,
+          state: state,
+          onMenuToggle: widget.onMenuToggle,
+          child: widget.child,
+        );
+      },
     );
   }
 }

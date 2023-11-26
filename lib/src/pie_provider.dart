@@ -1,34 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:pie_menu/src/pie_canvas_overlay.dart';
+import 'package:pie_menu/src/pie_canvas_core.dart';
 import 'package:pie_menu/src/pie_theme.dart';
 
 class PieProvider extends InheritedWidget {
-  const PieProvider({
+  PieProvider({
     super.key,
     required this.state,
-    required super.child,
-  });
+    required Widget Function(PieState state) builder,
+  }) : super(
+          child: Builder(
+            builder: (context) {
+              return ListenableBuilder(
+                listenable: PieState.of(context),
+                builder: (context, child) => builder(PieState.of(context)),
+              );
+            },
+          ),
+        );
 
   final PieState state;
 
   @override
-  bool updateShouldNotify(PieProvider oldWidget) {
-    return true;
-  }
+  bool updateShouldNotify(PieProvider oldWidget) => true;
 }
 
 class PieState extends ChangeNotifier {
   PieState({
-    required GlobalKey<PieCanvasOverlayState> canvasOverlayKey,
+    required GlobalKey<PieCanvasCoreState> canvasCoreKey,
     required this.theme,
     required this.active,
     required this.forceClose,
     required this.menuRenderBox,
     required this.menuKey,
   })  : canvasTheme = theme,
-        _canvasOverlayKey = canvasOverlayKey;
+        _canvasCoreKey = canvasCoreKey;
 
-  final GlobalKey<PieCanvasOverlayState> _canvasOverlayKey;
+  final GlobalKey<PieCanvasCoreState> _canvasCoreKey;
   final PieTheme canvasTheme;
 
   bool active;
@@ -37,7 +44,7 @@ class PieState extends ChangeNotifier {
   RenderBox? menuRenderBox;
   Key? menuKey;
 
-  PieCanvasOverlayState get overlayState => _canvasOverlayKey.currentState!;
+  PieCanvasCoreState get core => _canvasCoreKey.currentState!;
 
   void update({
     bool shouldNotify = true,

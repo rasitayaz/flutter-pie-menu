@@ -2,38 +2,26 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:pie_menu/pie_menu.dart';
+import 'package:pie_menu/src/pie_provider.dart';
 
 /// Displays [PieAction]s of the [PieMenu] on the [PieCanvas].
 class PieButton extends StatefulWidget {
   /// Creates a [PieButton] that is specialized for a [PieAction].
   const PieButton({
     super.key,
+    required this.state,
     required this.action,
-    required this.menuActive,
     required this.hovered,
-    required this.theme,
-    required this.fadeDuration,
-    required this.hoverDuration,
     required this.angle,
   });
+
+  final PieState state;
 
   /// Action to display.
   final PieAction action;
 
-  /// Whether the [PieMenu] this [PieButton] belongs to is open.
-  final bool menuActive;
-
   /// Whether this [PieButton] is currently hovered.
   final bool hovered;
-
-  /// Behavioral and visual structure of this button.
-  final PieTheme theme;
-
-  /// Duration of the [PieMenu] fade animation.
-  final Duration fadeDuration;
-
-  /// Duration of the [PieButton] hover animation.
-  final Duration hoverDuration;
 
   /// Display angle of [PieButton] in radians.
   final double angle;
@@ -46,7 +34,7 @@ class _PieButtonState extends State<PieButton>
     with SingleTickerProviderStateMixin {
   /// Controls [_animation].
   late final AnimationController _controller = AnimationController(
-    duration: widget.fadeDuration,
+    duration: _theme.fadeDuration,
     vsync: this,
   )..addListener(() => setState(() {}));
 
@@ -61,11 +49,7 @@ class _PieButtonState extends State<PieButton>
     ),
   );
 
-  /// Whether the [PieButton] is visible.
-  bool visible = false;
-
   PieAction get _action => widget.action;
-  PieTheme get _theme => widget.theme;
 
   PieButtonTheme get _buttonTheme {
     return _action.buttonTheme ?? _theme.buttonTheme;
@@ -75,6 +59,12 @@ class _PieButtonState extends State<PieButton>
     return _action.buttonThemeHovered ?? _theme.buttonThemeHovered;
   }
 
+  PieState get _state => widget.state;
+
+  PieTheme get _theme => _state.theme;
+
+  var _previouslyActive = false;
+
   @override
   void dispose() {
     _controller.dispose();
@@ -83,26 +73,25 @@ class _PieButtonState extends State<PieButton>
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.menuActive) {
-      visible = false;
-    } else if (widget.menuActive && !visible) {
-      visible = true;
+    if (!_previouslyActive && _state.active) {
       _controller.forward(from: 0);
     }
+
+    _previouslyActive = _state.active;
 
     return OverflowBox(
       maxHeight: _theme.buttonSize * 2,
       maxWidth: _theme.buttonSize * 2,
       child: AnimatedScale(
         scale: widget.hovered ? 1.2 : 1,
-        duration: widget.hoverDuration,
+        duration: _theme.hoverDuration,
         curve: Curves.ease,
         child: Transform.scale(
           scale: _animation.value,
           child: Stack(
             children: [
               AnimatedPositioned(
-                duration: widget.hoverDuration,
+                duration: _theme.hoverDuration,
                 curve: Curves.ease,
                 top: widget.hovered
                     ? _theme.buttonSize / 2 -

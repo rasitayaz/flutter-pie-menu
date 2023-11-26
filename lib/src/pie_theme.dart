@@ -37,7 +37,7 @@ class PieTheme {
     this.tooltipTextAlign,
     this.tooltipCanvasAlignment,
     this.tooltipUseFittedBox = false,
-    this.pieBounceDuration = const Duration(seconds: 1),
+    this.bounceDuration = const Duration(seconds: 1),
     this.fadeDuration = const Duration(milliseconds: 250),
     this.hoverDuration = const Duration(milliseconds: 250),
     this.delayDuration = const Duration(milliseconds: 350),
@@ -116,7 +116,7 @@ class PieTheme {
   final bool tooltipUseFittedBox;
 
   /// Duration of [PieButton] bounce animation.
-  final Duration pieBounceDuration;
+  final Duration bounceDuration;
 
   /// Duration of [PieMenu] fade animation.
   final Duration fadeDuration;
@@ -173,12 +173,7 @@ class PieTheme {
     TextAlign? tooltipTextAlign,
     Alignment? tooltipCanvasAlignment,
     bool? tooltipUseFittedBox,
-    Duration? pieBounceDuration,
-    bool? childBounceEnabled,
-    Duration? childBounceDuration,
-    double? childBounceDistance,
-    Curve? childBounceCurve,
-    Curve? childBounceReverseCurve,
+    Duration? bounceDuration,
     Duration? fadeDuration,
     Duration? hoverDuration,
     Duration? delayDuration,
@@ -207,7 +202,7 @@ class PieTheme {
       tooltipCanvasAlignment:
           tooltipCanvasAlignment ?? this.tooltipCanvasAlignment,
       tooltipUseFittedBox: tooltipUseFittedBox ?? this.tooltipUseFittedBox,
-      pieBounceDuration: pieBounceDuration ?? this.pieBounceDuration,
+      bounceDuration: bounceDuration ?? this.bounceDuration,
       fadeDuration: fadeDuration ?? this.fadeDuration,
       hoverDuration: hoverDuration ?? this.hoverDuration,
       delayDuration: delayDuration ?? this.delayDuration,
