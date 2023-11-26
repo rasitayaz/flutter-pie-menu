@@ -116,7 +116,7 @@ class StylingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return PieCanvas(
       theme: const PieTheme(
-        delayDuration: Duration(milliseconds: 250),
+        delayDuration: Duration.zero,
         tooltipTextStyle: TextStyle(
           fontSize: 32,
           fontWeight: FontWeight.w600,

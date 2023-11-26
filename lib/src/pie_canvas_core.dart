@@ -17,12 +17,10 @@ import 'package:vector_math/vector_math.dart' hide Colors;
 class PieCanvasCore extends StatefulWidget {
   const PieCanvasCore({
     super.key,
-    required this.state,
     required this.onMenuToggle,
     required this.child,
   });
 
-  final PieState state;
   final Function(bool active)? onMenuToggle;
   final Widget child;
 
@@ -31,10 +29,12 @@ class PieCanvasCore extends StatefulWidget {
 }
 
 class PieCanvasCoreState extends State<PieCanvasCore>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   /// * [PieMenu] refers to the menu that is currently displayed on the canvas.
 
-  PieState get _state => widget.state;
+  PieNotifier get _notifier => PieNotifier.of(context);
+
+  PieState get _state => _notifier.state;
 
   /// Theme of [PieMenu].
   ///
@@ -47,19 +47,34 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   List<PieAction> _actions = [];
 
   /// Controls [_bounceAnimation].
-  late final AnimationController _bounceController = AnimationController(
+  late final _bounceController = AnimationController(
     duration: _theme.bounceDuration,
     vsync: this,
   );
 
   /// Bouncing animation for the [PieButton]s.
-  late final Animation _bounceAnimation = Tween(
+  late final _bounceAnimation = Tween(
     begin: 0.0,
     end: 1.0,
   ).animate(
     CurvedAnimation(
       parent: _bounceController,
       curve: Curves.elasticOut,
+    ),
+  );
+
+  late final _fadeController = AnimationController(
+    duration: _theme.fadeDuration,
+    vsync: this,
+  );
+
+  late final _fadeAnimation = Tween(
+    begin: 0.0,
+    end: 1.0,
+  ).animate(
+    CurvedAnimation(
+      parent: _fadeController,
+      curve: Curves.ease,
     ),
   );
 
@@ -116,6 +131,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   @override
   void dispose() {
     _bounceController.dispose();
+    _fadeController.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -136,7 +152,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
       final prevSize = _size;
       _size = PlatformDispatcher.instance.views.first.physicalSize;
       if (prevSize != _size) {
-        _state.update(active: false, forceClose: true);
+        _fadeController.animateTo(0, duration: Duration.zero);
+        _notifier.update(active: false);
         _notifyToggleListeners(active: false);
         _detachMenu();
       }
@@ -197,11 +214,14 @@ class PieCanvasCoreState extends State<PieCanvasCore>
               ),
             ),
             IgnorePointer(
-              child: AnimatedOpacity(
-                duration:
-                    _state.forceClose ? Duration.zero : _theme.fadeDuration,
-                opacity: _state.active ? 1 : 0,
-                curve: Curves.ease,
+              child: AnimatedBuilder(
+                animation: _fadeAnimation,
+                builder: (context, child) {
+                  return Opacity(
+                    opacity: _fadeAnimation.value,
+                    child: child,
+                  );
+                },
                 child: Stack(
                   children: [
                     //* overlay start *//
@@ -230,11 +250,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                       final tooltipAlignment = _theme.tooltipCanvasAlignment;
 
                       Widget child = AnimatedOpacity(
-                        opacity:
-                            _state.active && _hoveredAction != null ? 1 : 0,
-                        duration: _state.active
-                            ? _theme.hoverDuration
-                            : Duration.zero,
+                        opacity: _hoveredAction != null ? 1 : 0,
+                        duration: _theme.hoverDuration,
                         curve: Curves.ease,
                         child: Padding(
                           padding: _theme.tooltipPadding,
@@ -250,7 +267,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                                   ? Colors.black
                                   : Colors.white,
                             )
-                                .merge(_state.canvasTheme.tooltipTextStyle)
+                                .merge(_notifier.canvasTheme.tooltipTextStyle)
                                 .merge(_theme.tooltipTextStyle),
                             child: _tooltip ?? const SizedBox(),
                           ),
@@ -340,7 +357,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                         ),
                         for (int i = 0; i < _actions.length; i++)
                           PieButton(
-                            state: _state,
                             action: _actions[i],
                             angle: _getActionAngle(i),
                             hovered: i == _hoveredAction,
@@ -419,16 +435,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     _attachTimer?.cancel();
     _detachTimer?.cancel();
 
-    _onMenuToggle = onMenuToggle;
-    _actions = actions;
-
-    _state.update(
-      shouldNotify: false,
-      theme: theme,
-      menuRenderBox: renderBox,
-      menuKey: menuKey,
-    );
-
     if (!_pressed) {
       _pressed = true;
       _pointerOffset = offset;
@@ -437,12 +443,17 @@ class PieCanvasCoreState extends State<PieCanvasCore>
         rightClicked ? Duration.zero : _theme.delayDuration,
         () {
           _detachTimer?.cancel();
-          _bounceController.forward(from: 0);
 
+          _bounceController.forward(from: 0);
+          _fadeController.forward(from: 0);
+
+          _onMenuToggle = onMenuToggle;
+          _actions = actions;
           _baseAngle = _calculateBaseAngle();
           _hoveredAction = null;
+          _tooltip = null;
 
-          _state.update(
+          _notifier.update(
             active: true,
             theme: theme,
             menuRenderBox: renderBox,
@@ -467,7 +478,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
         _tooltip = null;
         _hoveredAction = null;
 
-        _state.update(active: false);
+        _notifier.update(active: false);
       },
     );
   }
@@ -490,7 +501,9 @@ class PieCanvasCoreState extends State<PieCanvasCore>
           _actions[hoveredAction].onSelect();
         }
 
-        _state.update(active: false);
+        _fadeController.reverse();
+
+        _notifier.update(active: false);
         _notifyToggleListeners(active: false);
 
         _detachMenu();

@@ -9,13 +9,10 @@ class PieButton extends StatefulWidget {
   /// Creates a [PieButton] that is specialized for a [PieAction].
   const PieButton({
     super.key,
-    required this.state,
     required this.action,
     required this.hovered,
     required this.angle,
   });
-
-  final PieState state;
 
   /// Action to display.
   final PieAction action;
@@ -32,19 +29,21 @@ class PieButton extends StatefulWidget {
 
 class _PieButtonState extends State<PieButton>
     with SingleTickerProviderStateMixin {
-  /// Controls [_animation].
-  late final AnimationController _controller = AnimationController(
-    duration: _theme.fadeDuration,
+  /// Controls [_scaleAnimation].
+  late final _scaleController = AnimationController(
+    duration: Duration(
+      milliseconds: _theme.bounceDuration.inMilliseconds ~/ 2,
+    ),
     vsync: this,
-  )..addListener(() => setState(() {}));
+  );
 
   /// Fade animation for the [PieButton]s.
-  late final Animation _animation = Tween(
+  late final _scaleAnimation = Tween(
     begin: 0.0,
     end: 1.0,
   ).animate(
     CurvedAnimation(
-      parent: _controller,
+      parent: _scaleController,
       curve: Curves.ease,
     ),
   );
@@ -59,7 +58,7 @@ class _PieButtonState extends State<PieButton>
     return _action.buttonThemeHovered ?? _theme.buttonThemeHovered;
   }
 
-  PieState get _state => widget.state;
+  PieState get _state => PieNotifier.of(context).state;
 
   PieTheme get _theme => _state.theme;
 
@@ -67,14 +66,14 @@ class _PieButtonState extends State<PieButton>
 
   @override
   void dispose() {
-    _controller.dispose();
+    _scaleController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     if (!_previouslyActive && _state.active) {
-      _controller.forward(from: 0);
+      _scaleController.forward(from: 0);
     }
 
     _previouslyActive = _state.active;
@@ -86,8 +85,14 @@ class _PieButtonState extends State<PieButton>
         scale: widget.hovered ? 1.2 : 1,
         duration: _theme.hoverDuration,
         curve: Curves.ease,
-        child: Transform.scale(
-          scale: _animation.value,
+        child: AnimatedBuilder(
+          animation: _scaleAnimation,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _scaleAnimation.value,
+              child: child,
+            );
+          },
           child: Stack(
             children: [
               AnimatedPositioned(

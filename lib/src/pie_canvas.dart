@@ -31,21 +31,18 @@ class PieCanvas extends StatefulWidget {
 class _PieCanvasState extends State<PieCanvas> {
   final _canvasCoreKey = GlobalKey<PieCanvasCoreState>();
 
+  late final _notifier = PieNotifier(
+    canvasCoreKey: _canvasCoreKey,
+    canvasTheme: widget.theme,
+  );
+
   @override
   Widget build(BuildContext context) {
     return PieProvider(
-      state: PieState(
-        canvasCoreKey: _canvasCoreKey,
-        theme: widget.theme,
-        active: false,
-        forceClose: false,
-        menuRenderBox: null,
-        menuKey: null,
-      ),
-      builder: (state) {
+      notifier: _notifier,
+      builder: (context) {
         return PieCanvasCore(
           key: _canvasCoreKey,
-          state: state,
           onMenuToggle: widget.onMenuToggle,
           child: widget.child,
         );

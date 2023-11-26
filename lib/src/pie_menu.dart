@@ -46,10 +46,9 @@ class PieMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: PieState.of(context),
+      listenable: PieNotifier.of(context),
       builder: (context, _) {
         return PieMenuCore(
-          state: PieState.of(context),
           theme: theme,
           actions: actions,
           onToggle: onToggle,

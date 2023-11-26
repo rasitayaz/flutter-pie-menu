@@ -2,68 +2,78 @@ import 'package:flutter/material.dart';
 import 'package:pie_menu/src/pie_canvas_core.dart';
 import 'package:pie_menu/src/pie_theme.dart';
 
+class PieState {
+  PieState({
+    required this.active,
+    required this.theme,
+    required this.menuRenderBox,
+    required this.menuKey,
+  });
+
+  final bool active;
+  final PieTheme theme;
+  final RenderBox? menuRenderBox;
+  final Key? menuKey;
+}
+
 class PieProvider extends InheritedWidget {
   PieProvider({
     super.key,
-    required this.state,
-    required Widget Function(PieState state) builder,
+    required this.notifier,
+    required Widget Function(BuildContext context) builder,
   }) : super(
           child: Builder(
             builder: (context) {
               return ListenableBuilder(
-                listenable: PieState.of(context),
-                builder: (context, child) => builder(PieState.of(context)),
+                listenable: notifier,
+                builder: (context, child) => builder(context),
               );
             },
           ),
         );
 
-  final PieState state;
+  final PieNotifier notifier;
 
   @override
   bool updateShouldNotify(PieProvider oldWidget) => true;
 }
 
-class PieState extends ChangeNotifier {
-  PieState({
+class PieNotifier extends ChangeNotifier {
+  PieNotifier({
     required GlobalKey<PieCanvasCoreState> canvasCoreKey,
-    required this.theme,
-    required this.active,
-    required this.forceClose,
-    required this.menuRenderBox,
-    required this.menuKey,
-  })  : canvasTheme = theme,
-        _canvasCoreKey = canvasCoreKey;
+    required this.canvasTheme,
+  }) : _canvasCoreKey = canvasCoreKey;
 
   final GlobalKey<PieCanvasCoreState> _canvasCoreKey;
   final PieTheme canvasTheme;
 
-  bool active;
-  bool forceClose;
-  PieTheme theme;
-  RenderBox? menuRenderBox;
-  Key? menuKey;
+  late var state = PieState(
+    theme: canvasTheme,
+    active: false,
+    menuRenderBox: null,
+    menuKey: null,
+  );
 
   PieCanvasCoreState get core => _canvasCoreKey.currentState!;
 
   void update({
     bool shouldNotify = true,
     bool? active,
-    bool? forceClose,
     PieTheme? theme,
     RenderBox? menuRenderBox,
     Key? menuKey,
   }) {
-    this.active = active ?? this.active;
-    this.forceClose = forceClose ?? false;
-    this.theme = theme ?? this.theme;
-    this.menuRenderBox = menuRenderBox ?? this.menuRenderBox;
-    this.menuKey = menuKey ?? this.menuKey;
+    state = PieState(
+      active: active ?? state.active,
+      theme: theme ?? state.theme,
+      menuRenderBox: menuRenderBox ?? state.menuRenderBox,
+      menuKey: menuKey ?? state.menuKey,
+    );
 
     if (shouldNotify) notifyListeners();
   }
 
-  static PieState of(BuildContext context) {
+  static PieNotifier of(BuildContext context) {
     final provider = context.dependOnInheritedWidgetOfExactType<PieProvider>();
 
     if (provider == null) {
@@ -75,6 +85,6 @@ class PieState extends ChangeNotifier {
       );
     }
 
-    return provider.state;
+    return provider.notifier;
   }
 }
