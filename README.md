@@ -8,7 +8,7 @@
 [![github](https://img.shields.io/badge/github-rasitayaz-red)](https://github.com/rasitayaz)
 [![buy me a coffee](https://img.shields.io/badge/buy&nbsp;me&nbsp;a&nbsp;coffee-donate-gold)](https://buymeacoffee.com/rasitayaz)
 
-A Flutter package that provides a highly customizable circular/radial context menu similar to Pinterest's
+A Flutter package providing a highly customizable circular/radial context menu, similar to Pinterest's.
 
 [Click here to try Flutter Pie Menu online!](https://rasitayaz.github.io/flutter-pie-menu)
 
@@ -23,14 +23,14 @@ A Flutter package that provides a highly customizable circular/radial context me
   - [Customization](#customization)
     - [Button themes](#button-themes)
     - [Custom button widgets](#custom-button-widgets)
-    - [Display the menu on tap instead of long press](#display-the-menu-on-tap-instead-of-long-press)
-    - [Display the menu on right click](#display-the-menu-on-right-click)
+    - [Tap, long press or right click to activate the menu](#tap-long-press-or-right-click-to-activate-the-menu)
     - [Adjust display angle of menu buttons](#adjust-display-angle-of-menu-buttons)
   - [Contributing](#contributing)
+  - [Donation](#donation)
 
 ## Usage
 
-Wrap the widget that should respond to gestures with the `PieMenu` widget, and provide the menu with an array of `PieAction`s to display as menu buttons.
+Wrap the widget that should respond to gestures with the `PieMenu` widget, and provide the menu with an array of `PieAction`s to display as circular buttons.
 
 ```dart
 PieMenu(
@@ -46,9 +46,9 @@ PieMenu(
 ),
 ```
 
-Then wrap your page (or any other desired widget for drawing pie buttons and a background overlay) with `PieCanvas` widget.
+> 💡 Don't forget that you can only use `PieMenu` as a descendant of a `PieCanvas` widget.
 
-> 💡 Note that you can only use the `PieMenu` within the sub-hierarchy of a `PieCanvas` widget.
+Wrap your page, or any other desired widget for drawing the menu and the background overlay, with `PieCanvas` widget.
 
 For instance, if you want the menu to be displayed at the forefront, you can wrap your `Scaffold` with a `PieCanvas` like following:
 
@@ -70,7 +70,7 @@ PieCanvas(
 
 You can customize the appearance and behavior of menus using `PieTheme`.
 
-Using the `theme` attribute of `PieCanvas` widget, you can specify a theme for all the `PieMenu` widgets that inherit the canvas.
+Using the `theme` attribute of `PieCanvas` widget, you can specify a theme for all the descendant `PieMenu` widgets.
 
 ```dart
 PieCanvas(
@@ -122,7 +122,7 @@ PieButtonTheme(
 
 ### Custom button widgets
 
-If you wish to use custom widgets inside buttons instead of just icons, it is recommended to use `PieAction.builder()` with a `builder` which provides whether the action is hovered or not.
+If you wish to use custom widgets inside buttons instead of just icons, it is recommended to use `PieAction.builder()` with a `builder` which provides whether the action is hovered or not as a parameter.
 
 ```dart
 PieAction.builder(
@@ -139,17 +139,15 @@ PieAction.builder(
 ),
 ```
 
-### Display the menu on tap instead of long press
+### Tap, long press or right click to activate the menu
 
-If you wish to show the menu as soon as the child is pressed, you may set `delayDuration` of your theme to `Duration.zero`.
+You may set `delayDuration` of your theme to `Duration.zero` to activate the menu as soon as the child is pressed.
 
 ```dart
 PieTheme(
   delayDuration: Duration.zero,
 ),
 ```
-
-### Display the menu on right click
 
 Using `rightClickShowsMenu` and `leftClickShowsMenu` attributes of `PieTheme`, you can customize the mouse button behavior.
 
@@ -178,3 +176,9 @@ You can also use `customAngleDiff` or `spacing` to adjust the angle between butt
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 [GitHub Repository](https://github.com/rasitayaz/flutter-pie-menu)
+
+## Donation
+
+If you find this package useful, please consider donating to support the project.
+
+[![buy me a coffee](https://img.shields.io/badge/buy&nbsp;me&nbsp;a&nbsp;coffee-donate-gold)](https://buymeacoffee.com/rasitayaz)

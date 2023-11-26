@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:pie_menu/src/pie_button.dart';
 
 /// Defines the appearance of the circular buttons.
 class PieButtonTheme {
@@ -9,14 +8,14 @@ class PieButtonTheme {
     this.decoration,
   });
 
-  /// Background color of [PieButton].
+  /// Background color of the button.
   final Color? backgroundColor;
 
-  /// Icon color of [PieButton].
+  /// Icon color of the button.
   final Color? iconColor;
 
-  /// Container decoration of [PieButton].
+  /// Container decoration of the button.
   ///
-  /// Note that a custom decoration will ignore [backgroundColor].
+  /// Be aware that a custom decoration will ignore [backgroundColor].
   final Decoration? decoration;
 }

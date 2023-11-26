@@ -7,7 +7,7 @@ import 'package:pie_menu/src/pie_menu.dart';
 import 'package:pie_menu/src/pie_theme.dart';
 import 'package:vector_math/vector_math.dart' hide Matrix4;
 
-/// Customized [FlowDelegate] to size and position children efficiently.
+/// Customized [FlowDelegate] to size and position pie actions efficiently.
 class PieDelegate extends FlowDelegate {
   PieDelegate({
     required this.bounceAnimation,
@@ -18,7 +18,7 @@ class PieDelegate extends FlowDelegate {
     required this.theme,
   }) : super(repaint: bounceAnimation);
 
-  /// Bouncing animation for the [PieButton]s.
+  /// Bouncing animation for the buttons.
   final Animation bounceAnimation;
 
   /// Offset of the widget displayed in the center of the [PieMenu].

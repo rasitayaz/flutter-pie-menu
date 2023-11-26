@@ -7,7 +7,12 @@ import 'package:pie_menu/src/pie_menu_core.dart';
 import 'package:pie_menu/src/pie_provider.dart';
 import 'package:pie_menu/src/pie_theme.dart';
 
-/// Widget that displays [PieAction]s as circular buttons for its child.
+/// Displays a radial menu on the canvas when tapped, long-pressed,
+/// or right-clicked (depending on your [PieTheme] configuration).
+/// When it is active, you can select an action either by dragging your finger
+/// over it and releasing or by simply pressing on it.
+///
+/// A [PieCanvas] ancestor is required for this widget to function.
 class PieMenu extends StatelessWidget {
   const PieMenu({
     super.key,
@@ -28,17 +33,17 @@ class PieMenu extends StatelessWidget {
   /// Widget to be displayed when the menu is hidden.
   final Widget child;
 
-  /// Functional callback that is triggered when
-  /// this [PieMenu] is opened and closed.
+  /// Functional callback triggered when
+  /// this [PieMenu] becomes active or inactive.
   final Function(bool active)? onToggle;
 
-  /// Functional callback that is triggered on press.
+  /// Functional callback triggered on press.
   ///
   /// You can also use [onPressedWithDevice] if you need [PointerDeviceKind].
   final Function()? onPressed;
 
-  /// Functional callback with [PointerDeviceKind] details
-  /// that is triggered on press.
+  /// Functional callback triggered on press.
+  /// Provides [PointerDeviceKind] as a parameter.
   ///
   /// Can be useful to distinguish between mouse and touch events.
   final Function(PointerDeviceKind kind)? onPressedWithDevice;

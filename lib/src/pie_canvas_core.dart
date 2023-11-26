@@ -13,7 +13,7 @@ import 'package:pie_menu/src/pie_theme.dart';
 import 'package:pie_menu/src/platform/base.dart';
 import 'package:vector_math/vector_math.dart' hide Colors;
 
-/// Canvas widget that is actually displayed on the screen.
+/// Controls functionality and appearance of [PieCanvas].
 class PieCanvasCore extends StatefulWidget {
   const PieCanvasCore({
     super.key,
@@ -30,6 +30,7 @@ class PieCanvasCore extends StatefulWidget {
 
 class PieCanvasCoreState extends State<PieCanvasCore>
     with TickerProviderStateMixin, WidgetsBindingObserver {
+  /// Controls platform-specific functionality, used to handle right-clicks.
   final _platform = BasePlatform();
 
   /// Controls [_bounceAnimation].
@@ -49,11 +50,13 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     ),
   );
 
+  /// Controls [_fadeAnimation].
   late final _fadeController = AnimationController(
     duration: _theme.fadeDuration,
     vsync: this,
   );
 
+  /// Fade animation for the canvas and active menu.
   late final _fadeAnimation = Tween(
     begin: 0.0,
     end: 1.0,
@@ -67,13 +70,13 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   /// Whether menu child is currently pressed.
   var _pressed = false;
 
-  /// Whether menu child is pressed again when the menu is active.
+  /// Whether menu child is pressed again while the menu is active.
   var _pressedAgain = false;
 
   /// Currently pressed pointer offset.
   var _pointerOffset = Offset.zero;
 
-  /// Actions of [PieMenu].
+  /// Actions of the current [PieMenu].
   var _actions = <PieAction>[];
 
   /// Currently hovered [PieButton] index.
@@ -92,37 +95,44 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   /// Tooltip widget for the hovered [PieButton].
   Widget? _tooltip;
 
-  /// Functional callback that is triggered when
-  /// the active [PieMenu] is opened and closed.
+  /// Functional callback triggered when
+  /// the current [PieMenu] becomes active or inactive.
   Function(bool active)? _onMenuToggle;
 
+  /// Angle of the first [PieButton] in degrees.
   var _baseAngle = 0.0;
 
+  /// Size of the screen. Used to close the menu when the screen size changes.
   var _size = PlatformDispatcher.instance.views.first.physicalSize;
 
+  /// Stream subscription for right-clicks.
   dynamic _contextMenuSubscription;
 
+  /// Controls the shared state.
   PieNotifier get _notifier => PieNotifier.of(context);
 
+  /// Current shared state.
   PieState get _state => _notifier.state;
 
-  /// Theme of [PieMenu].
+  /// Theme of the current [PieMenu].
   ///
-  /// If [PieMenu] does not have a theme, [PieCanvas] theme is displayed.
+  /// If the [PieMenu] does not have a theme, [PieCanvas] theme is used.
   PieTheme get _theme => _state.theme;
 
+  /// RenderBox of the canvas.
   RenderBox? get _renderBox {
     final object = context.findRenderObject();
     return object is RenderBox && object.hasSize ? object : null;
   }
 
+  Size get _canvasSize => _renderBox?.size ?? Size.zero;
+
+  double get cw => _canvasSize.width;
+  double get ch => _canvasSize.height;
+
   Offset get _canvasOffset {
     return _renderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
   }
-
-  Size get _canvasSize => _renderBox?.size ?? Size.zero;
-  double get cw => _canvasSize.width;
-  double get ch => _canvasSize.height;
 
   double get px => _pointerOffset.dx - _canvasOffset.dx;
   double get py => _pointerOffset.dy - _canvasOffset.dy;

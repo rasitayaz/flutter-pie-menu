@@ -1,12 +1,16 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:pie_menu/pie_menu.dart';
+import 'package:pie_menu/src/pie_action.dart';
+import 'package:pie_menu/src/pie_button_theme.dart';
+import 'package:pie_menu/src/pie_canvas.dart';
+import 'package:pie_menu/src/pie_menu.dart';
 import 'package:pie_menu/src/pie_provider.dart';
+import 'package:pie_menu/src/pie_theme.dart';
 
 /// Displays [PieAction]s of the [PieMenu] on the [PieCanvas].
 class PieButton extends StatefulWidget {
-  /// Creates a [PieButton] that is specialized for a [PieAction].
+  /// Creates a [PieButton] specialized for a [PieAction].
   const PieButton({
     super.key,
     required this.action,
@@ -17,10 +21,10 @@ class PieButton extends StatefulWidget {
   /// Action to display.
   final PieAction action;
 
-  /// Whether this [PieButton] is currently hovered.
+  /// Whether this button is currently hovered.
   final bool hovered;
 
-  /// Display angle of [PieButton] in radians.
+  /// Display angle of the button in radians.
   final double angle;
 
   @override
@@ -37,7 +41,7 @@ class _PieButtonState extends State<PieButton>
     vsync: this,
   );
 
-  /// Fade animation for the [PieButton]s.
+  /// Fade animation for the button.
   late final _scaleAnimation = Tween(
     begin: 0.0,
     end: 1.0,
@@ -48,21 +52,29 @@ class _PieButtonState extends State<PieButton>
     ),
   );
 
+  /// Whether the menu was active in the previous rebuild.
+  var _previouslyActive = false;
+
+  /// Action to display.
   PieAction get _action => widget.action;
 
+  /// Button theme to use for idle state.
   PieButtonTheme get _buttonTheme {
     return _action.buttonTheme ?? _theme.buttonTheme;
   }
 
+  /// Button theme to use for hovered state.
   PieButtonTheme get _buttonThemeHovered {
     return _action.buttonThemeHovered ?? _theme.buttonThemeHovered;
   }
 
+  /// Current shared state.
   PieState get _state => PieNotifier.of(context).state;
 
+  /// Theme of the current [PieMenu].
+  ///
+  /// If the [PieMenu] does not have a theme, [PieCanvas] theme is used.
   PieTheme get _theme => _state.theme;
-
-  var _previouslyActive = false;
 
   @override
   void dispose() {
