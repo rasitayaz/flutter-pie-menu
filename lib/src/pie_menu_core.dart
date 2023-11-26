@@ -50,9 +50,6 @@ class _PieMenuCoreState extends State<PieMenuCore>
     with SingleTickerProviderStateMixin {
   final _uniqueKey = UniqueKey();
 
-  var _pressedOffset = Offset.zero;
-  var _pressedButton = 0;
-
   late final _fadeController = AnimationController(
     duration: _theme.fadeDuration,
     vsync: this,
@@ -68,13 +65,17 @@ class _PieMenuCoreState extends State<PieMenuCore>
     ),
   );
 
+  var _pressedOffset = Offset.zero;
+
+  var _pressedButton = 0;
+
+  var _previouslyActive = false;
+
   PieNotifier get _notifier => PieNotifier.of(context);
 
   PieState get _state => _notifier.state;
 
   PieTheme get _theme => widget.theme ?? _notifier.canvasTheme;
-
-  var _previouslyActive = false;
 
   @override
   void setState(fn) {

@@ -30,21 +30,7 @@ class PieCanvasCore extends StatefulWidget {
 
 class PieCanvasCoreState extends State<PieCanvasCore>
     with TickerProviderStateMixin, WidgetsBindingObserver {
-  /// * [PieMenu] refers to the menu that is currently displayed on the canvas.
-
-  PieNotifier get _notifier => PieNotifier.of(context);
-
-  PieState get _state => _notifier.state;
-
-  /// Theme of [PieMenu].
-  ///
-  /// If [PieMenu] does not have a theme, [PieCanvas] theme is displayed.
-  PieTheme get _theme => _state.theme;
-
   final _platform = BasePlatform();
-
-  /// Actions of [PieMenu].
-  List<PieAction> _actions = [];
 
   /// Controls [_bounceAnimation].
   late final _bounceController = AnimationController(
@@ -79,13 +65,16 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   );
 
   /// Whether menu child is currently pressed.
-  bool _pressed = false;
+  var _pressed = false;
 
   /// Whether menu child is pressed again when the menu is active.
-  bool _pressedAgain = false;
+  var _pressedAgain = false;
 
   /// Currently pressed pointer offset.
-  Offset _pointerOffset = Offset.zero;
+  var _pointerOffset = Offset.zero;
+
+  /// Actions of [PieMenu].
+  var _actions = <PieAction>[];
 
   /// Currently hovered [PieButton] index.
   int? _hoveredAction;
@@ -107,6 +96,21 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   /// the active [PieMenu] is opened and closed.
   Function(bool active)? _onMenuToggle;
 
+  var _baseAngle = 0.0;
+
+  var _size = PlatformDispatcher.instance.views.first.physicalSize;
+
+  dynamic _contextMenuSubscription;
+
+  PieNotifier get _notifier => PieNotifier.of(context);
+
+  PieState get _state => _notifier.state;
+
+  /// Theme of [PieMenu].
+  ///
+  /// If [PieMenu] does not have a theme, [PieCanvas] theme is displayed.
+  PieTheme get _theme => _state.theme;
+
   RenderBox? get _renderBox {
     final object = context.findRenderObject();
     return object is RenderBox && object.hasSize ? object : null;
@@ -120,7 +124,38 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   double get cw => _canvasSize.width;
   double get ch => _canvasSize.height;
 
-  dynamic _contextMenuSubscription;
+  double get px => _pointerOffset.dx - _canvasOffset.dx;
+  double get py => _pointerOffset.dy - _canvasOffset.dy;
+
+  double get _angleDiff {
+    final customAngleDiff = _theme.customAngleDiff;
+    if (customAngleDiff != null) return customAngleDiff;
+
+    final tangent = (_theme.buttonSize / 2 + _theme.spacing) / _theme.radius;
+    final angleInRadians = 2 * asin(tangent);
+    return degrees(angleInRadians);
+  }
+
+  double get _safeDistance => _theme.radius + _theme.buttonSize;
+
+  double _getActionAngle(int index) {
+    return radians(_baseAngle - _theme.angleOffset - _angleDiff * index);
+  }
+
+  Offset _getActionOffset(int index) {
+    final angle = _getActionAngle(index);
+    return Offset(
+      _pointerOffset.dx + _theme.radius * cos(angle),
+      _pointerOffset.dy - _theme.radius * sin(angle),
+    );
+  }
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
 
   @override
   void initState() {
@@ -137,15 +172,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   }
 
   @override
-  void setState(fn) {
-    if (mounted) {
-      super.setState(fn);
-    }
-  }
-
-  var _size = PlatformDispatcher.instance.views.first.physicalSize;
-
-  @override
   void didChangeMetrics() {
     super.didChangeMetrics();
     if (mounted && _state.active) {
@@ -158,34 +184,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
         _detachMenu();
       }
     }
-  }
-
-  double get px => _pointerOffset.dx - _canvasOffset.dx;
-  double get py => _pointerOffset.dy - _canvasOffset.dy;
-
-  double get _angleDiff {
-    final customAngleDiff = _theme.customAngleDiff;
-    if (customAngleDiff != null) return customAngleDiff;
-
-    final tangent = (_theme.buttonSize / 2 + _theme.spacing) / _theme.radius;
-    final angleInRadians = 2 * asin(tangent);
-    return degrees(angleInRadians);
-  }
-
-  double get _safeDistance => _theme.radius + _theme.buttonSize;
-
-  var _baseAngle = 0.0;
-
-  double _getActionAngle(int index) {
-    return radians(_baseAngle - _theme.angleOffset - _angleDiff * index);
-  }
-
-  Offset _getActionOffset(int index) {
-    final angle = _getActionAngle(index);
-    return Offset(
-      _pointerOffset.dx + _theme.radius * cos(angle),
-      _pointerOffset.dy - _theme.radius * sin(angle),
-    );
   }
 
   @override

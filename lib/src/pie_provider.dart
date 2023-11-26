@@ -45,6 +45,7 @@ class PieNotifier extends ChangeNotifier {
   }) : _canvasCoreKey = canvasCoreKey;
 
   final GlobalKey<PieCanvasCoreState> _canvasCoreKey;
+
   final PieTheme canvasTheme;
 
   late var state = PieState(
