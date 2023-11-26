@@ -162,7 +162,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     if (leftClicked && !_theme.leftClickShowsMenu) return;
 
-    _notifier.core.attachMenu(
+    _notifier.canvas.attachMenu(
       rightClicked: rightClicked,
       offset: _pressedOffset,
       renderBox: context.findRenderObject() as RenderBox,

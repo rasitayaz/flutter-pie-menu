@@ -110,6 +110,9 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   /// Stream subscription for right-clicks.
   dynamic _contextMenuSubscription;
 
+  /// RenderBox of the current menu.
+  RenderBox? _menuRenderBox;
+
   /// Controls the shared state.
   PieNotifier get _notifier => PieNotifier.of(context);
 
@@ -117,18 +120,18 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   PieState get _state => _notifier.state;
 
   /// RenderBox of the canvas.
-  RenderBox? get _renderBox {
+  RenderBox? get _canvasRenderBox {
     final object = context.findRenderObject();
     return object is RenderBox && object.hasSize ? object : null;
   }
 
-  Size get _canvasSize => _renderBox?.size ?? Size.zero;
+  Size get _canvasSize => _canvasRenderBox?.size ?? Size.zero;
 
   double get cw => _canvasSize.width;
   double get ch => _canvasSize.height;
 
   Offset get _canvasOffset {
-    return _renderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
+    return _canvasRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
   }
 
   double get px => _pointerOffset.dx - _canvasOffset.dx;
@@ -230,7 +233,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
   @override
   Widget build(BuildContext context) {
-    final menuRenderBox = _state.menuRenderBox;
+    final menuRenderBox = _menuRenderBox;
 
     return Material(
       type: MaterialType.transparency,
@@ -454,6 +457,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
           _bounceController.forward(from: 0);
           _fadeController.forward(from: 0);
 
+          _menuRenderBox = renderBox;
           _onMenuToggle = onMenuToggle;
           _actions = actions;
           _hoveredAction = null;
@@ -461,7 +465,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
           _notifier.update(
             active: true,
-            menuRenderBox: renderBox,
             menuKey: menuKey,
           );
           _notifyToggleListeners(active: true);

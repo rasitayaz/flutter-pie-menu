@@ -8,15 +8,11 @@ import 'package:pie_menu/src/pie_theme.dart';
 class PieState {
   PieState({
     required this.active,
-    required this.menuRenderBox,
     required this.menuKey,
   });
 
   /// Whether any menu is currently active.
   final bool active;
-
-  /// RenderBox of the currently active menu.
-  final RenderBox? menuRenderBox;
 
   /// Unique key of the currently active menu.
   final Key? menuKey;
@@ -66,22 +62,19 @@ class PieNotifier extends ChangeNotifier {
   /// Current state shared between [PieCanvasCore] and [PieMenuCore].
   late var state = PieState(
     active: false,
-    menuRenderBox: null,
     menuKey: null,
   );
 
   /// Current state of the [PieCanvasCore].
-  PieCanvasCoreState get core => _canvasCoreKey.currentState!;
+  PieCanvasCoreState get canvas => _canvasCoreKey.currentState!;
 
   /// Updates the shared state and notifies listeners.
   void update({
     bool? active,
-    RenderBox? menuRenderBox,
     Key? menuKey,
   }) {
     state = PieState(
       active: active ?? state.active,
-      menuRenderBox: menuRenderBox ?? state.menuRenderBox,
       menuKey: menuKey ?? state.menuKey,
     );
 
