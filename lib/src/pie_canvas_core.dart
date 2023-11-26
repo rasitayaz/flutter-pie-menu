@@ -568,18 +568,15 @@ class OverlayPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = color;
+    final paint = Paint();
+    paint.color = color;
 
-    canvas.drawPath(
-      Path.combine(
-        PathOperation.difference,
-        Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height)),
-        Path()
-          ..addRect(menuOffset & menuSize)
-          ..close(),
-      ),
-      paint,
-    );
+    final path = Path();
+    path.addRect(Rect.fromLTWH(0, 0, size.width, size.height));
+    path.addRect(menuOffset & menuSize);
+    path.fillType = PathFillType.evenOdd;
+
+    canvas.drawPath(path, paint);
   }
 
   @override
