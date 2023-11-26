@@ -99,9 +99,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   /// the current [PieMenu] becomes active or inactive.
   Function(bool active)? _onMenuToggle;
 
-  /// Angle of the first [PieButton] in degrees.
-  var _baseAngle = 0.0;
-
   /// Size of the screen. Used to close the menu when the screen size changes.
   var _size = PlatformDispatcher.instance.views.first.physicalSize;
 
@@ -146,7 +143,42 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     return degrees(angleInRadians);
   }
 
-  double get _safeDistance => _theme.radius + _theme.buttonSize;
+  /// Angle of the first [PieButton] in degrees.
+  double get _baseAngle {
+    final arc = (_actions.length - 1) * _angleDiff;
+    final customAngle = _theme.customAngle;
+
+    if (customAngle != null) {
+      switch (_theme.customAngleAnchor) {
+        case PieAnchor.start:
+          return customAngle;
+        case PieAnchor.center:
+          return customAngle + arc / 2;
+        case PieAnchor.end:
+          return customAngle + arc;
+      }
+    }
+
+    final p = Offset(px, py);
+    final distanceFactor = min(1, (cw / 2 - px) / (cw / 2));
+    final safeDistance = _theme.radius + _theme.buttonSize;
+
+    double angleBetween(Offset o1, Offset o2) {
+      final slope = (o2.dy - o1.dy) / (o2.dx - o1.dx);
+      return degrees(atan(slope));
+    }
+
+    if ((ch >= 2 * safeDistance && py < safeDistance) ||
+        (ch < 2 * safeDistance && py < ch / 2)) {
+      final o = px < cw / 2 ? const Offset(0, 0) : Offset(cw, 0);
+      return arc / 2 - 90 + angleBetween(o, p);
+    } else if (py > ch - safeDistance && (px < cw * 2 / 5 || px > cw * 3 / 5)) {
+      final o = px < cw / 2 ? Offset(0, ch) : Offset(cw, ch);
+      return arc / 2 + 90 + angleBetween(o, p);
+    } else {
+      return arc / 2 + 90 - 90 * distanceFactor;
+    }
+  }
 
   double _getActionAngle(int index) {
     return radians(_baseAngle - _theme.angleOffset - _angleDiff * index);
@@ -391,42 +423,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     return (_pointerOffset - offset).distance > _theme.pointerSize / 2;
   }
 
-  double _angleBetween(Offset o1, Offset o2) {
-    final slope = (o2.dy - o1.dy) / (o2.dx - o1.dx);
-    return degrees(atan(slope));
-  }
-
-  double _calculateBaseAngle() {
-    final arc = (_actions.length - 1) * _angleDiff;
-    final customAngle = _theme.customAngle;
-
-    if (customAngle != null) {
-      switch (_theme.customAngleAnchor) {
-        case PieAnchor.start:
-          return customAngle;
-        case PieAnchor.center:
-          return customAngle + arc / 2;
-        case PieAnchor.end:
-          return customAngle + arc;
-      }
-    }
-
-    final p = Offset(px, py);
-    final distanceFactor = min(1, (cw / 2 - px) / (cw / 2));
-
-    if ((ch >= 2 * _safeDistance && py < _safeDistance) ||
-        (ch < 2 * _safeDistance && py < ch / 2)) {
-      final o = px < cw / 2 ? const Offset(0, 0) : Offset(cw, 0);
-      return arc / 2 - 90 + _angleBetween(o, p);
-    } else if (py > ch - _safeDistance &&
-        (px < cw * 2 / 5 || px > cw * 3 / 5)) {
-      final o = px < cw / 2 ? Offset(0, ch) : Offset(cw, ch);
-      return arc / 2 + 90 + _angleBetween(o, p);
-    } else {
-      return arc / 2 + 90 - 90 * distanceFactor;
-    }
-  }
-
   void attachMenu({
     required bool rightClicked,
     required Offset offset,
@@ -457,7 +453,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
           _onMenuToggle = onMenuToggle;
           _actions = actions;
-          _baseAngle = _calculateBaseAngle();
           _hoveredAction = null;
           _tooltip = null;
 
