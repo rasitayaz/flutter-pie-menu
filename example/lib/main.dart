@@ -319,18 +319,16 @@ class StylingPage extends StatelessWidget {
     Color? color,
     required IconData iconData,
   }) {
-    return Bounce(
-      child: Container(
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Center(
-          child: FaIcon(
-            iconData,
-            color: Colors.white,
-            size: 64,
-          ),
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Center(
+        child: FaIcon(
+          iconData,
+          color: Colors.white,
+          size: 64,
         ),
       ),
     );
