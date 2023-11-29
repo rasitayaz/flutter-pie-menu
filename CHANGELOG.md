@@ -1,4 +1,10 @@
-* Other gestures are now automatically cancelled when a `PieMenu` becomes visible. You no longer have to use `NeverScrollableScrollPhysics` to disable scrolling or disable the functionality of your interactive menu child. [#41](https://github.com/rasitayaz/flutter-pie-menu/issues/41)
+## 3.0.0
+
+* Other gestures are now automatically cancelled when a `PieMenu` activates. You no longer have to use `NeverScrollableScrollPhysics` to disable scrolling or disable the functionality of your interactive menu child.
+* Overlay is now drawn around the menu child using `CustomPaint`. This addresses the issue of the menu child losing its state when the menu is activated.
+* Fixed some animation issues and slightly improved performance by implementing a better state management solution.
+* Replaced `childBounceDistance` with `childBounceFactor` in `PieTheme`.
+* Other minor improvements and bug fixes.
 
 ## 2.0.2
 
