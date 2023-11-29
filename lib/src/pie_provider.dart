@@ -89,7 +89,7 @@ class PieNotifier extends ChangeNotifier {
     if (provider == null) {
       throw Exception(
         'Could not find any PieCanvas.\n'
-        'Please make sure there is a PieCanvas that inherits PieMenu.\n\n'
+        'Ensure that every PieMenu has a PieCanvas ancestor.\n\n'
         'For more information, see the pie_menu documentation.\n'
         'https://pub.dev/packages/pie_menu',
       );
