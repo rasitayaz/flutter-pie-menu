@@ -39,7 +39,12 @@ class PieTheme {
     this.tooltipTextAlign,
     this.tooltipCanvasAlignment,
     this.tooltipUseFittedBox = false,
-    this.bounceDuration = const Duration(seconds: 1),
+    this.pieBounceDuration = const Duration(seconds: 1),
+    this.childBounceEnabled = true,
+    this.childBounceDuration = const Duration(milliseconds: 150),
+    this.childBounceFactor = 0.95,
+    this.childBounceCurve = Curves.easeOutCubic,
+    this.childBounceReverseCurve = Curves.easeInCubic,
     this.fadeDuration = const Duration(milliseconds: 250),
     this.hoverDuration = const Duration(milliseconds: 250),
     this.delayDuration = const Duration(milliseconds: 350),
@@ -118,7 +123,22 @@ class PieTheme {
   final bool tooltipUseFittedBox;
 
   /// Duration of [PieButton] bounce animation.
-  final Duration bounceDuration;
+  final Duration pieBounceDuration;
+
+  /// Whether to bounce the [PieMenu] child on press.
+  final bool childBounceEnabled;
+
+  /// Duration of menu child bounce animation.
+  final Duration childBounceDuration;
+
+  /// Distance of menu child bounce animation.
+  final double childBounceFactor;
+
+  /// Curve for the menu child bounce animation.
+  final Curve childBounceCurve;
+
+  /// Reverse curve for the menu child bounce animation.
+  final Curve? childBounceReverseCurve;
 
   /// Duration of [PieMenu] fade animation.
   final Duration fadeDuration;
@@ -176,7 +196,12 @@ class PieTheme {
     TextAlign? tooltipTextAlign,
     Alignment? tooltipCanvasAlignment,
     bool? tooltipUseFittedBox,
-    Duration? bounceDuration,
+    Duration? pieBounceDuration,
+    bool? childBounceEnabled,
+    Duration? childBounceDuration,
+    double? childBounceDistance,
+    Curve? childBounceCurve,
+    Curve? childBounceReverseCurve,
     Duration? fadeDuration,
     Duration? hoverDuration,
     Duration? delayDuration,
@@ -205,7 +230,13 @@ class PieTheme {
       tooltipCanvasAlignment:
           tooltipCanvasAlignment ?? this.tooltipCanvasAlignment,
       tooltipUseFittedBox: tooltipUseFittedBox ?? this.tooltipUseFittedBox,
-      bounceDuration: bounceDuration ?? this.bounceDuration,
+      pieBounceDuration: pieBounceDuration ?? this.pieBounceDuration,
+      childBounceEnabled: childBounceEnabled ?? this.childBounceEnabled,
+      childBounceDuration: childBounceDuration ?? this.childBounceDuration,
+      childBounceFactor: childBounceDistance ?? childBounceFactor,
+      childBounceCurve: childBounceCurve ?? this.childBounceCurve,
+      childBounceReverseCurve:
+          childBounceReverseCurve ?? this.childBounceReverseCurve,
       fadeDuration: fadeDuration ?? this.fadeDuration,
       hoverDuration: hoverDuration ?? this.hoverDuration,
       delayDuration: delayDuration ?? this.delayDuration,

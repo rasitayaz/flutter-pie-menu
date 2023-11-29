@@ -40,7 +40,7 @@ class _PieButtonState extends State<PieButton>
   /// Controls [_scaleAnimation].
   late final _scaleController = AnimationController(
     duration: Duration(
-      milliseconds: _theme.bounceDuration.inMilliseconds ~/ 2,
+      milliseconds: _theme.pieBounceDuration.inMilliseconds ~/ 2,
     ),
     vsync: this,
   );

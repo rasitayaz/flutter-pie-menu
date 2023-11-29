@@ -35,7 +35,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
   /// Controls [_bounceAnimation].
   late final _bounceController = AnimationController(
-    duration: _theme.bounceDuration,
+    duration: _theme.pieBounceDuration,
     vsync: this,
   );
 

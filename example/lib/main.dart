@@ -361,6 +361,7 @@ class _ListViewPageState extends State<ListViewPage> {
   Widget build(BuildContext context) {
     return PieCanvas(
       theme: const PieTheme(
+        childBounceEnabled: false,
         rightClickShowsMenu: true,
         tooltipTextStyle: TextStyle(
           fontSize: 32,
