@@ -1,3 +1,11 @@
+## 3.0.0
+
+* When a `PieMenu` activates, other gestures are now automatically cancelled. You no longer need to use `NeverScrollableScrollPhysics` to disable scrolling or to deactivate the functionality of your interactive menu child.
+* Overlay is now drawn around the menu child using `CustomPaint`. This addresses the issue of the menu child losing its state when the menu is activated.
+* Fixed some animation issues and slightly improved performance by implementing a better state management solution.
+* Replaced `childBounceDistance` with `childBounceFactor` in `PieTheme`.
+* Other minor improvements and bug fixes.
+
 ## 2.0.2
 
 * Fixed changelog typos.

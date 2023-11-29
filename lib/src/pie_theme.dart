@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pie_menu/pie_menu.dart';
 import 'package:pie_menu/src/pie_button.dart';
-import 'package:pie_menu/src/pie_canvas_provider.dart';
+import 'package:pie_menu/src/pie_button_theme.dart';
+import 'package:pie_menu/src/pie_canvas.dart';
+import 'package:pie_menu/src/pie_menu.dart';
+import 'package:pie_menu/src/pie_provider.dart';
 
 /// Action display anchor point for the specified custom angle in [PieTheme].
 enum PieAnchor { start, center, end }
@@ -39,10 +41,10 @@ class PieTheme {
     this.tooltipUseFittedBox = false,
     this.pieBounceDuration = const Duration(seconds: 1),
     this.childBounceEnabled = true,
-    this.childBounceDuration = const Duration(milliseconds: 120),
-    this.childBounceDistance = 24,
-    this.childBounceCurve = Curves.decelerate,
-    this.childBounceReverseCurve,
+    this.childBounceDuration = const Duration(milliseconds: 150),
+    this.childBounceFactor = 0.95,
+    this.childBounceCurve = Curves.easeOutCubic,
+    this.childBounceReverseCurve = Curves.easeInCubic,
     this.fadeDuration = const Duration(milliseconds: 250),
     this.hoverDuration = const Duration(milliseconds: 250),
     this.delayDuration = const Duration(milliseconds: 350),
@@ -130,7 +132,7 @@ class PieTheme {
   final Duration childBounceDuration;
 
   /// Distance of menu child bounce animation.
-  final double childBounceDistance;
+  final double childBounceFactor;
 
   /// Curve for the menu child bounce animation.
   final Curve childBounceCurve;
@@ -158,9 +160,17 @@ class PieTheme {
   /// Displacement distance of [PieButton]s when hovered.
   double get hoverDisplacement => buttonSize / 8;
 
-  /// Returns the [PieTheme] defined in the closest [PieCanvas].
+  Color get effectiveOverlayColor {
+    return overlayColor ??
+        (brightness == Brightness.light
+            ? Colors.white.withOpacity(0.8)
+            : Colors.black.withOpacity(0.8));
+  }
+
+  /// Returns the [PieTheme] defined in the closest [PieCanvas] instance
+  /// that encloses the given context.
   static PieTheme of(BuildContext context) {
-    return PieCanvasProvider.of(context).theme;
+    return PieNotifier.of(context).canvasTheme;
   }
 
   /// Creates a copy of this theme but with the
@@ -223,7 +233,7 @@ class PieTheme {
       pieBounceDuration: pieBounceDuration ?? this.pieBounceDuration,
       childBounceEnabled: childBounceEnabled ?? this.childBounceEnabled,
       childBounceDuration: childBounceDuration ?? this.childBounceDuration,
-      childBounceDistance: childBounceDistance ?? this.childBounceDistance,
+      childBounceFactor: childBounceDistance ?? childBounceFactor,
       childBounceCurve: childBounceCurve ?? this.childBounceCurve,
       childBounceReverseCurve:
           childBounceReverseCurve ?? this.childBounceReverseCurve,
