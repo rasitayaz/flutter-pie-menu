@@ -175,7 +175,7 @@ You can also use `customAngleDiff` or `spacing` to adjust the angle between butt
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-[GitHub Repository](https://github.com/rasitayaz/flutter-pie-menu)
+[![github](https://img.shields.io/badge/github-flutter%20pie%20menu-white)](https://github.com/rasitayaz/flutter-pie-menu)
 
 ## Donation
 
