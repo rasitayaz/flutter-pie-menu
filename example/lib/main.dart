@@ -1,4 +1,3 @@
-import 'package:bounce/bounce.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -361,7 +360,6 @@ class _ListViewPageState extends State<ListViewPage> {
   Widget build(BuildContext context) {
     return PieCanvas(
       theme: const PieTheme(
-        childBounceEnabled: false,
         rightClickShowsMenu: true,
         tooltipTextStyle: TextStyle(
           fontSize: 32,
@@ -409,20 +407,18 @@ class _ListViewPageState extends State<ListViewPage> {
                   child: const FaIcon(FontAwesomeIcons.share),
                 ),
               ],
-              child: Bounce(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.orangeAccent,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Center(
-                    child: Text(
-                      '#$index',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 64,
-                      ),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.orangeAccent,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Center(
+                  child: Text(
+                    '#$index',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 64,
                     ),
                   ),
                 ),
