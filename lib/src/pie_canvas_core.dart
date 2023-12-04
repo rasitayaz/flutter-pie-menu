@@ -100,7 +100,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   Function(bool active)? _onMenuToggle;
 
   /// Size of the screen. Used to close the menu when the screen size changes.
-  var _size = PlatformDispatcher.instance.views.first.physicalSize;
+  var _physicalSize = PlatformDispatcher.instance.views.first.physicalSize;
 
   /// Theme of the current [PieMenu].
   ///
@@ -134,8 +134,11 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     return _canvasRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
   }
 
-  double get px => _pointerOffset.dx - _canvasOffset.dx;
-  double get py => _pointerOffset.dy - _canvasOffset.dy;
+  double get cx => _canvasOffset.dx;
+  double get cy => _canvasOffset.dy;
+
+  double get px => _pointerOffset.dx - cx;
+  double get py => _pointerOffset.dy - cy;
 
   double get _angleDiff {
     final customAngleDiff = _theme.customAngleDiff;
@@ -161,6 +164,21 @@ class PieCanvasCoreState extends State<PieCanvasCore>
           return customAngle + arc;
       }
     }
+
+    final padding = MediaQuery.of(context).padding;
+    final size = MediaQuery.of(context).size;
+
+    final cx = this.cx < padding.left ? padding.left : this.cx;
+    final cy = this.cy < padding.top ? padding.top : this.cy;
+    final cw = this.cx + this.cw > size.width - padding.right
+        ? size.width - padding.right - cx
+        : this.cw;
+    final ch = this.cy + this.ch > size.height - padding.bottom
+        ? size.height - padding.bottom - cy
+        : this.ch;
+
+    final px = _pointerOffset.dx - cx;
+    final py = _pointerOffset.dy - cy;
 
     final p = Offset(px, py);
     final distanceFactor = min(1, (cw / 2 - px) / (cw / 2));
@@ -220,12 +238,10 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   void didChangeMetrics() {
     super.didChangeMetrics();
     if (mounted && _state.active) {
-      final prevSize = _size;
-      _size = PlatformDispatcher.instance.views.first.physicalSize;
-      if (prevSize != _size) {
+      final prevSize = _physicalSize;
+      _physicalSize = PlatformDispatcher.instance.views.first.physicalSize;
+      if (prevSize != _physicalSize) {
         _fadeController.animateTo(0, duration: Duration.zero);
-        _notifier.update(active: false);
-        _notifyToggleListeners(active: false);
         _detachMenu();
       }
     }
@@ -278,8 +294,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                             painter: OverlayPainter(
                               color: _theme.effectiveOverlayColor,
                               menuOffset: Offset(
-                                menuOffset.dx - _canvasOffset.dx,
-                                menuOffset.dy - _canvasOffset.dy,
+                                menuOffset.dx - cx,
+                                menuOffset.dy - cy,
                               ),
                               menuSize: menuRenderBox.size,
                             ),
@@ -340,9 +356,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                               .map((o) => o.dy)
                               .reduce((dy1, dy2) => max(dy1, dy2));
 
-                          return dyMax -
-                              _canvasOffset.dy +
-                              _theme.buttonSize / 2;
+                          return dyMax - cy + _theme.buttonSize / 2;
                         }
 
                         double? getBottomDistance() {
@@ -352,10 +366,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                               .map((o) => o.dy)
                               .reduce((dy1, dy2) => min(dy1, dy2));
 
-                          return ch -
-                              dyMin +
-                              _canvasOffset.dy +
-                              _theme.buttonSize / 2;
+                          return ch - dyMin + cy + _theme.buttonSize / 2;
                         }
 
                         return Positioned(
@@ -487,6 +498,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
         _hoveredAction = null;
 
         _notifier.update(active: false);
+        _notifyToggleListeners(active: false);
       },
     );
   }
@@ -510,9 +522,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
         }
 
         _fadeController.reverse();
-
-        _notifier.update(active: false);
-        _notifyToggleListeners(active: false);
 
         _detachMenu();
       }
