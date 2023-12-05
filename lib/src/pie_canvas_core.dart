@@ -117,6 +117,9 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   /// Last pressed offset relative to the child widget of the current menu.
   Offset? _locallyPressedOffset;
 
+  /// Tooltip widget of the currently hovered action.
+  Widget? _tooltip;
+
   /// Controls the shared state.
   PieNotifier get _notifier => PieNotifier.of(context);
 
@@ -254,9 +257,9 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   Widget build(BuildContext context) {
     final menuRenderBox = _menuRenderBox;
     final hoveredAction = _state.hoveredAction;
-    final tooltip = hoveredAction == null
-        ? const SizedBox()
-        : _actions[hoveredAction].tooltip;
+    if (hoveredAction != null) {
+      _tooltip = _actions[hoveredAction].tooltip;
+    }
 
     return Material(
       type: MaterialType.transparency,
@@ -375,7 +378,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                             )
                                 .merge(_notifier.canvasTheme.tooltipTextStyle)
                                 .merge(_theme.tooltipTextStyle),
-                            child: tooltip,
+                            child: _tooltip ?? const SizedBox(),
                           ),
                         ),
                       );
@@ -524,6 +527,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
           _locallyPressedOffset = localOffset;
           _onMenuToggle = onMenuToggle;
           _actions = actions;
+          _tooltip = null;
 
           _notifier.update(
             active: true,
