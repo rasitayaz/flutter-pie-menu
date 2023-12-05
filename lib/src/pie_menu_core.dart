@@ -119,6 +119,16 @@ class _PieMenuCoreState extends State<PieMenuCore>
   /// If the [PieMenu] does not have a theme, [PieCanvas] theme is used.
   PieTheme get _theme => widget.theme ?? _notifier.canvasTheme;
 
+  /// Whether to use [Listener] instead of [GestureDetector]
+  /// for bounce animation.
+  ///
+  /// [GestureDetector] provides a smoother bounce animation, but its callbacks
+  /// are not triggered when the delay duration is too short because of the
+  /// [LongPressGestureRecognizer] used internally.
+  bool get _useListenerForBounce {
+    return _theme.delayDuration < const Duration(milliseconds: 100);
+  }
+
   @override
   void dispose() {
     _overlayFadeController.dispose();
@@ -164,22 +174,28 @@ class _PieMenuCoreState extends State<PieMenuCore>
             onPointerDown: _pointerDown,
             onPointerMove: _pointerMove,
             onPointerUp: _pointerUp,
-            child: AnimatedOpacity(
-              opacity: _theme.overlayStyle == PieOverlayStyle.around &&
-                      _state.menuKey == _uniqueKey &&
-                      _state.active &&
-                      _state.hoveredAction != null
-                  ? _theme.childOpacityOnButtonHover
-                  : 1,
-              duration: _theme.hoverDuration,
-              curve: Curves.ease,
-              child: _theme.childBounceEnabled
-                  ? BouncingWidget(
-                      animation: _bounceAnimation,
-                      locallyPressedOffset: _locallyPressedOffset,
-                      child: widget.child,
-                    )
-                  : widget.child,
+            child: GestureDetector(
+              onTapDown: _tapDown,
+              onTapCancel: _tapCancel,
+              onTapUp: _tapUp,
+              dragStartBehavior: DragStartBehavior.down,
+              child: AnimatedOpacity(
+                opacity: _theme.overlayStyle == PieOverlayStyle.around &&
+                        _state.menuKey == _uniqueKey &&
+                        _state.active &&
+                        _state.hoveredAction != null
+                    ? _theme.childOpacityOnButtonHover
+                    : 1,
+                duration: _theme.hoverDuration,
+                curve: Curves.ease,
+                child: _theme.childBounceEnabled
+                    ? BouncingWidget(
+                        animation: _bounceAnimation,
+                        locallyPressedOffset: _locallyPressedOffset,
+                        child: widget.child,
+                      )
+                    : widget.child,
+              ),
             ),
           ),
         ),
@@ -187,7 +203,19 @@ class _PieMenuCoreState extends State<PieMenuCore>
     );
   }
 
-  void _pointerDown(PointerDownEvent event) async {
+  void _tapDown(TapDownDetails details) {
+    if (!_useListenerForBounce) _bounce();
+  }
+
+  void _tapCancel() {
+    if (!_useListenerForBounce) _debounce();
+  }
+
+  void _tapUp(TapUpDetails details) {
+    if (!_useListenerForBounce) _debounce();
+  }
+
+  void _pointerDown(PointerDownEvent event) {
     setState(() {
       _pressedOffset = event.position;
       _locallyPressedOffset = event.localPosition;
@@ -196,7 +224,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     if (_state.active) return;
 
-    _bounce();
+    if (_useListenerForBounce) _bounce();
 
     final isMouseEvent = event.kind == PointerDeviceKind.mouse;
     final leftClicked = isMouseEvent && _pressedButton == kPrimaryMouseButton;
@@ -232,13 +260,14 @@ class _PieMenuCoreState extends State<PieMenuCore>
   void _pointerMove(PointerMoveEvent event) {
     if (_state.active) return;
 
-    if ((_pressedOffset - event.position).distance > 8) {
+    if (_useListenerForBounce &&
+        (_pressedOffset - event.position).distance > 8) {
       _debounce();
     }
   }
 
   void _pointerUp(PointerUpEvent event) {
-    _debounce();
+    if (_useListenerForBounce) _debounce();
 
     if ((_pressedOffset - event.position).distance > 8) {
       return;
@@ -258,13 +287,13 @@ class _PieMenuCoreState extends State<PieMenuCore>
   }
 
   void _bounce() {
-    if (!_theme.childBounceEnabled) return;
-
-    _bounceController.forward();
+    if (!_theme.childBounceEnabled || _bounceStopwatch.isRunning) return;
 
     _debounceTimer?.cancel();
     _bounceStopwatch.reset();
     _bounceStopwatch.start();
+
+    _bounceController.forward();
   }
 
   void _debounce() {
