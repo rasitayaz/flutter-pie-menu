@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:pie_menu/src/bouncing_widget.dart';
 import 'package:pie_menu/src/pie_action.dart';
 import 'package:pie_menu/src/pie_button.dart';
 import 'package:pie_menu/src/pie_canvas.dart';
@@ -79,8 +80,8 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
   /// Bounce animation for the child widget.
   late final _bounceAnimation = Tween(
-    begin: 1.0,
-    end: _theme.childBounceFactor,
+    begin: 0.0,
+    end: 1.0,
   ).animate(
     CurvedAnimation(
       parent: _bounceController,
@@ -91,6 +92,9 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
   /// Offset of the press event.
   var _pressedOffset = Offset.zero;
+
+  /// Offset of the press event relative to the child widget.
+  var _locallyPressedOffset = Offset.zero;
 
   /// Button used for the press event.
   var _pressedButton = 0;
@@ -118,6 +122,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
   @override
   void dispose() {
     _overlayFadeController.dispose();
+    _bounceController.dispose();
     super.dispose();
   }
 
@@ -140,34 +145,41 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     return Stack(
       children: [
-        Positioned.fill(
-          child: AnimatedBuilder(
-            animation: _overlayFadeAnimation,
-            builder: (context, child) {
-              return Opacity(
-                opacity: _overlayFadeAnimation.value,
-                child: child,
-              );
-            },
-            child: ColoredBox(color: _theme.effectiveOverlayColor),
+        if (_theme.overlayStyle == PieOverlayStyle.around)
+          Positioned.fill(
+            child: AnimatedBuilder(
+              animation: _overlayFadeAnimation,
+              builder: (context, child) {
+                return Opacity(
+                  opacity: _overlayFadeAnimation.value,
+                  child: child,
+                );
+              },
+              child: ColoredBox(color: _theme.effectiveOverlayColor),
+            ),
           ),
-        ),
         MouseRegion(
           cursor: SystemMouseCursors.click,
           child: Listener(
             onPointerDown: _pointerDown,
             onPointerMove: _pointerMove,
             onPointerUp: _pointerUp,
-            child: AnimatedBuilder(
-              animation: _bounceAnimation,
-              builder: (context, child) {
-                return Transform.scale(
-                  scale: _bounceAnimation.value,
-                  alignment: Alignment.center,
-                  child: child,
-                );
-              },
-              child: widget.child,
+            child: AnimatedOpacity(
+              opacity: _theme.overlayStyle == PieOverlayStyle.around &&
+                      _state.menuKey == _uniqueKey &&
+                      _state.active &&
+                      _state.hoveredAction != null
+                  ? _theme.childOpacityOnButtonHover
+                  : 1,
+              duration: _theme.hoverDuration,
+              curve: Curves.ease,
+              child: _theme.childBounceEnabled
+                  ? BouncingWidget(
+                      animation: _bounceAnimation,
+                      locallyPressedOffset: _locallyPressedOffset,
+                      child: widget.child,
+                    )
+                  : widget.child,
             ),
           ),
         ),
@@ -176,8 +188,11 @@ class _PieMenuCoreState extends State<PieMenuCore>
   }
 
   void _pointerDown(PointerDownEvent event) async {
-    _pressedOffset = event.position;
-    _pressedButton = event.buttons;
+    setState(() {
+      _pressedOffset = event.position;
+      _locallyPressedOffset = event.localPosition;
+      _pressedButton = event.buttons;
+    });
 
     if (_state.active) return;
 
@@ -197,7 +212,10 @@ class _PieMenuCoreState extends State<PieMenuCore>
     _notifier.canvas.attachMenu(
       rightClicked: rightClicked,
       offset: _pressedOffset,
+      localOffset: _locallyPressedOffset,
       renderBox: context.findRenderObject() as RenderBox,
+      child: widget.child,
+      bounceAnimation: _bounceAnimation,
       menuKey: _uniqueKey,
       actions: widget.actions,
       theme: _theme,
@@ -254,9 +272,11 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     _bounceStopwatch.stop();
 
-    final debounceDelay = _bounceStopwatch.elapsedMilliseconds > 100
+    final minDelayMS = _theme.delayDuration == Duration.zero ? 100 : 75;
+
+    final debounceDelay = _bounceStopwatch.elapsedMilliseconds > minDelayMS
         ? Duration.zero
-        : const Duration(milliseconds: 100);
+        : Duration(milliseconds: minDelayMS);
 
     _debounceTimer = Timer(debounceDelay, () {
       if (mounted) _bounceController.reverse();

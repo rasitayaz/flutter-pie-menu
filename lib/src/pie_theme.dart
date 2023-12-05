@@ -8,6 +8,22 @@ import 'package:pie_menu/src/pie_provider.dart';
 /// Action display anchor point for the specified custom angle in [PieTheme].
 enum PieAnchor { start, center, end }
 
+/// Decides how to display the translucent canvas overlay.
+enum PieOverlayStyle {
+  /// Displays the overlay to cover the entire canvas,
+  /// and re-renders the menu child on top of the overlay.
+  ///
+  /// This is the recommended style if your menu child is stateless.
+  behind,
+
+  /// Draws the overlay around the menu child using [CustomPainter].
+  ///
+  /// Use this style if you want to preserve the state of your menu child.
+  /// You might experience some rendering issues when the menu is partially
+  /// obscured by other widgets.
+  around;
+}
+
 /// Defines the behavior and the appearance
 /// of [PieCanvas] and [PieMenu] widgets.
 class PieTheme {
@@ -41,6 +57,7 @@ class PieTheme {
     this.tooltipUseFittedBox = false,
     this.pieBounceDuration = const Duration(seconds: 1),
     this.childBounceEnabled = true,
+    this.childTiltEnabled = true,
     this.childBounceDuration = const Duration(milliseconds: 150),
     this.childBounceFactor = 0.95,
     this.childBounceCurve = Curves.easeOutCubic,
@@ -50,6 +67,8 @@ class PieTheme {
     this.delayDuration = const Duration(milliseconds: 350),
     this.leftClickShowsMenu = true,
     this.rightClickShowsMenu = false,
+    this.overlayStyle = PieOverlayStyle.behind,
+    this.childOpacityOnButtonHover = 0.5,
   });
 
   /// How the background and tooltip widgets should be displayed
@@ -128,6 +147,11 @@ class PieTheme {
   /// Whether to bounce the [PieMenu] child on press.
   final bool childBounceEnabled;
 
+  /// Whether to tilt the [PieMenu] child on press.
+  ///
+  /// Only works if [childBounceEnabled] is set to true.
+  final bool childTiltEnabled;
+
   /// Duration of menu child bounce animation.
   final Duration childBounceDuration;
 
@@ -156,6 +180,19 @@ class PieTheme {
 
   /// Whether to display the menu on right mouse click.
   final bool rightClickShowsMenu;
+
+  /// Decides how to display the translucent canvas overlay.
+  ///
+  /// [PieOverlayStyle.behind] is the recommended style
+  /// if your menu child is stateless.
+  ///
+  /// Use [PieOverlayStyle.around] if you want to preserve the state of your
+  /// menu child. However, you might experience some rendering issues
+  /// when the menu is partially obscured by other widgets.
+  final PieOverlayStyle overlayStyle;
+
+  /// Opacity of the menu child when a button is hovered.
+  final double childOpacityOnButtonHover;
 
   /// Displacement distance of [PieButton]s when hovered.
   double get hoverDisplacement => buttonSize / 8;
@@ -198,6 +235,7 @@ class PieTheme {
     bool? tooltipUseFittedBox,
     Duration? pieBounceDuration,
     bool? childBounceEnabled,
+    bool? childTiltEnabled,
     Duration? childBounceDuration,
     double? childBounceDistance,
     Curve? childBounceCurve,
@@ -207,6 +245,8 @@ class PieTheme {
     Duration? delayDuration,
     bool? leftClickShowsMenu,
     bool? rightClickShowsMenu,
+    PieOverlayStyle? overlayStyle,
+    double? childOpacityOnButtonHover,
   }) {
     return PieTheme(
       brightness: brightness ?? this.brightness,
@@ -232,6 +272,7 @@ class PieTheme {
       tooltipUseFittedBox: tooltipUseFittedBox ?? this.tooltipUseFittedBox,
       pieBounceDuration: pieBounceDuration ?? this.pieBounceDuration,
       childBounceEnabled: childBounceEnabled ?? this.childBounceEnabled,
+      childTiltEnabled: childTiltEnabled ?? this.childTiltEnabled,
       childBounceDuration: childBounceDuration ?? this.childBounceDuration,
       childBounceFactor: childBounceDistance ?? childBounceFactor,
       childBounceCurve: childBounceCurve ?? this.childBounceCurve,
@@ -242,6 +283,9 @@ class PieTheme {
       delayDuration: delayDuration ?? this.delayDuration,
       leftClickShowsMenu: leftClickShowsMenu ?? this.leftClickShowsMenu,
       rightClickShowsMenu: rightClickShowsMenu ?? this.rightClickShowsMenu,
+      overlayStyle: overlayStyle ?? this.overlayStyle,
+      childOpacityOnButtonHover:
+          childOpacityOnButtonHover ?? this.childOpacityOnButtonHover,
     );
   }
 }
