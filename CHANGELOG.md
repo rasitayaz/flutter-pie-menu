@@ -1,3 +1,9 @@
+## 3.1.0
+
+* Improved the child bounce animation by adding a 3D tilt effect to it inspired by [Bounce](https://pub.dev/packages/bounce) package. Can be disabled by setting `childTiltEnabled` to `false` in `PieTheme`.
+* Added `overlayStyle` to `PieTheme` to switch between the old and new overlay styles. `PieOverlayStyle.behind` (the old style) is used by default because the new one causes render issues in some cases.
+* Other minor improvements and bug fixes.
+
 ## 3.0.0
 
 * When a `PieMenu` activates, other gestures are now automatically cancelled. You no longer need to use `NeverScrollableScrollPhysics` to disable scrolling or to deactivate the functionality of your interactive menu child.

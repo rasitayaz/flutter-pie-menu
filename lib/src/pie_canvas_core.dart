@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:pie_menu/src/bouncing_widget.dart';
 import 'package:pie_menu/src/pie_action.dart';
 import 'package:pie_menu/src/pie_button.dart';
 import 'package:pie_menu/src/pie_canvas.dart';
@@ -33,19 +34,19 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   /// Controls platform-specific functionality, used to handle right-clicks.
   final _platform = BasePlatform();
 
-  /// Controls [_bounceAnimation].
-  late final _bounceController = AnimationController(
+  /// Controls [_buttonBounceAnimation].
+  late final _buttonBounceController = AnimationController(
     duration: _theme.pieBounceDuration,
     vsync: this,
   );
 
   /// Bouncing animation for the [PieButton]s.
-  late final _bounceAnimation = Tween(
+  late final _buttonBounceAnimation = Tween(
     begin: 0.0,
     end: 1.0,
   ).animate(
     CurvedAnimation(
-      parent: _bounceController,
+      parent: _buttonBounceController,
       curve: Curves.elasticOut,
     ),
   );
@@ -79,9 +80,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   /// Actions of the current [PieMenu].
   var _actions = <PieAction>[];
 
-  /// Currently hovered [PieButton] index.
-  int? _hoveredAction;
-
   /// Starts when the pointer is down,
   /// is triggered after the delay duration specified in [PieTheme],
   /// and gets cancelled when the pointer is up.
@@ -92,15 +90,12 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   /// and gets cancelled when the pointer is down again.
   Timer? _detachTimer;
 
-  /// Tooltip widget for the hovered [PieButton].
-  Widget? _tooltip;
-
   /// Functional callback triggered when
   /// the current [PieMenu] becomes active or inactive.
   Function(bool active)? _onMenuToggle;
 
   /// Size of the screen. Used to close the menu when the screen size changes.
-  var _size = PlatformDispatcher.instance.views.first.physicalSize;
+  var _physicalSize = PlatformDispatcher.instance.views.first.physicalSize;
 
   /// Theme of the current [PieMenu].
   ///
@@ -112,6 +107,18 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
   /// RenderBox of the current menu.
   RenderBox? _menuRenderBox;
+
+  /// Child widget of the current menu.
+  Widget? _menuChild;
+
+  /// Bounce animation for the child widget of the current menu.
+  Animation<double>? _childBounceAnimation;
+
+  /// Last pressed offset relative to the child widget of the current menu.
+  Offset? _locallyPressedOffset;
+
+  /// Tooltip widget of the currently hovered action.
+  Widget? _tooltip;
 
   /// Controls the shared state.
   PieNotifier get _notifier => PieNotifier.of(context);
@@ -134,8 +141,11 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     return _canvasRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
   }
 
-  double get px => _pointerOffset.dx - _canvasOffset.dx;
-  double get py => _pointerOffset.dy - _canvasOffset.dy;
+  double get cx => _canvasOffset.dx;
+  double get cy => _canvasOffset.dy;
+
+  double get px => _pointerOffset.dx - cx;
+  double get py => _pointerOffset.dy - cy;
 
   double get _angleDiff {
     final customAngleDiff = _theme.customAngleDiff;
@@ -161,6 +171,22 @@ class PieCanvasCoreState extends State<PieCanvasCore>
           return customAngle + arc;
       }
     }
+
+    final mediaQuery = MediaQuery.of(context);
+    final padding = mediaQuery.padding;
+    final size = mediaQuery.size;
+
+    final cx = this.cx < padding.left ? padding.left : this.cx;
+    final cy = this.cy < padding.top ? padding.top : this.cy;
+    final cw = this.cx + this.cw > size.width - padding.right
+        ? size.width - padding.right - cx
+        : this.cw;
+    final ch = this.cy + this.ch > size.height - padding.bottom
+        ? size.height - padding.bottom - cy
+        : this.ch;
+
+    final px = _pointerOffset.dx - cx;
+    final py = _pointerOffset.dy - cy;
 
     final p = Offset(px, py);
     final distanceFactor = min(1, (cw / 2 - px) / (cw / 2));
@@ -196,13 +222,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   }
 
   @override
-  void setState(fn) {
-    if (mounted) {
-      super.setState(fn);
-    }
-  }
-
-  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
@@ -210,7 +229,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
   @override
   void dispose() {
-    _bounceController.dispose();
+    _buttonBounceController.dispose();
     _fadeController.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
@@ -220,11 +239,14 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   void didChangeMetrics() {
     super.didChangeMetrics();
     if (mounted && _state.active) {
-      final prevSize = _size;
-      _size = PlatformDispatcher.instance.views.first.physicalSize;
-      if (prevSize != _size) {
+      final prevSize = _physicalSize;
+      _physicalSize = PlatformDispatcher.instance.views.first.physicalSize;
+      if (prevSize != _physicalSize) {
         _fadeController.animateTo(0, duration: Duration.zero);
-        _notifier.update(active: false);
+        _notifier.update(
+          active: false,
+          clearMenuKey: true,
+        );
         _notifyToggleListeners(active: false);
         _detachMenu();
       }
@@ -234,11 +256,15 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   @override
   Widget build(BuildContext context) {
     final menuRenderBox = _menuRenderBox;
+    final hoveredAction = _state.hoveredAction;
+    if (hoveredAction != null) {
+      _tooltip = _actions[hoveredAction].tooltip;
+    }
 
     return Material(
       type: MaterialType.transparency,
       child: MouseRegion(
-        cursor: _hoveredAction != null
+        cursor: hoveredAction != null
             ? SystemMouseCursors.click
             : SystemMouseCursors.basic,
         child: Stack(
@@ -269,22 +295,63 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                   children: [
                     //* overlay start *//
                     if (menuRenderBox != null && menuRenderBox.attached)
-                      () {
+                      ...() {
                         final menuOffset =
                             menuRenderBox.localToGlobal(Offset.zero);
 
-                        return Positioned.fill(
-                          child: CustomPaint(
-                            painter: OverlayPainter(
-                              color: _theme.effectiveOverlayColor,
-                              menuOffset: Offset(
-                                menuOffset.dx - _canvasOffset.dx,
-                                menuOffset.dy - _canvasOffset.dy,
+                        switch (_theme.overlayStyle) {
+                          case PieOverlayStyle.around:
+                            return [
+                              Positioned.fill(
+                                child: CustomPaint(
+                                  painter: OverlayPainter(
+                                    color: _theme.effectiveOverlayColor,
+                                    menuOffset: Offset(
+                                      menuOffset.dx - cx,
+                                      menuOffset.dy - cy,
+                                    ),
+                                    menuSize: menuRenderBox.size,
+                                  ),
+                                ),
                               ),
-                              menuSize: menuRenderBox.size,
-                            ),
-                          ),
-                        );
+                            ];
+                          case PieOverlayStyle.behind:
+                            final bounceAnimation = _childBounceAnimation;
+
+                            return [
+                              Positioned.fill(
+                                child: ColoredBox(
+                                  color: _theme.effectiveOverlayColor,
+                                ),
+                              ),
+                              Positioned(
+                                left: menuOffset.dx - cx,
+                                top: menuOffset.dy - cy,
+                                child: AnimatedOpacity(
+                                  opacity: _state.active &&
+                                          _state.hoveredAction != null
+                                      ? _theme.childOpacityOnButtonHover
+                                      : 1,
+                                  duration: _theme.hoverDuration,
+                                  curve: Curves.ease,
+                                  child: SizedBox.fromSize(
+                                    size: menuRenderBox.size,
+                                    child: _theme.childBounceEnabled &&
+                                            bounceAnimation != null
+                                        ? BouncingWidget(
+                                            theme: _theme,
+                                            animation: bounceAnimation,
+                                            locallyPressedOffset:
+                                                _locallyPressedOffset,
+                                            child:
+                                                _menuChild ?? const SizedBox(),
+                                          )
+                                        : _menuChild,
+                                  ),
+                                ),
+                              ),
+                            ];
+                        }
                       }.call(),
                     //* overlay end *//
 
@@ -293,7 +360,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                       final tooltipAlignment = _theme.tooltipCanvasAlignment;
 
                       Widget child = AnimatedOpacity(
-                        opacity: _hoveredAction != null ? 1 : 0,
+                        opacity: hoveredAction != null ? 1 : 0,
                         duration: _theme.hoverDuration,
                         curve: Curves.ease,
                         child: Padding(
@@ -340,9 +407,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                               .map((o) => o.dy)
                               .reduce((dy1, dy2) => max(dy1, dy2));
 
-                          return dyMax -
-                              _canvasOffset.dy +
-                              _theme.buttonSize / 2;
+                          return dyMax - cy + _theme.buttonSize / 2;
                         }
 
                         double? getBottomDistance() {
@@ -352,10 +417,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                               .map((o) => o.dy)
                               .reduce((dy1, dy2) => min(dy1, dy2));
 
-                          return ch -
-                              dyMin +
-                              _canvasOffset.dy +
-                              _theme.buttonSize / 2;
+                          return ch - dyMin + cy + _theme.buttonSize / 2;
                         }
 
                         return Positioned(
@@ -377,7 +439,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                     //* action buttons start *//
                     Flow(
                       delegate: PieDelegate(
-                        bounceAnimation: _bounceAnimation,
+                        bounceAnimation: _buttonBounceAnimation,
                         pointerOffset: _pointerOffset,
                         canvasOffset: _canvasOffset,
                         baseAngle: _baseAngle,
@@ -403,7 +465,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                             theme: _theme,
                             action: _actions[i],
                             angle: _getActionAngle(i),
-                            hovered: i == _hoveredAction,
+                            hovered: i == hoveredAction,
                           ),
                       ],
                     ),
@@ -430,7 +492,10 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   void attachMenu({
     required bool rightClicked,
     required Offset offset,
+    required Offset localOffset,
     required RenderBox renderBox,
+    required Widget child,
+    required Animation<double> bounceAnimation,
     required Key menuKey,
     required List<PieAction> actions,
     required PieTheme theme,
@@ -454,18 +519,21 @@ class PieCanvasCoreState extends State<PieCanvasCore>
         () {
           _detachTimer?.cancel();
 
-          _bounceController.forward(from: 0);
+          _buttonBounceController.forward(from: 0);
           _fadeController.forward(from: 0);
 
           _menuRenderBox = renderBox;
+          _menuChild = child;
+          _childBounceAnimation = bounceAnimation;
+          _locallyPressedOffset = localOffset;
           _onMenuToggle = onMenuToggle;
           _actions = actions;
-          _hoveredAction = null;
           _tooltip = null;
 
           _notifier.update(
             active: true,
             menuKey: menuKey,
+            clearHoveredAction: true,
           );
           _notifyToggleListeners(active: true);
         },
@@ -483,10 +551,12 @@ class PieCanvasCoreState extends State<PieCanvasCore>
         _attachTimer?.cancel();
         _pressed = false;
         _pressedAgain = false;
-        _tooltip = null;
-        _hoveredAction = null;
 
-        _notifier.update(active: false);
+        _notifier.update(
+          clearMenuKey: true,
+          active: false,
+          clearHoveredAction: true,
+        );
       },
     );
   }
@@ -503,7 +573,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
     if (_state.active) {
       if (_isBeyondPointerBounds(offset) || _pressedAgain) {
-        final hoveredAction = _hoveredAction;
+        final hoveredAction = _state.hoveredAction;
 
         if (hoveredAction != null) {
           _actions[hoveredAction].onSelect();
@@ -527,13 +597,11 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   void _pointerMove(Offset offset) {
     if (_state.active) {
       void hover(int? action) {
-        if (_hoveredAction != action) {
-          setState(() {
-            _hoveredAction = action;
-            if (action != null) {
-              _tooltip = _actions[action].tooltip;
-            }
-          });
+        if (_state.hoveredAction != action) {
+          _notifier.update(
+            hoveredAction: action,
+            clearHoveredAction: action == null,
+          );
         }
       }
 

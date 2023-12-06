@@ -7,15 +7,19 @@ import 'package:pie_menu/src/pie_theme.dart';
 /// Contains variables shared between [PieCanvasCore] and [PieMenuCore].
 class PieState {
   PieState({
-    required this.active,
     required this.menuKey,
+    required this.active,
+    required this.hoveredAction,
   });
+
+  /// Unique key of the currently active menu.
+  final Key? menuKey;
 
   /// Whether any menu is currently active.
   final bool active;
 
-  /// Unique key of the currently active menu.
-  final Key? menuKey;
+  /// Whether any menu action is currently hovered.
+  final int? hoveredAction;
 }
 
 /// Provides [PieState] to [PieCanvasCore] and [PieMenuCore].
@@ -60,9 +64,10 @@ class PieNotifier extends ChangeNotifier {
   final PieTheme canvasTheme;
 
   /// Current state shared between [PieCanvasCore] and [PieMenuCore].
-  late var state = PieState(
-    active: false,
+  var state = PieState(
     menuKey: null,
+    active: false,
+    hoveredAction: null,
   );
 
   /// Current state of the [PieCanvasCore].
@@ -70,12 +75,17 @@ class PieNotifier extends ChangeNotifier {
 
   /// Updates the shared state and notifies listeners.
   void update({
-    bool? active,
     Key? menuKey,
+    bool clearMenuKey = false,
+    bool? active,
+    int? hoveredAction,
+    bool clearHoveredAction = false,
   }) {
     state = PieState(
+      menuKey: clearMenuKey ? null : menuKey ?? state.menuKey,
       active: active ?? state.active,
-      menuKey: menuKey ?? state.menuKey,
+      hoveredAction:
+          clearHoveredAction ? null : hoveredAction ?? state.hoveredAction,
     );
 
     notifyListeners();
