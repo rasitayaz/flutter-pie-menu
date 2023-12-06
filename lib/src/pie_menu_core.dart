@@ -108,6 +108,9 @@ class _PieMenuCoreState extends State<PieMenuCore>
   /// Used to measure the time between bounce and debounce.
   final _bounceStopwatch = Stopwatch();
 
+  /// Whether the press was canceled by a pointer move event or menu toggle.
+  var _pressCanceled = false;
+
   /// Controls the shared state.
   PieNotifier get _notifier => PieNotifier.of(context);
 
@@ -142,6 +145,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
       if (!_previouslyActive && _state.active) {
         _overlayFadeController.forward(from: 0);
         _debounce();
+        _pressCanceled = true;
       } else if (_previouslyActive && !_state.active) {
         _overlayFadeController.reverse();
       }
@@ -224,6 +228,8 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     if (_state.active) return;
 
+    _pressCanceled = false;
+
     if (_useListenerForBounce) _bounce();
 
     final isMouseEvent = event.kind == PointerDeviceKind.mouse;
@@ -260,18 +266,14 @@ class _PieMenuCoreState extends State<PieMenuCore>
   void _pointerMove(PointerMoveEvent event) {
     if (_state.active) return;
 
-    if (_useListenerForBounce &&
-        (_pressedOffset - event.position).distance > 8) {
-      _debounce();
+    if ((_pressedOffset - event.position).distance > 8) {
+      _pressCanceled = true;
+      if (_useListenerForBounce) _debounce();
     }
   }
 
   void _pointerUp(PointerUpEvent event) {
-    if (_useListenerForBounce) _debounce();
-
-    if ((_pressedOffset - event.position).distance > 8) {
-      return;
-    }
+    if (_pressCanceled) return;
 
     if (_state.active && _theme.delayDuration != Duration.zero) {
       return;
