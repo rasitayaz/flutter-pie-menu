@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:pie_menu/src/pie_theme.dart';
 
+/// This widget is highly inspired by [Bounce](https://pub.dev/packages/bounce)
+/// package created by [Guillaume Cendre](https://github.com/mrcendre)
 class BouncingWidget extends StatefulWidget {
   const BouncingWidget({
     super.key,
