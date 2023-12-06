@@ -273,6 +273,8 @@ class _PieMenuCoreState extends State<PieMenuCore>
   }
 
   void _pointerUp(PointerUpEvent event) {
+    if (_useListenerForBounce) _debounce();
+
     if (_pressCanceled) return;
 
     if (_state.active && _theme.delayDuration != Duration.zero) {
