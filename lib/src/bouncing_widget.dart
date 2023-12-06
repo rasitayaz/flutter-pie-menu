@@ -4,15 +4,18 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:pie_menu/src/pie_theme.dart';
 
 class BouncingWidget extends StatefulWidget {
   const BouncingWidget({
     super.key,
+    required this.theme,
     required this.animation,
     required this.locallyPressedOffset,
     required this.child,
   });
 
+  final PieTheme theme;
   final Animation<double> animation;
   final Offset? locallyPressedOffset;
   final Widget child;
@@ -26,21 +29,19 @@ class _BouncingWidgetState extends State<BouncingWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: move these to theme
-    const shouldTilt = true;
-    const scaleFactor = 0.95;
-
     return AnimatedBuilder(
       animation: widget.animation,
       builder: (context, child) {
         final v = 0.5 / max(lastSize.width, lastSize.height);
         final transform = Matrix4.identity()..setEntry(3, 2, v);
 
-        transform.scale(lerpDouble(1, scaleFactor, widget.animation.value));
+        transform.scale(
+          lerpDouble(1, widget.theme.childBounceFactor, widget.animation.value),
+        );
 
         final offset = widget.locallyPressedOffset;
 
-        if (shouldTilt && offset != null) {
+        if (widget.theme.childTiltEnabled && offset != null) {
           final x = offset.dx / lastSize.width;
           final y = offset.dy / lastSize.height;
 

@@ -339,6 +339,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                                     child: _theme.childBounceEnabled &&
                                             bounceAnimation != null
                                         ? BouncingWidget(
+                                            theme: _theme,
                                             animation: bounceAnimation,
                                             locallyPressedOffset:
                                                 _locallyPressedOffset,

@@ -194,6 +194,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
                 curve: Curves.ease,
                 child: _theme.childBounceEnabled
                     ? BouncingWidget(
+                        theme: _theme,
                         animation: _bounceAnimation,
                         locallyPressedOffset: _locallyPressedOffset,
                         child: widget.child,
