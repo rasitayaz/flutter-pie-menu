@@ -68,38 +68,47 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Flutter Pie Menu 🥧',
-          style: TextStyle(fontWeight: FontWeight.w600),
+    return PieCanvas(
+      theme: const PieTheme(
+        rightClickShowsMenu: true,
+        tooltipTextStyle: TextStyle(
+          fontSize: 32,
+          fontWeight: FontWeight.w600,
         ),
       ),
-      body: IndexedStack(
-        index: _navigationIndex,
-        children: const [
-          StylingPage(),
-          ListViewPage(),
-          AboutPage(),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _navigationIndex,
-        onTap: (index) => setState(() => _navigationIndex = index),
-        items: const [
-          BottomNavigationBarItem(
-            icon: FaIcon(FontAwesomeIcons.palette),
-            label: 'Styling',
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'Flutter Pie Menu 🥧',
+            style: TextStyle(fontWeight: FontWeight.w600),
           ),
-          BottomNavigationBarItem(
-            icon: FaIcon(FontAwesomeIcons.list),
-            label: 'ListView',
-          ),
-          BottomNavigationBarItem(
-            icon: FaIcon(FontAwesomeIcons.circleInfo),
-            label: 'About',
-          ),
-        ],
+        ),
+        body: IndexedStack(
+          index: _navigationIndex,
+          children: const [
+            StylingPage(),
+            ListViewPage(),
+            AboutPage(),
+          ],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _navigationIndex,
+          onTap: (index) => setState(() => _navigationIndex = index),
+          items: const [
+            BottomNavigationBarItem(
+              icon: FaIcon(FontAwesomeIcons.palette),
+              label: 'Styling',
+            ),
+            BottomNavigationBarItem(
+              icon: FaIcon(FontAwesomeIcons.list),
+              label: 'ListView',
+            ),
+            BottomNavigationBarItem(
+              icon: FaIcon(FontAwesomeIcons.circleInfo),
+              label: 'About',
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -358,75 +367,66 @@ class _ListViewPageState extends State<ListViewPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PieCanvas(
-      theme: const PieTheme(
-        rightClickShowsMenu: true,
-        tooltipTextStyle: TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.w600,
-        ),
+    return ListView.separated(
+      padding: EdgeInsets.only(
+        top: spacing,
+        bottom: spacing,
+        left: MediaQuery.of(context).padding.left + spacing,
+        right: MediaQuery.of(context).padding.right + spacing,
       ),
-      child: ListView.separated(
-        padding: EdgeInsets.only(
-          top: spacing,
-          bottom: spacing,
-          left: MediaQuery.of(context).padding.left + spacing,
-          right: MediaQuery.of(context).padding.right + spacing,
-        ),
-        physics: const BouncingScrollPhysics(),
-        itemCount: 16,
-        separatorBuilder: (context, index) => const SizedBox(height: spacing),
-        itemBuilder: (context, index) {
-          return SizedBox(
-            height: 200,
-            child: PieMenu(
-              onPressed: () {
-                context.showSnackBar(
-                  '#$index — Long press or right click to show the menu',
-                );
-              },
-              actions: [
-                PieAction(
-                  tooltip: const Text('Like'),
-                  onSelect: () => context.showSnackBar('Like #$index'),
-                  child: const FaIcon(FontAwesomeIcons.solidHeart),
-                ),
-                PieAction(
-                  tooltip: const Text('Comment'),
-                  onSelect: () => context.showSnackBar('Comment #$index'),
-                  child: const FaIcon(FontAwesomeIcons.solidComment),
-                ),
-                PieAction(
-                  tooltip: const Text('Save'),
-                  onSelect: () => context.showSnackBar('Save #$index'),
-                  child: const FaIcon(FontAwesomeIcons.solidBookmark),
-                ),
-                PieAction(
-                  tooltip: const Text('Share'),
-                  onSelect: () => context.showSnackBar('Share #$index'),
-                  child: const FaIcon(FontAwesomeIcons.share),
-                ),
-              ],
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Colors.orangeAccent,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Center(
-                  child: Text(
-                    '#$index',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 64,
-                    ),
+      physics: const BouncingScrollPhysics(),
+      itemCount: 16,
+      separatorBuilder: (context, index) => const SizedBox(height: spacing),
+      itemBuilder: (context, index) {
+        return SizedBox(
+          height: 200,
+          child: PieMenu(
+            onPressed: () {
+              context.showSnackBar(
+                '#$index — Long press or right click to show the menu',
+              );
+            },
+            actions: [
+              PieAction(
+                tooltip: const Text('Like'),
+                onSelect: () => context.showSnackBar('Like #$index'),
+                child: const FaIcon(FontAwesomeIcons.solidHeart),
+              ),
+              PieAction(
+                tooltip: const Text('Comment'),
+                onSelect: () => context.showSnackBar('Comment #$index'),
+                child: const FaIcon(FontAwesomeIcons.solidComment),
+              ),
+              PieAction(
+                tooltip: const Text('Save'),
+                onSelect: () => context.showSnackBar('Save #$index'),
+                child: const FaIcon(FontAwesomeIcons.solidBookmark),
+              ),
+              PieAction(
+                tooltip: const Text('Share'),
+                onSelect: () => context.showSnackBar('Share #$index'),
+                child: const FaIcon(FontAwesomeIcons.share),
+              ),
+            ],
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.orangeAccent,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Center(
+                child: Text(
+                  '#$index',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 64,
                   ),
                 ),
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
