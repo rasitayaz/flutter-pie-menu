@@ -209,8 +209,6 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     _pressCanceled = false;
 
-    _bounce();
-
     final isMouseEvent = event.kind == PointerDeviceKind.mouse;
     final leftClicked = isMouseEvent && _pressedButton == kPrimaryMouseButton;
     final rightClicked =
@@ -219,6 +217,8 @@ class _PieMenuCoreState extends State<PieMenuCore>
     if (isMouseEvent && !leftClicked && !rightClicked) return;
 
     if (rightClicked && !_theme.rightClickShowsMenu) return;
+
+    _bounce();
 
     if (leftClicked && !_theme.leftClickShowsMenu) return;
 
