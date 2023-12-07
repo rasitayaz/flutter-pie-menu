@@ -1,8 +1,12 @@
-# 3.1.2
+## 3.1.3
+
+* Fixed changelog typos.
+
+## 3.1.2
 
 * Small bug fixes.
 
-# 3.1.1
+## 3.1.1
 
 * Fixed timers not being disposed properly, causing errors during navigation.
 * Fixed some child bounce animation issues.
