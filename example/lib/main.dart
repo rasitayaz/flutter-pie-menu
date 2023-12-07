@@ -377,13 +377,8 @@ class ListViewPage extends StatelessWidget {
           height: 200,
           child: PieMenu(
             onPressed: () {
-              /* context.showSnackBar(
+              context.showSnackBar(
                 '#$index — Long press or right click to show the menu',
-              ); */
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const AboutPage(),
-                ),
               );
             },
             actions: [
