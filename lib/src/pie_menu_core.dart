@@ -220,7 +220,10 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     if (rightClicked && !_theme.rightClickShowsMenu) return;
 
-    _bounce();
+    if (_theme.delayDuration < const Duration(milliseconds: 100) ||
+        rightClicked) {
+      _bounce();
+    }
 
     if (leftClicked && !_theme.leftClickShowsMenu) return;
 

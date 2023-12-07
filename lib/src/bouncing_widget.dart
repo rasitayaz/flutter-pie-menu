@@ -34,6 +34,16 @@ class _BouncingWidgetState extends State<BouncingWidget> {
     return AnimatedBuilder(
       animation: widget.animation,
       builder: (context, child) {
+        final sizeWrapper = _WidgetSizeWrapper(
+          onSizeChange: (newSize) {
+            if (lastSize == newSize) return;
+            setState(() => lastSize = newSize);
+          },
+          child: widget.child,
+        );
+
+        if (lastSize == Size.zero) return sizeWrapper;
+
         final v = 0.5 / max(lastSize.width, lastSize.height);
         final transform = Matrix4.identity()..setEntry(3, 2, v);
 
@@ -59,13 +69,7 @@ class _BouncingWidgetState extends State<BouncingWidget> {
         return Transform(
           transform: transform,
           origin: Offset(lastSize.width / 2, lastSize.height / 2),
-          child: _WidgetSizeWrapper(
-            onSizeChange: (newSize) {
-              if (lastSize == newSize) return;
-              setState(() => lastSize = newSize);
-            },
-            child: widget.child,
-          ),
+          child: sizeWrapper,
         );
       },
       child: widget.child,
