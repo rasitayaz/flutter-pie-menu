@@ -231,6 +231,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   void dispose() {
     _buttonBounceController.dispose();
     _fadeController.dispose();
+    _attachTimer?.cancel();
+    _detachTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }

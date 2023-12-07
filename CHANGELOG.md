@@ -1,3 +1,8 @@
+# 3.1.1
+
+* Fixed timers not being disposed properly, causing errors during navigation.
+* Fixed some child bounce animation issues.
+
 ## 3.1.0
 
 * Improved the child bounce animation by adding a 3D tilt effect to it inspired by [Bounce](https://pub.dev/packages/bounce) package. Can be disabled by setting `childTiltEnabled` to `false` in `PieTheme`.

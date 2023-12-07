@@ -122,20 +122,12 @@ class _PieMenuCoreState extends State<PieMenuCore>
   /// If the [PieMenu] does not have a theme, [PieCanvas] theme is used.
   PieTheme get _theme => widget.theme ?? _notifier.canvasTheme;
 
-  /// Whether to use [Listener] instead of [GestureDetector]
-  /// for bounce animation.
-  ///
-  /// [GestureDetector] provides a smoother bounce animation, but its callbacks
-  /// are not triggered when the delay duration is too short because of the
-  /// [LongPressGestureRecognizer] used internally.
-  bool get _useListenerForBounce {
-    return _theme.delayDuration < const Duration(milliseconds: 100);
-  }
-
   @override
   void dispose() {
     _overlayFadeController.dispose();
     _bounceController.dispose();
+    _debounceTimer?.cancel();
+    _bounceStopwatch.stop();
     super.dispose();
   }
 
@@ -179,9 +171,9 @@ class _PieMenuCoreState extends State<PieMenuCore>
             onPointerMove: _pointerMove,
             onPointerUp: _pointerUp,
             child: GestureDetector(
-              onTapDown: _tapDown,
-              onTapCancel: _tapCancel,
-              onTapUp: _tapUp,
+              onTapDown: (details) => _bounce(),
+              onTapCancel: () => _debounce(),
+              onTapUp: (details) => _debounce(),
               dragStartBehavior: DragStartBehavior.down,
               child: AnimatedOpacity(
                 opacity: _theme.overlayStyle == PieOverlayStyle.around &&
@@ -208,18 +200,6 @@ class _PieMenuCoreState extends State<PieMenuCore>
     );
   }
 
-  void _tapDown(TapDownDetails details) {
-    if (!_useListenerForBounce) _bounce();
-  }
-
-  void _tapCancel() {
-    if (!_useListenerForBounce) _debounce();
-  }
-
-  void _tapUp(TapUpDetails details) {
-    if (!_useListenerForBounce) _debounce();
-  }
-
   void _pointerDown(PointerDownEvent event) {
     setState(() {
       _pressedOffset = event.position;
@@ -231,8 +211,6 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     _pressCanceled = false;
 
-    if (_useListenerForBounce) _bounce();
-
     final isMouseEvent = event.kind == PointerDeviceKind.mouse;
     final leftClicked = isMouseEvent && _pressedButton == kPrimaryMouseButton;
     final rightClicked =
@@ -241,6 +219,8 @@ class _PieMenuCoreState extends State<PieMenuCore>
     if (isMouseEvent && !leftClicked && !rightClicked) return;
 
     if (rightClicked && !_theme.rightClickShowsMenu) return;
+
+    _bounce();
 
     if (leftClicked && !_theme.leftClickShowsMenu) return;
 
@@ -269,12 +249,12 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     if ((_pressedOffset - event.position).distance > 8) {
       _pressCanceled = true;
-      if (_useListenerForBounce) _debounce();
+      _debounce();
     }
   }
 
   void _pointerUp(PointerUpEvent event) {
-    if (_useListenerForBounce) _debounce();
+    _debounce();
 
     if (_pressCanceled) return;
 
@@ -313,7 +293,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
         : Duration(milliseconds: minDelayMS);
 
     _debounceTimer = Timer(debounceDelay, () {
-      if (mounted) _bounceController.reverse();
+      _bounceController.reverse();
     });
   }
 }
