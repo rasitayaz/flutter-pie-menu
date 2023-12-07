@@ -1,3 +1,7 @@
+## 3.1.3
+
+* Fixed changelog typos.
+
 ## 3.1.2
 
 * Small bug fixes.
