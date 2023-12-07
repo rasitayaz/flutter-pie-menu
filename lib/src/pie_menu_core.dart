@@ -126,6 +126,8 @@ class _PieMenuCoreState extends State<PieMenuCore>
   void dispose() {
     _overlayFadeController.dispose();
     _bounceController.dispose();
+    _debounceTimer?.cancel();
+    _bounceStopwatch.stop();
     super.dispose();
   }
 
@@ -291,7 +293,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
         : Duration(milliseconds: minDelayMS);
 
     _debounceTimer = Timer(debounceDelay, () {
-      if (mounted) _bounceController.reverse();
+      _bounceController.reverse();
     });
   }
 }

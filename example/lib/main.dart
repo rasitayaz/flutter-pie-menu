@@ -30,11 +30,11 @@ void main() {
       systemNavigationBarColor: Colors.transparent,
     ),
   );
-  runApp(const SandboxApp());
+  runApp(const ExampleApp());
 }
 
-class SandboxApp extends StatelessWidget {
-  const SandboxApp({super.key});
+class ExampleApp extends StatelessWidget {
+  const ExampleApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +64,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _navigationIndex = 0;
+  var _navigationIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +114,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-/// Different styles
+//* different styles *//
 class StylingPage extends StatelessWidget {
   const StylingPage({super.key});
 
@@ -354,16 +354,11 @@ class StylingPage extends StatelessWidget {
   }
 }
 
-/// List view example
-class ListViewPage extends StatefulWidget {
+//* list view example *//
+class ListViewPage extends StatelessWidget {
   const ListViewPage({super.key});
 
-  @override
-  State<ListViewPage> createState() => _ListViewPageState();
-}
-
-class _ListViewPageState extends State<ListViewPage> {
-  static const double spacing = 20;
+  static const spacing = 20.0;
 
   @override
   Widget build(BuildContext context) {
@@ -382,8 +377,13 @@ class _ListViewPageState extends State<ListViewPage> {
           height: 200,
           child: PieMenu(
             onPressed: () {
-              context.showSnackBar(
+              /* context.showSnackBar(
                 '#$index — Long press or right click to show the menu',
+              ); */
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const AboutPage(),
+                ),
               );
             },
             actions: [
@@ -431,7 +431,7 @@ class _ListViewPageState extends State<ListViewPage> {
   }
 }
 
-/// About the developer
+//* about the developer *//
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
 

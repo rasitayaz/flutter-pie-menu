@@ -1,3 +1,4 @@
+* Fixed timers not being disposed properly, causing errors with the navigation.
 * Fixed some child bounce animation issues.
 
 ## 3.1.0
