@@ -1,4 +1,6 @@
-* Fixed timers not being disposed properly, causing errors with the navigation.
+# 3.1.1
+
+* Fixed timers not being disposed properly, causing errors during navigation.
 * Fixed some child bounce animation issues.
 
 ## 3.1.0
