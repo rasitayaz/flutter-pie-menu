@@ -515,6 +515,14 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     if (!_pressed) {
       _pressed = true;
       if (_theme.alwaysPlaceActionsFromCenter) {
+        if (!renderBox.hasSize) {
+          throw Exception(
+            'The current RenderBox doesn\'t have a size.\n'
+            'Please do not use `alwaysPlaceActionsFromCenter` here\n\n'
+            'For more information, see the pie_menu documentation.\n'
+            'https://pub.dev/packages/pie_menu',
+          );
+        }
         _pointerOffset = offset -
             localOffset +
             Offset(renderBox.size.width * 0.5, renderBox.size.height * 0.5);
