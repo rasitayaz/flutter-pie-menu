@@ -514,7 +514,13 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
     if (!_pressed) {
       _pressed = true;
-      _pointerOffset = offset;
+      if (_theme.alwaysPlaceActionsFromCenter) {
+        _pointerOffset = offset -
+            localOffset +
+            Offset(renderBox.size.width * 0.5, renderBox.size.height * 0.5);
+      } else {
+        _pointerOffset = offset;
+      }
 
       _attachTimer = Timer(
         rightClicked ? Duration.zero : _theme.delayDuration,

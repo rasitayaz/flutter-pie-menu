@@ -48,6 +48,7 @@ class PieTheme {
     this.angleOffset = 0,
     this.customAngle,
     this.customAngleAnchor = PieAnchor.center,
+    this.alwaysPlaceActionsFromCenter = false,
     this.buttonSize = 56,
     this.pointerSize = 40,
     this.tooltipPadding = const EdgeInsets.all(32),
@@ -115,6 +116,10 @@ class PieTheme {
 
   /// Action display alignment for the specified [customAngle].
   final PieAnchor customAngleAnchor;
+
+  /// Ignores pointer offset and places actions from the center
+  /// of the button.
+  final bool alwaysPlaceActionsFromCenter;
 
   /// Size of [PieButton] circle.
   final double buttonSize;
