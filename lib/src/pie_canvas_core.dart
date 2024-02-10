@@ -488,6 +488,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   }
 
   bool _isBeyondPointerBounds(Offset offset) {
+    if (_theme.alwaysPlaceActionsFromCenter) return false;
+
     return (_pointerOffset - offset).distance > _theme.pointerSize / 2;
   }
 
