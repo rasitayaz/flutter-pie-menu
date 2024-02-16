@@ -234,6 +234,7 @@ class PieTheme {
     double? angleOffset,
     double? customAngle,
     PieAnchor? customAngleAnchor,
+    bool? alwaysPlaceActionFromCenter,
     double? buttonSize,
     double? pointerSize,
     EdgeInsets? tooltipPadding,
@@ -270,6 +271,8 @@ class PieTheme {
       angleOffset: angleOffset ?? this.angleOffset,
       customAngle: customAngle ?? this.customAngle,
       customAngleAnchor: customAngleAnchor ?? this.customAngleAnchor,
+      alwaysPlaceActionFromCenter:
+          alwaysPlaceActionFromCenter ?? this.alwaysPlaceActionFromCenter,
       buttonSize: buttonSize ?? this.buttonSize,
       pointerSize: pointerSize ?? this.pointerSize,
       tooltipPadding: tooltipPadding ?? this.tooltipPadding,
