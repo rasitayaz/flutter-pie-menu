@@ -48,7 +48,7 @@ class PieTheme {
     this.angleOffset = 0,
     this.customAngle,
     this.customAngleAnchor = PieAnchor.center,
-    this.alwaysPlaceActionFromCenter = true,
+    this.alwaysPlaceActionFromCenter = false,
     this.buttonSize = 56,
     this.pointerSize = 40,
     this.tooltipPadding = const EdgeInsets.all(32),
@@ -120,8 +120,8 @@ class PieTheme {
   /// If set to true, all actions will be rendered from the center
   /// of the widget.
   ///
-  /// This is ideal if you're using [PieMenu] with small icon buttons
-  /// or [FloatingActionButton]s
+  /// This is ideal if you're using [PieMenu] with small icon (e.g., [Scaffold.floatingActionButton])
+  /// and fixed [customAngle]
   final bool alwaysPlaceActionFromCenter;
 
   /// Size of [PieButton] circle.
