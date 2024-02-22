@@ -141,6 +141,11 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     return _canvasRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
   }
 
+  Offset? get _menuCenter {
+    return _menuRenderBox
+        ?.localToGlobal((_menuRenderBox as RenderBox).size.center(Offset.zero));
+  }
+
   double get cx => _canvasOffset.dx;
   double get cy => _canvasOffset.dy;
 
@@ -214,10 +219,14 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   }
 
   Offset _getActionOffset(int index) {
+    final referenceOffset = _theme.alwaysPlaceActionFromCenter
+        ? (_menuCenter ?? _pointerOffset)
+        : _pointerOffset;
+
     final angle = _getActionAngle(index);
     return Offset(
-      _pointerOffset.dx + _theme.radius * cos(angle),
-      _pointerOffset.dy - _theme.radius * sin(angle),
+      referenceOffset.dx + _theme.radius * cos(angle),
+      referenceOffset.dy - _theme.radius * sin(angle),
     );
   }
 
@@ -447,6 +456,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                         baseAngle: _baseAngle,
                         angleDiff: _angleDiff,
                         theme: _theme,
+                        menuCenter: _menuCenter,
                       ),
                       children: [
                         DecoratedBox(
@@ -598,6 +608,10 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
   void _pointerMove(Offset offset) {
     if (_state.active) {
+      final referenceOffset = _theme.alwaysPlaceActionFromCenter
+          ? (_menuCenter ?? _pointerOffset)
+          : _pointerOffset;
+
       void hover(int? action) {
         if (_state.hoveredAction != action) {
           _notifier.update(
@@ -607,7 +621,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
         }
       }
 
-      final pointerDistance = (_pointerOffset - offset).distance;
+      final pointerDistance = (referenceOffset - offset).distance;
 
       if (pointerDistance < _theme.radius - _theme.buttonSize * 0.5 ||
           pointerDistance > _theme.radius + _theme.buttonSize * 0.8) {
