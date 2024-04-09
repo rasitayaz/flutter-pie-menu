@@ -327,6 +327,8 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
   /// Calculates the mid point of the current widget as absolute coordinates.
   /// This can be used within [PointerEvents] to simulate taps.
+  ///
+  /// Returns Offset.zero if the RenderBox was not available.
   Offset _getMidPointInGlobalSpace() {
     final renderBox = context.findRenderObject() as RenderBox?;
     Offset midPointInGlobalSpace = Offset.zero;
