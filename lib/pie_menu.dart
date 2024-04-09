@@ -5,3 +5,4 @@ export 'src/pie_button_theme.dart';
 export 'src/pie_canvas.dart';
 export 'src/pie_menu.dart';
 export 'src/pie_theme.dart';
+export 'src/pie_menu_controller.dart';
