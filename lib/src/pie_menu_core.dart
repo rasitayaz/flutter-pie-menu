@@ -7,6 +7,7 @@ import 'package:pie_menu/src/pie_action.dart';
 import 'package:pie_menu/src/pie_button.dart';
 import 'package:pie_menu/src/pie_canvas.dart';
 import 'package:pie_menu/src/pie_menu.dart';
+import 'package:pie_menu/src/pie_menu_controller.dart';
 import 'package:pie_menu/src/pie_provider.dart';
 import 'package:pie_menu/src/pie_theme.dart';
 
@@ -19,6 +20,7 @@ class PieMenuCore extends StatefulWidget {
     required this.onToggle,
     required this.onPressed,
     required this.onPressedWithDevice,
+    this.controller,
     required this.child,
   });
 
@@ -45,6 +47,9 @@ class PieMenuCore extends StatefulWidget {
   ///
   /// Can be useful to distinguish between mouse and touch events.
   final Function(PointerDeviceKind kind)? onPressedWithDevice;
+
+  /// Controller for programmatically emitting [PieMenu] events.
+  final PieMenuController? controller;
 
   @override
   State<PieMenuCore> createState() => _PieMenuCoreState();
@@ -123,11 +128,19 @@ class _PieMenuCoreState extends State<PieMenuCore>
   PieTheme get _theme => widget.theme ?? _notifier.canvasTheme;
 
   @override
+  void initState() {
+    widget.controller?.addListener(_onControllerChanged);
+    super.initState();
+  }
+
+  @override
   void dispose() {
     _overlayFadeController.dispose();
     _bounceController.dispose();
     _debounceTimer?.cancel();
     _bounceStopwatch.stop();
+    widget.controller?.dispose();
+
     super.dispose();
   }
 
@@ -298,5 +311,40 @@ class _PieMenuCoreState extends State<PieMenuCore>
     _debounceTimer = Timer(debounceDelay, () {
       _bounceController.reverse();
     });
+  }
+
+  void _onControllerChanged() {
+    final syntheticPointerDownEvent = PointerDownEvent(
+      kind: PointerDeviceKind.touch,
+      buttons: 0,
+      position: _getMidPointInGlobalSpace(),
+    );
+
+    _pointerDown(
+      syntheticPointerDownEvent,
+    );
+  }
+
+  /// Calculates the mid point of the current widget as absolute coordinates.
+  /// This can be used within [PointerEvents] to simulate taps.
+  Offset _getMidPointInGlobalSpace() {
+    final renderBox = context.findRenderObject() as RenderBox?;
+    Offset midPointInGlobalSpace = Offset.zero;
+
+    if (renderBox != null && widget.controller != null) {
+      // Find middle of widget in local space.
+      final constraints = renderBox.constraints;
+      final midPointOfCurrentBounds = Offset(
+        constraints.maxWidth / 2,
+        constraints.maxHeight / 2,
+      );
+
+      // Convert local space to global space
+      midPointInGlobalSpace = renderBox.localToGlobal(
+        midPointOfCurrentBounds,
+      );
+    }
+
+    return midPointInGlobalSpace;
   }
 }
