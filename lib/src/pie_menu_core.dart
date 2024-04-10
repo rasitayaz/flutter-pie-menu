@@ -7,7 +7,7 @@ import 'package:pie_menu/src/pie_action.dart';
 import 'package:pie_menu/src/pie_button.dart';
 import 'package:pie_menu/src/pie_canvas.dart';
 import 'package:pie_menu/src/pie_menu.dart';
-import 'package:pie_menu/src/pie_menu_controller.dart';
+import 'package:pie_menu/src/pie_menu_tap_controller.dart';
 import 'package:pie_menu/src/pie_provider.dart';
 import 'package:pie_menu/src/pie_theme.dart';
 
@@ -20,7 +20,7 @@ class PieMenuCore extends StatefulWidget {
     required this.onToggle,
     required this.onPressed,
     required this.onPressedWithDevice,
-    this.controller,
+    this.tapController,
     required this.child,
   });
 
@@ -48,8 +48,8 @@ class PieMenuCore extends StatefulWidget {
   /// Can be useful to distinguish between mouse and touch events.
   final Function(PointerDeviceKind kind)? onPressedWithDevice;
 
-  /// Controller for programmatically emitting [PieMenu] events.
-  final PieMenuController? controller;
+  /// Controller for programmatically emitting [PieMenu] tap events.
+  final PieMenuTapController? tapController;
 
   @override
   State<PieMenuCore> createState() => _PieMenuCoreState();
@@ -129,7 +129,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
   @override
   void initState() {
-    widget.controller?.addListener(_onControllerChanged);
+    widget.tapController?.addListener(_onTapControllerChanged);
     super.initState();
   }
 
@@ -139,7 +139,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
     _bounceController.dispose();
     _debounceTimer?.cancel();
     _bounceStopwatch.stop();
-    widget.controller?.dispose();
+    widget.tapController?.dispose();
 
     super.dispose();
   }
@@ -313,7 +313,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
     });
   }
 
-  void _onControllerChanged() {
+  void _onTapControllerChanged() {
     final syntheticPointerDownEvent = PointerDownEvent(
       kind: PointerDeviceKind.touch,
       buttons: 0,
@@ -333,7 +333,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
     final renderBox = context.findRenderObject() as RenderBox?;
     Offset midPointInGlobalSpace = Offset.zero;
 
-    if (renderBox != null && widget.controller != null) {
+    if (renderBox != null && widget.tapController != null) {
       // Find middle of widget in local space.
       final constraints = renderBox.constraints;
       final midPointOfCurrentBounds = Offset(

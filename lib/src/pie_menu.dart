@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pie_menu/src/pie_action.dart';
 import 'package:pie_menu/src/pie_button.dart';
 import 'package:pie_menu/src/pie_canvas.dart';
-import 'package:pie_menu/src/pie_menu_controller.dart';
+import 'package:pie_menu/src/pie_menu_tap_controller.dart';
 import 'package:pie_menu/src/pie_menu_core.dart';
 import 'package:pie_menu/src/pie_provider.dart';
 import 'package:pie_menu/src/pie_theme.dart';
@@ -22,7 +22,7 @@ class PieMenu extends StatelessWidget {
     this.onToggle,
     this.onPressed,
     this.onPressedWithDevice,
-    this.controller,
+    this.tapController,
     required this.child,
   });
 
@@ -50,7 +50,7 @@ class PieMenu extends StatelessWidget {
   /// Can be useful to distinguish between mouse and touch events.
   final Function(PointerDeviceKind kind)? onPressedWithDevice;
 
-  final PieMenuController? controller;
+  final PieMenuTapController? tapController;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +63,7 @@ class PieMenu extends StatelessWidget {
           onToggle: onToggle,
           onPressed: onPressed,
           onPressedWithDevice: onPressedWithDevice,
-          controller: controller,
+          tapController: tapController,
           child: child,
         );
       },
