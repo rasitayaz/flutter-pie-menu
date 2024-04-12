@@ -333,9 +333,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
   void _onOpenMenu() => _attachMenu(false, offset: _getMidPointInGlobalSpace());
 
-  void _onCloseMenu() {
-    _notifier.canvas.closeMenu(_uniqueKey);
-  }
+  void _onCloseMenu() => _notifier.canvas.closeMenu(_uniqueKey);
 
   /// Calculates the mid point of the current widget as absolute coordinates.
   Offset _getMidPointInGlobalSpace() {
