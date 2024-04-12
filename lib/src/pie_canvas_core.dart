@@ -548,6 +548,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     Key currentMenuKey,
   ) {
     if (currentMenuKey == _notifier.state.menuKey) {
+      _fadeController.reverse();
       _detachMenu();
     }
   }
