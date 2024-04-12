@@ -50,7 +50,7 @@ class PieMenu extends StatelessWidget {
   /// Can be useful to distinguish between mouse and touch events.
   final Function(PointerDeviceKind kind)? onPressedWithDevice;
 
-  /// Controller for programmatically emitting [PieMenu] tap events.
+  /// Controller for programmatically emitting [PieMenu] events.
   final PieMenuController? controller;
 
   @override
