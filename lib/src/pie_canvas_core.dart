@@ -141,11 +141,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     return _canvasRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
   }
 
-  Offset? get _menuCenter {
-    return _menuRenderBox
-        ?.localToGlobal((_menuRenderBox as RenderBox).size.center(Offset.zero));
-  }
-
   double get cx => _canvasOffset.dx;
   double get cy => _canvasOffset.dy;
 
@@ -219,14 +214,10 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   }
 
   Offset _getActionOffset(int index) {
-    final referenceOffset = _theme.alwaysPlaceActionFromCenter
-        ? (_menuCenter ?? _pointerOffset)
-        : _pointerOffset;
-
     final angle = _getActionAngle(index);
     return Offset(
-      referenceOffset.dx + _theme.radius * cos(angle),
-      referenceOffset.dy - _theme.radius * sin(angle),
+      _pointerOffset.dx + _theme.radius * cos(angle),
+      _pointerOffset.dy - _theme.radius * sin(angle),
     );
   }
 
@@ -456,7 +447,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                         baseAngle: _baseAngle,
                         angleDiff: _angleDiff,
                         theme: _theme,
-                        menuCenter: _menuCenter,
                       ),
                       children: [
                         DecoratedBox(
@@ -547,6 +537,13 @@ class PieCanvasCoreState extends State<PieCanvasCore>
             menuKey: menuKey,
             clearHoveredAction: true,
           );
+
+          if (_theme.alwaysPlaceActionFromCenter && _menuRenderBox != null) {
+            _pointerOffset = _menuRenderBox!.localToGlobal(
+              (_menuRenderBox as RenderBox).size.center(Offset.zero),
+            );
+          }
+
           _notifyToggleListeners(active: true);
         },
       );
@@ -584,9 +581,13 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     _attachTimer?.cancel();
 
     if (_state.active) {
-      if (_isBeyondPointerBounds(offset) || _pressedAgain) {
-        final hoveredAction = _state.hoveredAction;
+      final int? hoveredAction = _state.hoveredAction;
 
+      final bool beyondBounds = _theme.alwaysPlaceActionFromCenter
+          ? (hoveredAction != null)
+          : _isBeyondPointerBounds(offset);
+
+      if (beyondBounds || _pressedAgain) {
         if (hoveredAction != null) {
           _actions[hoveredAction].onSelect();
         }
@@ -608,10 +609,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
   void _pointerMove(Offset offset) {
     if (_state.active) {
-      final referenceOffset = _theme.alwaysPlaceActionFromCenter
-          ? (_menuCenter ?? _pointerOffset)
-          : _pointerOffset;
-
       void hover(int? action) {
         if (_state.hoveredAction != action) {
           _notifier.update(
@@ -621,7 +618,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
         }
       }
 
-      final pointerDistance = (referenceOffset - offset).distance;
+      final pointerDistance = (_pointerOffset - offset).distance;
 
       if (pointerDistance < _theme.radius - _theme.buttonSize * 0.5 ||
           pointerDistance > _theme.radius + _theme.buttonSize * 0.8) {

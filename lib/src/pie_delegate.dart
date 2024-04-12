@@ -16,7 +16,6 @@ class PieDelegate extends FlowDelegate {
     required this.baseAngle,
     required this.angleDiff,
     required this.theme,
-    this.menuCenter,
   }) : super(repaint: bounceAnimation);
 
   /// Bouncing animation for the buttons.
@@ -37,9 +36,6 @@ class PieDelegate extends FlowDelegate {
   /// Theme to use for the [PieMenu].
   final PieTheme theme;
 
-  /// Size of the child widget, used when [PieTheme.alwaysPlaceActionFromCenter] is true
-  final Offset? menuCenter;
-
   @override
   bool shouldRepaint(PieDelegate oldDelegate) {
     return bounceAnimation != oldDelegate.bounceAnimation;
@@ -47,13 +43,8 @@ class PieDelegate extends FlowDelegate {
 
   @override
   void paintChildren(FlowPaintingContext context) {
-    final bool forceCenter =
-        theme.alwaysPlaceActionFromCenter && menuCenter != null;
-
-    final dx =
-        (forceCenter ? menuCenter!.dx : pointerOffset.dx) - canvasOffset.dx;
-    final dy =
-        (forceCenter ? menuCenter!.dy : pointerOffset.dy) - canvasOffset.dy;
+    final dx = pointerOffset.dx - canvasOffset.dx;
+    final dy = pointerOffset.dy - canvasOffset.dy;
     final count = context.childCount;
 
     for (var i = 0; i < count; ++i) {
