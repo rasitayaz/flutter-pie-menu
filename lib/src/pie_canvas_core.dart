@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:pie_menu/src/bouncing_widget.dart';
 import 'package:pie_menu/src/pie_action.dart';
 import 'package:pie_menu/src/pie_button.dart';
@@ -538,9 +539,9 @@ class PieCanvasCoreState extends State<PieCanvasCore>
             clearHoveredAction: true,
           );
 
-          if (_theme.alwaysPlaceActionFromCenter && _menuRenderBox != null) {
-            _pointerOffset = _menuRenderBox!.localToGlobal(
-              (_menuRenderBox as RenderBox).size.center(Offset.zero),
+          if (_theme.alwaysPlaceActionFromCenter) {
+            _pointerOffset = renderBox.localToGlobal(
+              renderBox.size.center(Offset.zero),
             );
           }
 
@@ -583,8 +584,15 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     if (_state.active) {
       final int? hoveredAction = _state.hoveredAction;
 
+      final Offset? localOffset = _menuRenderBox?.globalToLocal(offset);
+
       final bool beyondBounds = _theme.alwaysPlaceActionFromCenter
-          ? (hoveredAction != null)
+          ? !(hoveredAction == null &&
+              localOffset != null &&
+              _menuRenderBox!.hitTest(
+                BoxHitTestResult(),
+                position: localOffset,
+              ))
           : _isBeyondPointerBounds(offset);
 
       if (beyondBounds || _pressedAgain) {
