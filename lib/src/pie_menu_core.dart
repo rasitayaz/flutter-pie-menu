@@ -240,18 +240,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     if (leftClicked && !_theme.leftClickShowsMenu) return;
 
-    _notifier.canvas.attachMenu(
-      rightClicked: rightClicked,
-      offset: _pressedOffset,
-      localOffset: _locallyPressedOffset,
-      renderBox: context.findRenderObject() as RenderBox,
-      child: widget.child,
-      bounceAnimation: _bounceAnimation,
-      menuKey: _uniqueKey,
-      actions: widget.actions,
-      theme: _theme,
-      onMenuToggle: widget.onToggle,
-    );
+    _attachMenu(rightClicked);
 
     final recognizer = LongPressGestureRecognizer(
       duration: _theme.delayDuration,
@@ -313,6 +302,21 @@ class _PieMenuCoreState extends State<PieMenuCore>
     });
   }
 
+  void _attachMenu(bool rightClicked, {Offset? offset}) {
+    _notifier.canvas.attachMenu(
+      rightClicked: rightClicked,
+      offset: offset ?? _pressedOffset,
+      localOffset: _locallyPressedOffset,
+      renderBox: context.findRenderObject() as RenderBox,
+      child: widget.child,
+      bounceAnimation: _bounceAnimation,
+      menuKey: _uniqueKey,
+      actions: widget.actions,
+      theme: _theme,
+      onMenuToggle: widget.onToggle,
+    );
+  }
+
   void _onControllerChanged() {
     final eventActions = {
       PieMenuEvent.openMenu: _onOpenMenu,
@@ -327,20 +331,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
     action?.call();
   }
 
-  void _onOpenMenu() {
-    _notifier.canvas.attachMenu(
-      rightClicked: false,
-      offset: _getMidPointInGlobalSpace(),
-      localOffset: _locallyPressedOffset,
-      renderBox: context.findRenderObject() as RenderBox,
-      child: widget.child,
-      bounceAnimation: _bounceAnimation,
-      menuKey: _uniqueKey,
-      actions: widget.actions,
-      theme: _theme,
-      onMenuToggle: widget.onToggle,
-    );
-  }
+  void _onOpenMenu() => _attachMenu(false, offset: _getMidPointInGlobalSpace());
 
   void _onCloseMenu() {
     _notifier.canvas.closeMenu(_uniqueKey);
