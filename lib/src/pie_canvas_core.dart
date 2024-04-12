@@ -543,6 +543,15 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     }
   }
 
+  // A method to allow controllers to close the menu
+  void closeMenu(
+    Key currentMenuKey,
+  ) {
+    if (currentMenuKey == _notifier.state.menuKey) {
+      _detachMenu();
+    }
+  }
+
   void _detachMenu({bool afterDelay = true}) {
     final subscription = _contextMenuSubscription;
     if (subscription is StreamSubscription) subscription.cancel();

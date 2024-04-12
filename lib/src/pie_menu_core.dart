@@ -313,27 +313,44 @@ class _PieMenuCoreState extends State<PieMenuCore>
     });
   }
 
-  void _onTapControllerChanged() {
-    final syntheticPointerDownEvent = PointerDownEvent(
-      kind: PointerDeviceKind.touch,
-      buttons: 0,
-      position: _getMidPointInGlobalSpace(),
-    );
+  void _onControllerChanged() {
+    final eventActions = {
+      PieMenuEvent.openMenu: _onOpenMenu,
+      PieMenuEvent.closeMenu: _onCloseMenu,
+      // Add more event-action mappings as needed
+    };
 
-    _pointerDown(
-      syntheticPointerDownEvent,
+    // ! used because this method only runs if we registered it with the controller.
+    final action = eventActions[widget.controller!.value];
+
+    // Call the action function if it exists
+    action?.call();
+  }
+
+  void _onOpenMenu() {
+    _notifier.canvas.attachMenu(
+      rightClicked: false,
+      offset: _getMidPointInGlobalSpace(),
+      localOffset: _locallyPressedOffset,
+      renderBox: context.findRenderObject() as RenderBox,
+      child: widget.child,
+      bounceAnimation: _bounceAnimation,
+      menuKey: _uniqueKey,
+      actions: widget.actions,
+      theme: _theme,
+      onMenuToggle: widget.onToggle,
     );
   }
 
+  void _onCloseMenu() {
+    _notifier.canvas.closeMenu(_uniqueKey);
+  }
+
   /// Calculates the mid point of the current widget as absolute coordinates.
-  /// This can be used within [PointerEvents] to simulate taps.
-  ///
-  /// Returns Offset.zero if the RenderBox was not available.
   Offset _getMidPointInGlobalSpace() {
-    final renderBox = context.findRenderObject() as RenderBox?;
+    final renderBox = context.findRenderObject() as RenderBox;
     Offset midPointInGlobalSpace = Offset.zero;
 
-    if (renderBox != null && widget.tapController != null) {
     // Find middle of widget in local space.
     final constraints = renderBox.constraints;
     final midPointOfCurrentBounds = Offset(
@@ -345,7 +362,6 @@ class _PieMenuCoreState extends State<PieMenuCore>
     midPointInGlobalSpace = renderBox.localToGlobal(
       midPointOfCurrentBounds,
     );
-    }
 
     return midPointInGlobalSpace;
   }
