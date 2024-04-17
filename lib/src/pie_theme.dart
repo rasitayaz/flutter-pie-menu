@@ -48,7 +48,8 @@ class PieTheme {
     this.angleOffset = 0,
     this.customAngle,
     this.customAngleAnchor = PieAnchor.center,
-    this.alwaysPlaceActionFromCenter = false,
+    this.menuAlignment,
+    this.menuDisplacement = Offset.zero,
     this.buttonSize = 56,
     this.pointerSize = 40,
     this.tooltipPadding = const EdgeInsets.all(32),
@@ -117,12 +118,17 @@ class PieTheme {
   /// Action display alignment for the specified [customAngle].
   final PieAnchor customAngleAnchor;
 
-  /// If set to true, all actions will be rendered from the center
-  /// of the widget.
+  /// Alignment of the menu relative to the menu child.
   ///
-  /// This is ideal if you're using [PieMenu] with small icon (e.g., [Scaffold.floatingActionButton])
-  /// and fixed [customAngle]
-  final bool alwaysPlaceActionFromCenter;
+  /// Can be used to display the menu at a specific position
+  /// regardless of the pressed offset.
+  /// For example, you can set it to [Alignment.center] to align
+  /// the menu at the center of the child widget.
+  /// You can combine it with [menuDisplacement] to fine-tune the position.
+  final Alignment? menuAlignment;
+
+  /// Displacement offset for the menu.
+  final Offset menuDisplacement;
 
   /// Size of [PieButton] circle.
   final double buttonSize;
@@ -234,7 +240,8 @@ class PieTheme {
     double? angleOffset,
     double? customAngle,
     PieAnchor? customAngleAnchor,
-    bool? alwaysPlaceActionFromCenter,
+    Alignment? menuAlignment,
+    Offset? menuDisplacement,
     double? buttonSize,
     double? pointerSize,
     EdgeInsets? tooltipPadding,
@@ -271,8 +278,8 @@ class PieTheme {
       angleOffset: angleOffset ?? this.angleOffset,
       customAngle: customAngle ?? this.customAngle,
       customAngleAnchor: customAngleAnchor ?? this.customAngleAnchor,
-      alwaysPlaceActionFromCenter:
-          alwaysPlaceActionFromCenter ?? this.alwaysPlaceActionFromCenter,
+      menuAlignment: menuAlignment ?? this.menuAlignment,
+      menuDisplacement: menuDisplacement ?? this.menuDisplacement,
       buttonSize: buttonSize ?? this.buttonSize,
       pointerSize: pointerSize ?? this.pointerSize,
       tooltipPadding: tooltipPadding ?? this.tooltipPadding,
