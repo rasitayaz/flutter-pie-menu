@@ -247,13 +247,12 @@ class PieCanvasCoreState extends State<PieCanvasCore>
       final prevSize = _physicalSize;
       _physicalSize = PlatformDispatcher.instance.views.first.physicalSize;
       if (prevSize != _physicalSize) {
-        _fadeController.animateTo(0, duration: Duration.zero);
         _notifier.update(
           active: false,
           clearMenuKey: true,
         );
         _notifyToggleListeners(active: false);
-        _detachMenu();
+        _detachMenu(animate: false);
       }
     }
   }
@@ -565,12 +564,18 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     }
   }
 
-  void _detachMenu({bool afterDelay = true}) {
+  void _detachMenu({bool animate = true}) {
     final subscription = _contextMenuSubscription;
     if (subscription is StreamSubscription) subscription.cancel();
 
+    if (animate) {
+      _fadeController.reverse();
+    } else {
+      _fadeController.animateTo(0, duration: Duration.zero);
+    }
+
     _detachTimer = Timer(
-      afterDelay ? _theme.fadeDuration : Duration.zero,
+      animate ? _theme.fadeDuration : Duration.zero,
       () {
         _attachTimer?.cancel();
         _pressed = false;
@@ -602,8 +607,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
         if (hoveredAction != null) {
           _actions[hoveredAction].onSelect();
         }
-
-        _fadeController.reverse();
 
         _notifier.update(active: false);
         _notifyToggleListeners(active: false);
@@ -658,7 +661,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
         hover(closestDistance < _theme.buttonSize * 0.8 ? closestAction : null);
       }
     } else if (_pressed && _isBeyondPointerBounds(offset)) {
-      _detachMenu(afterDelay: false);
+      _detachMenu(animate: false);
     }
   }
 }
