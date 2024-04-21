@@ -139,7 +139,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
     _bounceController.dispose();
     _debounceTimer?.cancel();
     _bounceStopwatch.stop();
-    widget.controller?.dispose();
+    widget.controller?.removeListener(_onControllerChanged);
 
     super.dispose();
   }
