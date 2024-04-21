@@ -319,6 +319,8 @@ class _PieMenuCoreState extends State<PieMenuCore>
       actions: widget.actions,
       theme: _theme,
       onMenuToggle: widget.onToggle,
+      menuAlignment: menuOpenEvent?.menuAlignment,
+      menuDisplacement: menuOpenEvent?.menuDisplacement,
     );
   }
 

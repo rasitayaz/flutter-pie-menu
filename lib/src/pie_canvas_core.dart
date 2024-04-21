@@ -504,6 +504,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     required List<PieAction> actions,
     required PieTheme theme,
     required Function(bool menuActive)? onMenuToggle,
+    Alignment? menuAlignment,
+    Offset? menuDisplacement,
   }) {
     _theme = theme;
 
@@ -519,7 +521,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
       _pressedOffset = offset;
 
-      final menuAlignment = _theme.menuAlignment;
+      menuAlignment ??= _theme.menuAlignment;
+      menuDisplacement ??= _theme.menuDisplacement;
 
       if (menuAlignment != null) {
         _pointerOffset = renderBox.localToGlobal(
@@ -534,7 +537,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
         _pointerOffset = offset;
       }
 
-      _pointerOffset += _theme.menuDisplacement;
+      _pointerOffset += menuDisplacement;
 
       _attachTimer = Timer(
         rightClicked ? Duration.zero : _theme.delayDuration,
