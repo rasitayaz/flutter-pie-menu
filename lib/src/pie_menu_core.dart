@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:pie_menu/pie_menu.dart';
 import 'package:pie_menu/src/bouncing_widget.dart';
 import 'package:pie_menu/src/pie_action.dart';
 import 'package:pie_menu/src/pie_button.dart';
 import 'package:pie_menu/src/pie_canvas.dart';
 import 'package:pie_menu/src/pie_menu.dart';
 import 'package:pie_menu/src/pie_menu_controller.dart';
+import 'package:pie_menu/src/pie_menu_event.dart';
 import 'package:pie_menu/src/pie_provider.dart';
 import 'package:pie_menu/src/pie_theme.dart';
 
@@ -302,10 +304,13 @@ class _PieMenuCoreState extends State<PieMenuCore>
     });
   }
 
-  void _attachMenu(bool rightClicked, {Offset? offset}) {
+  void _attachMenu(
+    bool rightClicked, {
+    PieMenuOpenEvent? menuOpenEvent,
+  }) {
     _notifier.canvas.attachMenu(
       rightClicked: rightClicked,
-      offset: offset ?? _pressedOffset,
+      offset: _pressedOffset,
       localOffset: _locallyPressedOffset,
       renderBox: context.findRenderObject() as RenderBox,
       child: widget.child,
@@ -318,40 +323,18 @@ class _PieMenuCoreState extends State<PieMenuCore>
   }
 
   void _onControllerChanged() {
-    final eventActions = {
-      PieMenuEvent.openMenu: _onOpenMenu,
-      PieMenuEvent.closeMenu: _onCloseMenu,
-      // Add more event-action mappings as needed
-    };
+    // Null assertion used because this method only runs if we registered it with the controller; so the controller != null.
+    final controllerEvent = widget.controller!.value;
 
-    // ! used because this method only runs if we registered it with the controller.
-    final action = eventActions[widget.controller!.value];
-
-    // Call the action function if it exists
-    action?.call();
+    controllerEvent.map(
+      open: _onOpenMenu,
+      close: _onCloseMenu,
+    );
   }
 
-  void _onOpenMenu() => _attachMenu(false, offset: _getMidPointInGlobalSpace());
+  void _onOpenMenu(PieMenuOpenEvent event) =>
+      _attachMenu(false, menuOpenEvent: event);
 
-  void _onCloseMenu() => _notifier.canvas.closeMenu(_uniqueKey);
-
-  /// Calculates the mid point of the current widget as absolute coordinates.
-  Offset _getMidPointInGlobalSpace() {
-    final renderBox = context.findRenderObject() as RenderBox;
-    Offset midPointInGlobalSpace = Offset.zero;
-
-    // Find middle of widget in local space.
-    final constraints = renderBox.constraints;
-    final midPointOfCurrentBounds = Offset(
-      constraints.maxWidth / 2,
-      constraints.maxHeight / 2,
-    );
-
-    // Convert local space to global space
-    midPointInGlobalSpace = renderBox.localToGlobal(
-      midPointOfCurrentBounds,
-    );
-
-    return midPointInGlobalSpace;
-  }
+  void _onCloseMenu(PieMenuCloseEvent event) =>
+      _notifier.canvas.closeMenu(_uniqueKey);
 }
