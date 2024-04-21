@@ -17,12 +17,12 @@ abstract class PieMenuEvent {
 
 class PieMenuOpenEvent extends PieMenuEvent {
   PieMenuOpenEvent({
-    required this.menuAlignment,
-    required this.menuDisplacement,
+    this.menuAlignment,
+    this.menuDisplacement,
   });
 
-  final Alignment menuAlignment;
-  final Offset menuDisplacement;
+  final Alignment? menuAlignment;
+  final Offset? menuDisplacement;
 }
 
 class PieMenuCloseEvent extends PieMenuEvent {}

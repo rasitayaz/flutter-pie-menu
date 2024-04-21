@@ -7,8 +7,8 @@ class PieMenuController extends ValueNotifier<PieMenuEvent> {
   PieMenuController() : super(PieMenuCloseEvent());
 
   void openMenu({
-    Alignment menuAlignment = Alignment.center,
-    Offset menuDisplacement = Offset.zero,
+    Alignment? menuAlignment,
+    Offset? menuDisplacement,
   }) {
     value = PieMenuOpenEvent(
       menuAlignment: menuAlignment,
