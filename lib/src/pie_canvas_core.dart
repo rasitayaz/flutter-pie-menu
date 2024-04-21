@@ -74,8 +74,11 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   /// Whether menu child is pressed again while the menu is active.
   var _pressedAgain = false;
 
-  /// Currently pressed pointer offset.
+  /// Currently active pointer offset.
   var _pointerOffset = Offset.zero;
+
+  /// Initially pressed offset.
+  var _pressedOffset = Offset.zero;
 
   /// Actions of the current [PieMenu].
   var _actions = <PieAction>[];
@@ -244,13 +247,12 @@ class PieCanvasCoreState extends State<PieCanvasCore>
       final prevSize = _physicalSize;
       _physicalSize = PlatformDispatcher.instance.views.first.physicalSize;
       if (prevSize != _physicalSize) {
-        _fadeController.animateTo(0, duration: Duration.zero);
         _notifier.update(
           active: false,
           clearMenuKey: true,
         );
         _notifyToggleListeners(active: false);
-        _detachMenu();
+        _detachMenu(animate: false);
       }
     }
   }
@@ -488,7 +490,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   }
 
   bool _isBeyondPointerBounds(Offset offset) {
-    return (_pointerOffset - offset).distance > _theme.pointerSize / 2;
+    return (_pressedOffset - offset).distance > _theme.pointerSize / 2;
   }
 
   void attachMenu({
@@ -514,7 +516,25 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
     if (!_pressed) {
       _pressed = true;
-      _pointerOffset = offset;
+
+      _pressedOffset = offset;
+
+      final menuAlignment = _theme.menuAlignment;
+
+      if (menuAlignment != null) {
+        _pointerOffset = renderBox.localToGlobal(
+          renderBox.size.center(
+            Offset(
+              menuAlignment.x * renderBox.size.width / 2,
+              menuAlignment.y * renderBox.size.height / 2,
+            ),
+          ),
+        );
+      } else {
+        _pointerOffset = offset;
+      }
+
+      _pointerOffset += _theme.menuDisplacement;
 
       _attachTimer = Timer(
         rightClicked ? Duration.zero : _theme.delayDuration,
@@ -537,6 +557,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
             menuKey: menuKey,
             clearHoveredAction: true,
           );
+
           _notifyToggleListeners(active: true);
         },
       );
@@ -553,12 +574,18 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     }
   }
 
-  void _detachMenu({bool afterDelay = true}) {
+  void _detachMenu({bool animate = true}) {
     final subscription = _contextMenuSubscription;
     if (subscription is StreamSubscription) subscription.cancel();
 
+    if (animate) {
+      _fadeController.reverse();
+    } else {
+      _fadeController.animateTo(0, duration: Duration.zero);
+    }
+
     _detachTimer = Timer(
-      afterDelay ? _theme.fadeDuration : Duration.zero,
+      animate ? _theme.fadeDuration : Duration.zero,
       () {
         _attachTimer?.cancel();
         _pressed = false;
@@ -584,14 +611,12 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     _attachTimer?.cancel();
 
     if (_state.active) {
-      if (_isBeyondPointerBounds(offset) || _pressedAgain) {
+      if (_pressedAgain || _isBeyondPointerBounds(offset)) {
         final hoveredAction = _state.hoveredAction;
 
         if (hoveredAction != null) {
           _actions[hoveredAction].onSelect();
         }
-
-        _fadeController.reverse();
 
         _notifier.update(active: false);
         _notifyToggleListeners(active: false);
@@ -604,6 +629,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
     _pressed = false;
     _pressedAgain = false;
+    _pressedOffset = _pointerOffset;
   }
 
   void _pointerMove(Offset offset) {
@@ -617,9 +643,16 @@ class PieCanvasCoreState extends State<PieCanvasCore>
         }
       }
 
+      final withinSafeDistance = (_pressedOffset - offset).distance < 8;
+
+      if (_pressedOffset != _pointerOffset && !withinSafeDistance) {
+        _pressedOffset = _pointerOffset;
+      }
+
       final pointerDistance = (_pointerOffset - offset).distance;
 
-      if (pointerDistance < _theme.radius - _theme.buttonSize * 0.5 ||
+      if (withinSafeDistance ||
+          pointerDistance < _theme.radius - _theme.buttonSize * 0.5 ||
           pointerDistance > _theme.radius + _theme.buttonSize * 0.8) {
         hover(null);
       } else {
@@ -638,7 +671,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
         hover(closestDistance < _theme.buttonSize * 0.8 ? closestAction : null);
       }
     } else if (_pressed && _isBeyondPointerBounds(offset)) {
-      _detachMenu(afterDelay: false);
+      _detachMenu(animate: false);
     }
   }
 }

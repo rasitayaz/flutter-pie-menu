@@ -1,3 +1,5 @@
+* Added `menuAlignment` and `menuDisplacement` to `PieTheme` to allow custom positioning of the menu. [#50](https://github.com/rasitayaz/flutter-pie-menu/issues/50)
+
 ## 3.1.3
 
 * Fixed changelog typos.
