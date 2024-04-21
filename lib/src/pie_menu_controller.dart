@@ -1,17 +1,22 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:pie_menu/src/pie_menu_event.dart';
 
 /// Controller for programmatically emitting [PieMenu] events.
 class PieMenuController extends ValueNotifier<PieMenuEvent> {
-  PieMenuController() : super(PieMenuEvent.closeMenu);
+  PieMenuController() : super(PieMenuCloseEvent());
 
-  void openMenu() {
-    value = PieMenuEvent.openMenu;
+  void openMenu({
+    required Alignment menuAlignment,
+    Offset menuDisplacement = Offset.zero,
+  }) {
+    value = PieMenuOpenEvent(
+      menuAlignment: menuAlignment,
+      menuDisplacement: menuDisplacement,
+    );
   }
 
   void closeMenu() {
-    value = PieMenuEvent.closeMenu;
+    value = PieMenuCloseEvent();
   }
 }
-
-enum PieMenuEvent { openMenu, closeMenu }
