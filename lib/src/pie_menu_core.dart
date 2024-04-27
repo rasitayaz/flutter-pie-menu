@@ -354,7 +354,6 @@ class _PieMenuCoreState extends State<PieMenuCore>
   }
 
   void _onToggleMenu(PieMenuToggleEvent event) {
-    print('toggle');
     if (_state.menuKey == _uniqueKey) {
       _notifier.canvas.closeMenu(_uniqueKey);
     } else {
