@@ -19,10 +19,12 @@ class PieCanvasCore extends StatefulWidget {
   const PieCanvasCore({
     super.key,
     required this.onMenuToggle,
+    required this.theme,
     required this.child,
   });
 
   final Function(bool menuOpen)? onMenuToggle;
+  final PieTheme theme;
   final Widget child;
 
   @override
@@ -102,7 +104,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   /// Theme of the current [PieMenu].
   ///
   /// If the [PieMenu] does not have a theme, [PieCanvas] theme is used.
-  late var _theme = _notifier.canvasTheme;
+  late var _theme = widget.theme;
 
   /// Stream subscription for right-clicks.
   dynamic _contextMenuSubscription;
@@ -377,7 +379,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                                   ? Colors.black
                                   : Colors.white,
                             )
-                                .merge(_notifier.canvasTheme.tooltipTextStyle)
+                                .merge(widget.theme.tooltipTextStyle)
                                 .merge(_theme.tooltipTextStyle),
                             child: _tooltip ?? const SizedBox(),
                           ),

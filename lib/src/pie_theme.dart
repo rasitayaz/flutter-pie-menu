@@ -221,7 +221,7 @@ class PieTheme {
   /// Returns the [PieTheme] defined in the closest [PieCanvas] instance
   /// that encloses the given context.
   static PieTheme of(BuildContext context) {
-    return PieNotifier.of(context).canvasTheme;
+    return PieNotifier.of(context).canvas.widget.theme;
   }
 
   /// Creates a copy of this theme but with the

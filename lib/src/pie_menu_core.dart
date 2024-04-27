@@ -122,7 +122,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
   /// Theme of the current [PieMenu].
   ///
   /// If the [PieMenu] does not have a theme, [PieCanvas] theme is used.
-  PieTheme get _theme => widget.theme ?? _notifier.canvasTheme;
+  PieTheme get _theme => widget.theme ?? _notifier.canvas.widget.theme;
 
   /// Render box of the current widget.
   RenderBox? get _renderBox => context.findRenderObject() as RenderBox?;
@@ -130,7 +130,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
   @override
   void initState() {
     super.initState();
-    widget.controller?.addListener(_onControllerChanged);
+    widget.controller?.addListener(_handleControllerEvent);
   }
 
   @override
@@ -139,7 +139,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
     _bounceController.dispose();
     _debounceTimer?.cancel();
     _bounceStopwatch.stop();
-    widget.controller?.removeListener(_onControllerChanged);
+    widget.controller?.removeListener(_handleControllerEvent);
 
     super.dispose();
   }
@@ -328,7 +328,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
     );
   }
 
-  void _onControllerChanged() {
+  void _handleControllerEvent() {
     final controller = widget.controller;
     if (controller == null) return;
     final event = controller.value;
