@@ -19,4 +19,14 @@ class PieMenuController extends ValueNotifier<PieMenuEvent> {
   void closeMenu() {
     value = PieMenuCloseEvent();
   }
+
+  void toggleMenu({
+    Alignment menuAlignment = Alignment.center,
+    Offset? menuDisplacement,
+  }) {
+    value = PieMenuToggleEvent(
+      menuAlignment: menuAlignment,
+      menuDisplacement: menuDisplacement,
+    );
+  }
 }

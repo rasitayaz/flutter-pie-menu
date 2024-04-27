@@ -21,7 +21,7 @@ class PieMenuCore extends StatefulWidget {
     required this.onToggle,
     required this.onPressed,
     required this.onPressedWithDevice,
-    this.controller,
+    required this.controller,
     required this.child,
   });
 
@@ -129,8 +129,8 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
   @override
   void initState() {
-    widget.controller?.addListener(_onControllerChanged);
     super.initState();
+    widget.controller?.addListener(_onControllerChanged);
   }
 
   @override
@@ -329,13 +329,17 @@ class _PieMenuCoreState extends State<PieMenuCore>
   }
 
   void _onControllerChanged() {
-    // Null assertion used because this method only runs if we registered it with the controller; so the controller != null.
-    final controllerEvent = widget.controller!.value;
+    final controller = widget.controller;
+    if (controller == null) return;
+    final event = controller.value;
 
-    controllerEvent.map(
-      open: _onOpenMenu,
-      close: _onCloseMenu,
-    );
+    if (event is PieMenuOpenEvent) {
+      _onOpenMenu(event);
+    } else if (event is PieMenuCloseEvent) {
+      _onCloseMenu(event);
+    } else if (event is PieMenuToggleEvent) {
+      _onToggleMenu(event);
+    }
   }
 
   void _onOpenMenu(PieMenuOpenEvent event) {
@@ -347,5 +351,17 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
   void _onCloseMenu(PieMenuCloseEvent event) {
     _notifier.canvas.closeMenu(_uniqueKey);
+  }
+
+  void _onToggleMenu(PieMenuToggleEvent event) {
+    print('toggle');
+    if (_state.menuKey == _uniqueKey) {
+      _notifier.canvas.closeMenu(_uniqueKey);
+    } else {
+      _attachMenu(
+        menuAlignment: event.menuAlignment,
+        menuDisplacement: event.menuDisplacement,
+      );
+    }
   }
 }
