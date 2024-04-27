@@ -201,7 +201,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
                     ? BouncingWidget(
                         theme: _theme,
                         animation: _bounceAnimation,
-                        locallyPressedOffset:
+                        pressedOffset:
                             _renderBox?.globalToLocal(_pressedOffset),
                         child: widget.child,
                       )

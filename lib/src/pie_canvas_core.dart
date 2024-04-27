@@ -341,7 +341,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                                         ? BouncingWidget(
                                             theme: _theme,
                                             animation: bounceAnimation,
-                                            locallyPressedOffset: menuRenderBox
+                                            pressedOffset: menuRenderBox
                                                 .globalToLocal(_pointerOffset),
                                             child:
                                                 _menuChild ?? const SizedBox(),
