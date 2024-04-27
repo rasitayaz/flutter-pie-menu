@@ -13,13 +13,13 @@ class BouncingWidget extends StatefulWidget {
     super.key,
     required this.theme,
     required this.animation,
-    required this.locallyPressedOffset,
+    required this.pressedOffset,
     required this.child,
   });
 
   final PieTheme theme;
   final Animation<double> animation;
-  final Offset? locallyPressedOffset;
+  final Offset? pressedOffset;
   final Widget child;
 
   @override
@@ -51,7 +51,7 @@ class _BouncingWidgetState extends State<BouncingWidget> {
           lerpDouble(1, widget.theme.childBounceFactor, widget.animation.value),
         );
 
-        final offset = widget.locallyPressedOffset;
+        final offset = widget.pressedOffset;
 
         if (widget.theme.childTiltEnabled && offset != null) {
           final x = offset.dx / lastSize.width;

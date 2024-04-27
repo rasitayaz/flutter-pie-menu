@@ -22,8 +22,8 @@ class PieCanvas extends StatefulWidget {
   final PieTheme theme;
 
   /// Functional callback triggered when
-  /// any descendant [PieMenu] becomes active or inactive.
-  final Function(bool active)? onMenuToggle;
+  /// any descendant [PieMenu] opens or closes.
+  final Function(bool menuOpen)? onMenuToggle;
 
   @override
   State<PieCanvas> createState() => _PieCanvasState();
@@ -37,7 +37,6 @@ class _PieCanvasState extends State<PieCanvas> {
   /// Notifies both [PieCanvasCore] and [PieMenuCore] for shared state changes.
   late final _notifier = PieNotifier(
     canvasCoreKey: _canvasCoreKey,
-    canvasTheme: widget.theme,
   );
 
   @override
@@ -48,6 +47,7 @@ class _PieCanvasState extends State<PieCanvas> {
         return PieCanvasCore(
           key: _canvasCoreKey,
           onMenuToggle: widget.onMenuToggle,
+          theme: widget.theme,
           child: widget.child,
         );
       },

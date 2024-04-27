@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:pie_menu/src/pie_canvas_core.dart';
-import 'package:pie_menu/src/pie_menu.dart';
 import 'package:pie_menu/src/pie_menu_core.dart';
-import 'package:pie_menu/src/pie_theme.dart';
 
 /// Contains variables shared between [PieCanvasCore] and [PieMenuCore].
 class PieState {
   PieState({
     required this.menuKey,
-    required this.active,
+    required this.menuOpen,
     required this.hoveredAction,
   });
 
-  /// Unique key of the currently active menu.
+  /// Unique key of the currently open menu.
   final Key? menuKey;
 
-  /// Whether any menu is currently active.
-  final bool active;
+  /// Whether any menu is currently open.
+  final bool menuOpen;
 
   /// Whether any menu action is currently hovered.
   final int? hoveredAction;
@@ -52,21 +50,16 @@ class PieProvider extends InheritedWidget {
 class PieNotifier extends ChangeNotifier {
   PieNotifier({
     required GlobalKey<PieCanvasCoreState> canvasCoreKey,
-    required this.canvasTheme,
   }) : _canvasCoreKey = canvasCoreKey;
 
   /// Key for the [PieCanvasCore] widget, [PieMenuCore] needs this
   /// to attach itself to the canvas.
   final GlobalKey<PieCanvasCoreState> _canvasCoreKey;
 
-  /// Theme to use for any descendant [PieMenu]
-  /// if not overridden by the menu itself.
-  final PieTheme canvasTheme;
-
   /// Current state shared between [PieCanvasCore] and [PieMenuCore].
   var state = PieState(
     menuKey: null,
-    active: false,
+    menuOpen: false,
     hoveredAction: null,
   );
 
@@ -77,13 +70,13 @@ class PieNotifier extends ChangeNotifier {
   void update({
     Key? menuKey,
     bool clearMenuKey = false,
-    bool? active,
+    bool? menuOpen,
     int? hoveredAction,
     bool clearHoveredAction = false,
   }) {
     state = PieState(
       menuKey: clearMenuKey ? null : menuKey ?? state.menuKey,
-      active: active ?? state.active,
+      menuOpen: menuOpen ?? state.menuOpen,
       hoveredAction:
           clearHoveredAction ? null : hoveredAction ?? state.hoveredAction,
     );
