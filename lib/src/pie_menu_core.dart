@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:pie_menu/pie_menu.dart';
 import 'package:pie_menu/src/bouncing_widget.dart';
 import 'package:pie_menu/src/pie_action.dart';
 import 'package:pie_menu/src/pie_button.dart';
@@ -35,9 +34,8 @@ class PieMenuCore extends StatefulWidget {
   /// Widget to be displayed when the menu is hidden.
   final Widget child;
 
-  /// Functional callback triggered when
-  /// this [PieMenu] becomes active or inactive.
-  final Function(bool active)? onToggle;
+  /// Functional callback triggered when this menu opens or closes.
+  final Function(bool menuOpen)? onToggle;
 
   /// Functional callback triggered on press.
   ///
@@ -100,14 +98,11 @@ class _PieMenuCoreState extends State<PieMenuCore>
   /// Offset of the press event.
   var _pressedOffset = Offset.zero;
 
-  /// Offset of the press event relative to the child widget.
-  var _locallyPressedOffset = Offset.zero;
-
   /// Button used for the press event.
   var _pressedButton = 0;
 
-  /// Whether the menu was active in the previous rebuild.
-  var _previouslyActive = false;
+  /// Whether the menu was open in the previous rebuild.
+  var _previouslyOpen = false;
 
   /// Used to cancel the delayed debounce animation on bounce.
   Timer? _debounceTimer;
@@ -129,6 +124,9 @@ class _PieMenuCoreState extends State<PieMenuCore>
   /// If the [PieMenu] does not have a theme, [PieCanvas] theme is used.
   PieTheme get _theme => widget.theme ?? _notifier.canvasTheme;
 
+  /// Render box of the current widget.
+  RenderBox? get _renderBox => context.findRenderObject() as RenderBox?;
+
   @override
   void initState() {
     widget.controller?.addListener(_onControllerChanged);
@@ -149,11 +147,11 @@ class _PieMenuCoreState extends State<PieMenuCore>
   @override
   Widget build(BuildContext context) {
     if (_state.menuKey == _uniqueKey) {
-      if (!_previouslyActive && _state.active) {
+      if (!_previouslyOpen && _state.menuOpen) {
         _overlayFadeController.forward(from: 0);
         _debounce();
         _pressCanceled = true;
-      } else if (_previouslyActive && !_state.active) {
+      } else if (_previouslyOpen && !_state.menuOpen) {
         _overlayFadeController.reverse();
       }
     } else {
@@ -162,7 +160,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
       }
     }
 
-    _previouslyActive = _state.active;
+    _previouslyOpen = _state.menuOpen;
 
     return Stack(
       children: [
@@ -193,7 +191,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
               child: AnimatedOpacity(
                 opacity: _theme.overlayStyle == PieOverlayStyle.around &&
                         _state.menuKey == _uniqueKey &&
-                        _state.active &&
+                        _state.menuOpen &&
                         _state.hoveredAction != null
                     ? _theme.childOpacityOnButtonHover
                     : 1,
@@ -203,7 +201,8 @@ class _PieMenuCoreState extends State<PieMenuCore>
                     ? BouncingWidget(
                         theme: _theme,
                         animation: _bounceAnimation,
-                        locallyPressedOffset: _locallyPressedOffset,
+                        locallyPressedOffset:
+                            _renderBox?.globalToLocal(_pressedOffset),
                         child: widget.child,
                       )
                     : widget.child,
@@ -218,11 +217,10 @@ class _PieMenuCoreState extends State<PieMenuCore>
   void _pointerDown(PointerDownEvent event) {
     setState(() {
       _pressedOffset = event.position;
-      _locallyPressedOffset = event.localPosition;
       _pressedButton = event.buttons;
     });
 
-    if (_state.active) return;
+    if (_state.menuOpen) return;
 
     _pressCanceled = false;
 
@@ -242,7 +240,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     if (leftClicked && !_theme.leftClickShowsMenu) return;
 
-    _attachMenu(rightClicked);
+    _attachMenu(rightClicked: rightClicked, offset: _pressedOffset);
 
     final recognizer = LongPressGestureRecognizer(
       duration: _theme.delayDuration,
@@ -252,7 +250,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
   }
 
   void _pointerMove(PointerMoveEvent event) {
-    if (_state.active) return;
+    if (_state.menuOpen) return;
 
     if ((_pressedOffset - event.position).distance > 8) {
       _pressCanceled = true;
@@ -265,7 +263,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     if (_pressCanceled) return;
 
-    if (_state.active && _theme.delayDuration != Duration.zero) {
+    if (_state.menuOpen && _theme.delayDuration != Duration.zero) {
       return;
     }
 
@@ -304,23 +302,29 @@ class _PieMenuCoreState extends State<PieMenuCore>
     });
   }
 
-  void _attachMenu(
-    bool rightClicked, {
-    PieMenuOpenEvent? menuOpenEvent,
+  void _attachMenu({
+    bool rightClicked = false,
+    Offset? offset,
+    Alignment? menuAlignment,
+    Offset? menuDisplacement,
   }) {
+    assert(
+      offset != null || menuAlignment != null,
+      'Offset or alignment must be provided.',
+    );
+
     _notifier.canvas.attachMenu(
       rightClicked: rightClicked,
-      offset: _pressedOffset,
-      localOffset: _locallyPressedOffset,
-      renderBox: context.findRenderObject() as RenderBox,
+      offset: offset,
+      renderBox: _renderBox!,
       child: widget.child,
       bounceAnimation: _bounceAnimation,
       menuKey: _uniqueKey,
       actions: widget.actions,
       theme: _theme,
       onMenuToggle: widget.onToggle,
-      menuAlignment: menuOpenEvent?.menuAlignment,
-      menuDisplacement: menuOpenEvent?.menuDisplacement,
+      menuAlignment: menuAlignment,
+      menuDisplacement: menuDisplacement,
     );
   }
 
@@ -334,9 +338,14 @@ class _PieMenuCoreState extends State<PieMenuCore>
     );
   }
 
-  void _onOpenMenu(PieMenuOpenEvent event) =>
-      _attachMenu(false, menuOpenEvent: event);
+  void _onOpenMenu(PieMenuOpenEvent event) {
+    _attachMenu(
+      menuAlignment: event.menuAlignment,
+      menuDisplacement: event.menuDisplacement,
+    );
+  }
 
-  void _onCloseMenu(PieMenuCloseEvent event) =>
-      _notifier.canvas.closeMenu(_uniqueKey);
+  void _onCloseMenu(PieMenuCloseEvent event) {
+    _notifier.canvas.closeMenu(_uniqueKey);
+  }
 }

@@ -22,7 +22,7 @@ class PieCanvasCore extends StatefulWidget {
     required this.child,
   });
 
-  final Function(bool active)? onMenuToggle;
+  final Function(bool menuOpen)? onMenuToggle;
   final Widget child;
 
   @override
@@ -57,7 +57,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     vsync: this,
   );
 
-  /// Fade animation for the canvas and active menu.
+  /// Fade animation for the canvas and current menu.
   late final _fadeAnimation = Tween(
     begin: 0.0,
     end: 1.0,
@@ -71,10 +71,10 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   /// Whether menu child is currently pressed.
   var _pressed = false;
 
-  /// Whether menu child is pressed again while the menu is active.
+  /// Whether menu child is pressed again while a menu is open.
   var _pressedAgain = false;
 
-  /// Currently active pointer offset.
+  /// Current pointer offset.
   var _pointerOffset = Offset.zero;
 
   /// Initially pressed offset.
@@ -93,9 +93,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   /// and gets cancelled when the pointer is down again.
   Timer? _detachTimer;
 
-  /// Functional callback triggered when
-  /// the current [PieMenu] becomes active or inactive.
-  Function(bool active)? _onMenuToggle;
+  /// Functional callback triggered when the current menu opens or closes.
+  Function(bool menuOpen)? _onMenuToggle;
 
   /// Size of the screen. Used to close the menu when the screen size changes.
   var _physicalSize = PlatformDispatcher.instance.views.first.physicalSize;
@@ -116,9 +115,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
   /// Bounce animation for the child widget of the current menu.
   Animation<double>? _childBounceAnimation;
-
-  /// Last pressed offset relative to the child widget of the current menu.
-  Offset? _locallyPressedOffset;
 
   /// Tooltip widget of the currently hovered action.
   Widget? _tooltip;
@@ -243,15 +239,15 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   @override
   void didChangeMetrics() {
     super.didChangeMetrics();
-    if (mounted && _state.active) {
+    if (mounted && _state.menuOpen) {
       final prevSize = _physicalSize;
       _physicalSize = PlatformDispatcher.instance.views.first.physicalSize;
       if (prevSize != _physicalSize) {
         _notifier.update(
-          active: false,
+          menuOpen: false,
           clearMenuKey: true,
         );
-        _notifyToggleListeners(active: false);
+        _notifyToggleListeners(menuOpen: false);
         _detachMenu(animate: false);
       }
     }
@@ -277,12 +273,12 @@ class PieCanvasCoreState extends State<PieCanvasCore>
               behavior: HitTestBehavior.translucent,
               onPointerDown: (event) => _pointerDown(event.position),
               onPointerMove: (event) => _pointerMove(event.position),
-              onPointerHover: _state.active
+              onPointerHover: _state.menuOpen
                   ? (event) => _pointerMove(event.position)
                   : null,
               onPointerUp: (event) => _pointerUp(event.position),
               child: IgnorePointer(
-                ignoring: _state.active,
+                ignoring: _state.menuOpen,
                 child: widget.child,
               ),
             ),
@@ -332,7 +328,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                                 left: menuOffset.dx - cx,
                                 top: menuOffset.dy - cy,
                                 child: AnimatedOpacity(
-                                  opacity: _state.active &&
+                                  opacity: _state.menuOpen &&
                                           _state.hoveredAction != null
                                       ? _theme.childOpacityOnButtonHover
                                       : 1,
@@ -345,8 +341,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                                         ? BouncingWidget(
                                             theme: _theme,
                                             animation: bounceAnimation,
-                                            locallyPressedOffset:
-                                                _locallyPressedOffset,
+                                            locallyPressedOffset: menuRenderBox
+                                                .globalToLocal(_pointerOffset),
                                             child:
                                                 _menuChild ?? const SizedBox(),
                                           )
@@ -484,9 +480,9 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     );
   }
 
-  void _notifyToggleListeners({required bool active}) {
-    _onMenuToggle?.call(active);
-    widget.onMenuToggle?.call(active);
+  void _notifyToggleListeners({required bool menuOpen}) {
+    _onMenuToggle?.call(menuOpen);
+    widget.onMenuToggle?.call(menuOpen);
   }
 
   bool _isBeyondPointerBounds(Offset offset) {
@@ -495,18 +491,22 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
   void attachMenu({
     required bool rightClicked,
-    required Offset offset,
-    required Offset localOffset,
     required RenderBox renderBox,
     required Widget child,
     required Animation<double> bounceAnimation,
     required Key menuKey,
     required List<PieAction> actions,
     required PieTheme theme,
-    required Function(bool menuActive)? onMenuToggle,
-    Alignment? menuAlignment,
-    Offset? menuDisplacement,
+    required Function(bool menuOpen)? onMenuToggle,
+    required Offset? offset,
+    required Alignment? menuAlignment,
+    required Offset? menuDisplacement,
   }) {
+    assert(
+      offset != null || menuAlignment != null,
+      'Offset or alignment must be provided.',
+    );
+
     _theme = theme;
 
     _contextMenuSubscription = _platform.listenContextMenu(
@@ -518,8 +518,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
     if (!_pressed) {
       _pressed = true;
-
-      _pressedOffset = offset;
 
       menuAlignment ??= _theme.menuAlignment;
       menuDisplacement ??= _theme.menuDisplacement;
@@ -533,11 +531,12 @@ class PieCanvasCoreState extends State<PieCanvasCore>
             ),
           ),
         );
-      } else {
+      } else if (offset != null) {
         _pointerOffset = offset;
       }
 
       _pointerOffset += menuDisplacement;
+      _pressedOffset = offset ?? _pointerOffset;
 
       _attachTimer = Timer(
         rightClicked ? Duration.zero : _theme.delayDuration,
@@ -550,28 +549,25 @@ class PieCanvasCoreState extends State<PieCanvasCore>
           _menuRenderBox = renderBox;
           _menuChild = child;
           _childBounceAnimation = bounceAnimation;
-          _locallyPressedOffset = localOffset;
           _onMenuToggle = onMenuToggle;
           _actions = actions;
           _tooltip = null;
 
           _notifier.update(
-            active: true,
+            menuOpen: true,
             menuKey: menuKey,
             clearHoveredAction: true,
           );
 
-          _notifyToggleListeners(active: true);
+          _notifyToggleListeners(menuOpen: true);
         },
       );
     }
   }
 
-  // A method to allow controllers to close the menu
-  void closeMenu(
-    Key currentMenuKey,
-  ) {
-    if (currentMenuKey == _notifier.state.menuKey) {
+  /// Closes the currently attached menu if the given [menuKey] matches.
+  void closeMenu(Key menuKey) {
+    if (menuKey == _notifier.state.menuKey) {
       _detachMenu();
     }
   }
@@ -595,7 +591,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
         _notifier.update(
           clearMenuKey: true,
-          active: false,
+          menuOpen: false,
           clearHoveredAction: true,
         );
       },
@@ -603,7 +599,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   }
 
   void _pointerDown(Offset offset) {
-    if (_state.active) {
+    if (_state.menuOpen) {
       _pressedAgain = true;
       _pointerMove(offset);
     }
@@ -612,7 +608,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   void _pointerUp(Offset offset) {
     _attachTimer?.cancel();
 
-    if (_state.active) {
+    if (_state.menuOpen) {
       if (_pressedAgain || _isBeyondPointerBounds(offset)) {
         final hoveredAction = _state.hoveredAction;
 
@@ -620,8 +616,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
           _actions[hoveredAction].onSelect();
         }
 
-        _notifier.update(active: false);
-        _notifyToggleListeners(active: false);
+        _notifier.update(menuOpen: false);
+        _notifyToggleListeners(menuOpen: false);
 
         _detachMenu();
       }
@@ -635,7 +631,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   }
 
   void _pointerMove(Offset offset) {
-    if (_state.active) {
+    if (_state.menuOpen) {
       void hover(int? action) {
         if (_state.hoveredAction != action) {
           _notifier.update(

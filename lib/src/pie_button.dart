@@ -56,8 +56,8 @@ class _PieButtonState extends State<PieButton>
     ),
   );
 
-  /// Whether the menu was active in the previous rebuild.
-  var _previouslyActive = false;
+  /// Whether the menu was open in the previous rebuild.
+  var _previouslyOpen = false;
 
   /// Action to display.
   PieAction get _action => widget.action;
@@ -88,11 +88,11 @@ class _PieButtonState extends State<PieButton>
 
   @override
   Widget build(BuildContext context) {
-    if (!_previouslyActive && _state.active) {
+    if (!_previouslyOpen && _state.menuOpen) {
       _scaleController.forward(from: 0);
     }
 
-    _previouslyActive = _state.active;
+    _previouslyOpen = _state.menuOpen;
 
     return OverflowBox(
       maxHeight: _theme.buttonSize * 2,

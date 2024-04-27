@@ -5,10 +5,12 @@ abstract class PieMenuEvent {
     required T Function(PieMenuOpenEvent) open,
     required T Function(PieMenuCloseEvent) close,
   }) {
-    if (this is PieMenuOpenEvent) {
-      return open(this as PieMenuOpenEvent);
-    } else if (this is PieMenuCloseEvent) {
-      return close(this as PieMenuCloseEvent);
+    final event = this;
+
+    if (event is PieMenuOpenEvent) {
+      return open(event);
+    } else if (event is PieMenuCloseEvent) {
+      return close(event);
     }
 
     throw Exception('Unhandled subtype of PieMenuEvent');
@@ -17,11 +19,11 @@ abstract class PieMenuEvent {
 
 class PieMenuOpenEvent extends PieMenuEvent {
   PieMenuOpenEvent({
-    this.menuAlignment,
-    this.menuDisplacement,
+    required this.menuAlignment,
+    required this.menuDisplacement,
   });
 
-  final Alignment? menuAlignment;
+  final Alignment menuAlignment;
   final Offset? menuDisplacement;
 }
 
