@@ -1,4 +1,8 @@
+## 3.2.0
+
 * Added `menuAlignment` and `menuDisplacement` to `PieTheme` to allow custom positioning of the menu. [#50](https://github.com/rasitayaz/flutter-pie-menu/issues/50)
+* Added `PieMenuController` to allow manual control over the menu. Currently it provides the ability to open and close the menu programmatically. [#48](https://github.com/rasitayaz/flutter-pie-menu/issues/48)
+* Fixed `PieCanvas` theme is not updating after widget initialization.
 
 ## 3.1.3
 
