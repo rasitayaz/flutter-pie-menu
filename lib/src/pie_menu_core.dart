@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:pie_menu/pie_menu.dart';
 import 'package:pie_menu/src/bouncing_widget.dart';
 import 'package:pie_menu/src/pie_action.dart';
 import 'package:pie_menu/src/pie_button.dart';
 import 'package:pie_menu/src/pie_canvas.dart';
 import 'package:pie_menu/src/pie_menu.dart';
+import 'package:pie_menu/src/pie_menu_controller.dart';
+import 'package:pie_menu/src/pie_menu_event.dart';
 import 'package:pie_menu/src/pie_provider.dart';
 import 'package:pie_menu/src/pie_theme.dart';
 
@@ -19,6 +22,7 @@ class PieMenuCore extends StatefulWidget {
     required this.onToggle,
     required this.onPressed,
     required this.onPressedWithDevice,
+    this.controller,
     required this.child,
   });
 
@@ -45,6 +49,9 @@ class PieMenuCore extends StatefulWidget {
   ///
   /// Can be useful to distinguish between mouse and touch events.
   final Function(PointerDeviceKind kind)? onPressedWithDevice;
+
+  /// Controller for programmatically emitting [PieMenu] events.
+  final PieMenuController? controller;
 
   @override
   State<PieMenuCore> createState() => _PieMenuCoreState();
@@ -123,11 +130,19 @@ class _PieMenuCoreState extends State<PieMenuCore>
   PieTheme get _theme => widget.theme ?? _notifier.canvasTheme;
 
   @override
+  void initState() {
+    widget.controller?.addListener(_onControllerChanged);
+    super.initState();
+  }
+
+  @override
   void dispose() {
     _overlayFadeController.dispose();
     _bounceController.dispose();
     _debounceTimer?.cancel();
     _bounceStopwatch.stop();
+    widget.controller?.removeListener(_onControllerChanged);
+
     super.dispose();
   }
 
@@ -227,18 +242,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     if (leftClicked && !_theme.leftClickShowsMenu) return;
 
-    _notifier.canvas.attachMenu(
-      rightClicked: rightClicked,
-      offset: _pressedOffset,
-      localOffset: _locallyPressedOffset,
-      renderBox: context.findRenderObject() as RenderBox,
-      child: widget.child,
-      bounceAnimation: _bounceAnimation,
-      menuKey: _uniqueKey,
-      actions: widget.actions,
-      theme: _theme,
-      onMenuToggle: widget.onToggle,
-    );
+    _attachMenu(rightClicked);
 
     final recognizer = LongPressGestureRecognizer(
       duration: _theme.delayDuration,
@@ -299,4 +303,40 @@ class _PieMenuCoreState extends State<PieMenuCore>
       _bounceController.reverse();
     });
   }
+
+  void _attachMenu(
+    bool rightClicked, {
+    PieMenuOpenEvent? menuOpenEvent,
+  }) {
+    _notifier.canvas.attachMenu(
+      rightClicked: rightClicked,
+      offset: _pressedOffset,
+      localOffset: _locallyPressedOffset,
+      renderBox: context.findRenderObject() as RenderBox,
+      child: widget.child,
+      bounceAnimation: _bounceAnimation,
+      menuKey: _uniqueKey,
+      actions: widget.actions,
+      theme: _theme,
+      onMenuToggle: widget.onToggle,
+      menuAlignment: menuOpenEvent?.menuAlignment,
+      menuDisplacement: menuOpenEvent?.menuDisplacement,
+    );
+  }
+
+  void _onControllerChanged() {
+    // Null assertion used because this method only runs if we registered it with the controller; so the controller != null.
+    final controllerEvent = widget.controller!.value;
+
+    controllerEvent.map(
+      open: _onOpenMenu,
+      close: _onCloseMenu,
+    );
+  }
+
+  void _onOpenMenu(PieMenuOpenEvent event) =>
+      _attachMenu(false, menuOpenEvent: event);
+
+  void _onCloseMenu(PieMenuCloseEvent event) =>
+      _notifier.canvas.closeMenu(_uniqueKey);
 }
