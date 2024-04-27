@@ -52,7 +52,7 @@ PieMenu(
 
 Wrap your page, or any other desired widget for drawing the menu and the background overlay, with `PieCanvas` widget.
 
-For instance, if you want the menu to be displayed at the forefront, you can wrap your `Scaffold` with a `PieCanvas` like following:
+For instance, if you want the menu to be displayed at the forefront, wrap your `Scaffold` with a `PieCanvas` like following:
 
 ```dart
 PieCanvas(
@@ -143,7 +143,7 @@ PieAction.builder(
 
 ### Adjust display angle of menu buttons
 
-If you don't want the dynamic angle calculation and have the menu appear at a fixed angle, you can set `customAngle` and `customAngleAnchor` attributes of `PieTheme`.
+If you don't want the dynamic angle calculation and have the menu appear at a fixed angle, set `customAngle` and `customAngleAnchor` attributes of `PieTheme`.
 
 ```dart
 PieTheme(
@@ -156,7 +156,7 @@ You can also use `customAngleDiff` or `spacing` to adjust the angle between butt
 
 ### Place the menu at a specific position
 
-Use `menuAlignment` attribute of `PieTheme` to make the menu appear at a specific position regardless of the pressed point. You can combine it with `menuDisplacement` to fine-tune the position.
+Use `menuAlignment` attribute of `PieTheme` to make the menu appear at a specific position regardless of the pressed point. Combine it with `menuDisplacement` to fine-tune the position.
 
 ```dart
 PieTheme(
@@ -167,7 +167,7 @@ PieTheme(
 
 ### Tap, long press or right click to open the menu
 
-You may set `delayDuration` of your theme to `Duration.zero` to open the menu instantly on tap.
+Set `delayDuration` of your theme to `Duration.zero` to open the menu instantly on tap.
 
 ```dart
 PieTheme(
