@@ -12,8 +12,8 @@ A Flutter package providing a highly customizable circular/radial context menu, 
 
 [Click here to try Flutter Pie Menu online!](https://rasitayaz.github.io/flutter-pie-menu)
 
-|![](https://raw.githubusercontent.com/rasitayaz/flutter-pie-menu/showcase/preview/screenshot-1.jpg)|![](https://raw.githubusercontent.com/rasitayaz/flutter-pie-menu/showcase/preview/example-1.gif)|![](https://raw.githubusercontent.com/rasitayaz/flutter-pie-menu/showcase/preview/example-2.gif)|
-|:-:|:-:|:-:|
+| ![](https://raw.githubusercontent.com/rasitayaz/flutter-pie-menu/showcase/preview/screenshot-1.jpg) | ![](https://raw.githubusercontent.com/rasitayaz/flutter-pie-menu/showcase/preview/example-1.gif) | ![](https://raw.githubusercontent.com/rasitayaz/flutter-pie-menu/showcase/preview/example-2.gif) |
+| :-------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------: |
 
 ## Table of Contents
 
@@ -23,8 +23,10 @@ A Flutter package providing a highly customizable circular/radial context menu, 
   - [Customization](#customization)
     - [Button themes](#button-themes)
     - [Custom button widgets](#custom-button-widgets)
-    - [Tap, long press or right click to activate the menu](#tap-long-press-or-right-click-to-activate-the-menu)
     - [Adjust display angle of menu buttons](#adjust-display-angle-of-menu-buttons)
+    - [Place the menu at a specific position](#place-the-menu-at-a-specific-position)
+    - [Tap, long press or right click to open the menu](#tap-long-press-or-right-click-to-open-the-menu)
+    - [Controllers and callbacks](#controllers-and-callbacks)
   - [Contributing](#contributing)
   - [Donation](#donation)
 
@@ -139,9 +141,33 @@ PieAction.builder(
 ),
 ```
 
-### Tap, long press or right click to activate the menu
+### Adjust display angle of menu buttons
 
-You may set `delayDuration` of your theme to `Duration.zero` to activate the menu as soon as the child is pressed.
+If you don't want the dynamic angle calculation and have the menu appear at a fixed angle, you can set `customAngle` and `customAngleAnchor` attributes of `PieTheme`.
+
+```dart
+PieTheme(
+  customAngle: 90, // In degrees
+  customAngleAnchor: PieAnchor.center, // start, center, end
+),
+```
+
+You can also use `customAngleDiff` or `spacing` to adjust the angle between buttons, and `angleOffset` to rotate the menu.
+
+### Place the menu at a specific position
+
+Use `menuAlignment` attribute of `PieTheme` to make the menu appear at a specific position regardless of the pressed point. You can combine it with `menuDisplacement` to fine-tune the position.
+
+```dart
+PieTheme(
+  menuAlignment: Alignment.center,
+  menuDisplacement: Offset(0, 0),
+),
+```
+
+### Tap, long press or right click to open the menu
+
+You may set `delayDuration` of your theme to `Duration.zero` to open the menu instantly on tap.
 
 ```dart
 PieTheme(
@@ -158,18 +184,39 @@ PieTheme(
 ),
 ```
 
-### Adjust display angle of menu buttons
+### Controllers and callbacks
 
-If you don't want the dynamic angle calculation and have the menu appear at a fixed angle, you can set `customAngle` and `customAngleAnchor` attributes of `PieTheme`.
+To open, close or toggle a menu programmatically, assign a `PieMenuController` to it.
 
 ```dart
-PieTheme(
-  customAngle: 90, // In degrees
-  customAngleAnchor: PieAnchor.center, // start, center, end
+// Create a controller inside a stateful widget.
+final _pieMenuController = PieMenuController();
+
+// Assign the controller to a PieMenu.
+PieMenu(
+  controller: _pieMenuController,
+  ...
 ),
+
+// Control the menu using the controller.
+_pieMenuController.open(
+  menuAlignment: Alignment.center,
+);
 ```
 
-You can also use `customAngleDiff` or `spacing` to adjust the angle between buttons, and `angleOffset` to rotate the menu.
+If you need to do something when the menu is toggled, use `onToggle` callback of `PieMenu`, or `onMenuToggle` callback of `PieCanvas`.
+
+```dart
+PieMenu(
+  onToggle: (menuOpen) => print('Menu ${menuOpen ? 'opened' : 'closed'}'),
+  ...
+),
+
+PieCanvas(
+  onMenuToggle: (menuOpen) => print('A menu ${menuOpen ? 'opened' : 'closed'}'),
+  ...
+),
+```
 
 ## Contributing
 
