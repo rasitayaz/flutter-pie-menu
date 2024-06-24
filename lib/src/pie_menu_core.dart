@@ -134,6 +134,12 @@ class _PieMenuCoreState extends State<PieMenuCore>
   }
 
   @override
+  void setState(VoidCallback fn) {
+    if (!mounted) return;
+    super.setState(fn);
+  }
+
+  @override
   void dispose() {
     _overlayFadeController.dispose();
     _bounceController.dispose();

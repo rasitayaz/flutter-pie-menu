@@ -30,6 +30,12 @@ class _BouncingWidgetState extends State<BouncingWidget> {
   var lastSize = Size.zero;
 
   @override
+  void setState(VoidCallback fn) {
+    if (!mounted) return;
+    super.setState(fn);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: widget.animation,
