@@ -1,3 +1,7 @@
+## 3.2.1
+
+* Fixed some stateful widgets are trying to set their state after being disposed.
+
 ## 3.2.0
 
 * Added `menuAlignment` and `menuDisplacement` to `PieTheme` to allow custom positioning of the menu. [#50](https://github.com/rasitayaz/flutter-pie-menu/issues/50)
