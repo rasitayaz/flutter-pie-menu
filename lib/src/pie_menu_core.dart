@@ -21,6 +21,7 @@ class PieMenuCore extends StatefulWidget {
     required this.onToggle,
     required this.onPressed,
     required this.onPressedWithDevice,
+    required this.onPressedWithPosition,
     required this.controller,
     required this.child,
   });
@@ -40,6 +41,7 @@ class PieMenuCore extends StatefulWidget {
   /// Functional callback triggered on press.
   ///
   /// You can also use [onPressedWithDevice] if you need [PointerDeviceKind].
+  /// You can also use [onPressedWithPosition] if you need [Offset].
   final Function()? onPressed;
 
   /// Functional callback triggered on press.
@@ -47,6 +49,12 @@ class PieMenuCore extends StatefulWidget {
   ///
   /// Can be useful to distinguish between mouse and touch events.
   final Function(PointerDeviceKind kind)? onPressedWithDevice;
+
+  /// Functional callback triggered on press.
+  /// Provides [Offset] as a parameter.
+  ///
+  /// Can be useful to get the position of the menu.
+  final Function(Offset position)? onPressedWithPosition;
 
   /// Controller for programmatically emitting [PieMenu] events.
   final PieMenuController? controller;
@@ -280,6 +288,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     widget.onPressed?.call();
     widget.onPressedWithDevice?.call(event.kind);
+    widget.onPressedWithPosition?.call(_pressedOffset);
   }
 
   void _bounce() {
