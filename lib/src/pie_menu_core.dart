@@ -288,7 +288,6 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     widget.onPressed?.call();
     widget.onPressedWithDevice?.call(event.kind);
-    widget.onPressedWithPosition?.call(_pressedOffset);
   }
 
   void _bounce() {
@@ -327,6 +326,8 @@ class _PieMenuCoreState extends State<PieMenuCore>
       offset != null || menuAlignment != null,
       'Offset or alignment must be provided.',
     );
+
+    widget.onPressedWithPosition?.call(_pressedOffset);
 
     _notifier.canvas.attachMenu(
       rightClicked: rightClicked,
