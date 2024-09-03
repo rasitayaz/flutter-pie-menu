@@ -16,7 +16,9 @@ class PieDelegate extends FlowDelegate {
     required this.baseAngle,
     required this.angleDiff,
     required this.theme,
-  }) : super(repaint: bounceAnimation);
+    BoxConstraints? constraints,
+  })  : _constraints = constraints,
+        super(repaint: bounceAnimation);
 
   /// Bouncing animation for the buttons.
   final Animation bounceAnimation;
@@ -35,6 +37,11 @@ class PieDelegate extends FlowDelegate {
 
   /// Theme to use for the [PieMenu].
   final PieTheme theme;
+
+  /// Constraints of the [PieCanvas].
+  ///
+  /// If null, the constraints are calculated based on the theme.
+  final BoxConstraints? _constraints;
 
   @override
   bool shouldRepaint(PieDelegate oldDelegate) {
@@ -78,9 +85,13 @@ class PieDelegate extends FlowDelegate {
   }
 
   @override
-  BoxConstraints getConstraintsForChild(int i, BoxConstraints constraints) {
-    return BoxConstraints.tight(
-      Size.square(i == 0 ? theme.pointerSize : theme.buttonSize),
-    );
+  BoxConstraints getConstraintsForChild(
+    int i,
+    BoxConstraints constraints,
+  ) {
+    return _constraints ??
+        BoxConstraints.tight(
+          Size.square(i == 0 ? theme.pointerSize : theme.buttonSize),
+        );
   }
 }

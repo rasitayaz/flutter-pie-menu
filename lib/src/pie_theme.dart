@@ -148,6 +148,9 @@ class PieTheme {
   /// Alignment of the tooltip in the [PieCanvas].
   ///
   /// Setting this property will disable dynamic tooltip positioning.
+  ///
+  /// Setting this property to [Alignment.center] will center the tooltip
+  /// on the pressed position.
   final Alignment? tooltipCanvasAlignment;
 
   /// Whether to wrap the tooltip with [FittedBox] widget.

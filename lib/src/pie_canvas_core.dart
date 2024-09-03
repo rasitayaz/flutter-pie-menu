@@ -12,7 +12,7 @@ import 'package:pie_menu/src/pie_menu.dart';
 import 'package:pie_menu/src/pie_provider.dart';
 import 'package:pie_menu/src/pie_theme.dart';
 import 'package:pie_menu/src/platform/base.dart';
-import 'package:vector_math/vector_math.dart' hide Colors;
+import 'package:vector_math/vector_math.dart' hide Colors, Matrix4;
 
 /// Controls functionality and appearance of [PieCanvas].
 class PieCanvasCore extends StatefulWidget {
@@ -391,6 +391,27 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                       }
 
                       if (tooltipAlignment != null) {
+                        // If the tooltip is centered, use a Flow widget to
+                        // position it relative to the pointer.
+                        if (tooltipAlignment == Alignment.center) {
+                          return Flow(
+                            delegate: PieDelegate(
+                              bounceAnimation: _buttonBounceAnimation,
+                              pointerOffset: _pointerOffset,
+                              canvasOffset: _canvasOffset,
+                              baseAngle: _baseAngle,
+                              angleDiff: _angleDiff,
+                              theme: _theme,
+                              constraints: BoxConstraints(
+                                minWidth: 0,
+                                maxWidth: cw,
+                                minHeight: 0,
+                                maxHeight: ch,
+                              ),
+                            ),
+                            children: [child],
+                          );
+                        }
                         return Align(
                           alignment: tooltipAlignment,
                           child: child,
