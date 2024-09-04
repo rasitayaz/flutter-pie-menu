@@ -78,22 +78,10 @@ class _PieMenuCoreState extends State<PieMenuCore>
   );
 
   /// Controls [_bounceAnimation].
-  late final _bounceController = AnimationController(
-    duration: _theme.childBounceDuration,
-    vsync: this,
-  );
+  late final AnimationController _bounceController;
 
   /// Bounce animation for the child widget.
-  late final _bounceAnimation = Tween(
-    begin: 0.0,
-    end: 1.0,
-  ).animate(
-    CurvedAnimation(
-      parent: _bounceController,
-      curve: _theme.childBounceCurve,
-      reverseCurve: _theme.childBounceReverseCurve,
-    ),
-  );
+  late final Animation<double> _bounceAnimation;
 
   /// Offset of the press event.
   var _pressedOffset = Offset.zero;
@@ -131,6 +119,24 @@ class _PieMenuCoreState extends State<PieMenuCore>
   void initState() {
     super.initState();
     widget.controller?.addListener(_handleControllerEvent);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _bounceController = AnimationController(
+        duration: _theme.childBounceDuration,
+        vsync: this,
+      );
+
+      _bounceAnimation = Tween(
+        begin: 0.0,
+        end: 1.0,
+      ).animate(
+        CurvedAnimation(
+          parent: _bounceController,
+          curve: _theme.childBounceCurve,
+          reverseCurve: _theme.childBounceReverseCurve,
+        ),
+      );
+    });
   }
 
   @override
@@ -203,15 +209,16 @@ class _PieMenuCoreState extends State<PieMenuCore>
                     : 1,
                 duration: _theme.hoverDuration,
                 curve: Curves.ease,
-                child: _theme.childBounceEnabled
-                    ? BouncingWidget(
-                        theme: _theme,
-                        animation: _bounceAnimation,
-                        pressedOffset:
-                            _renderBox?.globalToLocal(_pressedOffset),
-                        child: widget.child,
-                      )
-                    : widget.child,
+                child:
+                    _theme.childBounceEnabled && _pressedOffset != Offset.zero
+                        ? BouncingWidget(
+                            theme: _theme,
+                            animation: _bounceAnimation,
+                            pressedOffset:
+                                _renderBox?.globalToLocal(_pressedOffset),
+                            child: widget.child,
+                          )
+                        : widget.child,
               ),
             ),
           ),
