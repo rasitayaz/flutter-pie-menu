@@ -1,3 +1,7 @@
+## 3.2.4
+
+* Hotfix for scrollable performance issue.
+
 ## 3.2.3
 
 * Another hotfix for exceptions thrown from bouncing widget.

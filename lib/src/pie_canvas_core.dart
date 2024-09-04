@@ -265,7 +265,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
     return NotificationListener<ScrollUpdateNotification>(
       onNotification: (notification) {
-        setState(() {});
+        if (_state.menuOpen) setState(() {});
         return false;
       },
       child: Material(
