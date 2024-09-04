@@ -495,7 +495,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     required bool rightClicked,
     required RenderBox renderBox,
     required Widget child,
-    required Animation<double> bounceAnimation,
+    required Animation<double>? bounceAnimation,
     required Key menuKey,
     required List<PieAction> actions,
     required PieTheme theme,
