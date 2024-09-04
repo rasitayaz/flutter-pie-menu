@@ -23,10 +23,10 @@ A Flutter package providing a highly customizable circular/radial context menu, 
   - [Customization](#customization)
     - [Button themes](#button-themes)
     - [Custom button widgets](#custom-button-widgets)
-    - [Adjust display angle of menu buttons](#adjust-display-angle-of-menu-buttons)
-    - [Place the menu at a specific position](#place-the-menu-at-a-specific-position)
+    - [Display angle of menu buttons](#display-angle-of-menu-buttons)
+    - [Specific menu position](#specific-menu-position)
     - [Tap, long press or right click to open the menu](#tap-long-press-or-right-click-to-open-the-menu)
-    - [Controllers and callbacks](#controllers-and-callbacks)
+  - [Controllers and callbacks](#controllers-and-callbacks)
   - [Contributing](#contributing)
   - [Donation](#donation)
 
@@ -141,7 +141,7 @@ PieAction.builder(
 ),
 ```
 
-### Adjust display angle of menu buttons
+### Display angle of menu buttons
 
 If you don't want the dynamic angle calculation and have the menu appear at a fixed angle, set `customAngle` and `customAngleAnchor` attributes of `PieTheme`.
 
@@ -154,7 +154,7 @@ PieTheme(
 
 You can also use `customAngleDiff` or `spacing` to adjust the angle between buttons, and `angleOffset` to rotate the menu.
 
-### Place the menu at a specific position
+### Specific menu position
 
 Use `menuAlignment` attribute of `PieTheme` to make the menu appear at a specific position regardless of the pressed point. Combine it with `menuDisplacement` to fine-tune the position.
 
@@ -184,7 +184,7 @@ PieTheme(
 ),
 ```
 
-### Controllers and callbacks
+## Controllers and callbacks
 
 To open, close or toggle a menu programmatically, assign a `PieMenuController` to it.
 

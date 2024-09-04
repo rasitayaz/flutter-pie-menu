@@ -78,22 +78,10 @@ class _PieMenuCoreState extends State<PieMenuCore>
   );
 
   /// Controls [_bounceAnimation].
-  late final _bounceController = AnimationController(
-    duration: _theme.childBounceDuration,
-    vsync: this,
-  );
+  AnimationController? _bounceController;
 
   /// Bounce animation for the child widget.
-  late final _bounceAnimation = Tween(
-    begin: 0.0,
-    end: 1.0,
-  ).animate(
-    CurvedAnimation(
-      parent: _bounceController,
-      curve: _theme.childBounceCurve,
-      reverseCurve: _theme.childBounceReverseCurve,
-    ),
-  );
+  Animation<double>? _bounceAnimation;
 
   /// Offset of the press event.
   var _pressedOffset = Offset.zero;
@@ -131,6 +119,25 @@ class _PieMenuCoreState extends State<PieMenuCore>
   void initState() {
     super.initState();
     widget.controller?.addListener(_handleControllerEvent);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_theme.childBounceEnabled) {
+        final controller = _bounceController = AnimationController(
+          duration: _theme.childBounceDuration,
+          vsync: this,
+        );
+        _bounceAnimation = Tween(
+          begin: 0.0,
+          end: 1.0,
+        ).animate(
+          CurvedAnimation(
+            parent: controller,
+            curve: _theme.childBounceCurve,
+            reverseCurve: _theme.childBounceReverseCurve,
+          ),
+        );
+      }
+    });
   }
 
   @override
@@ -142,7 +149,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
   @override
   void dispose() {
     _overlayFadeController.dispose();
-    _bounceController.dispose();
+    _bounceController?.dispose();
     _debounceTimer?.cancel();
     _bounceStopwatch.stop();
     widget.controller?.removeListener(_handleControllerEvent);
@@ -152,6 +159,8 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
   @override
   Widget build(BuildContext context) {
+    final bounceAnimation = _bounceAnimation;
+
     if (_state.menuKey == _uniqueKey) {
       if (!_previouslyOpen && _state.menuOpen) {
         _overlayFadeController.forward(from: 0);
@@ -203,10 +212,10 @@ class _PieMenuCoreState extends State<PieMenuCore>
                     : 1,
                 duration: _theme.hoverDuration,
                 curve: Curves.ease,
-                child: _theme.childBounceEnabled
+                child: bounceAnimation != null && _pressedOffset != Offset.zero
                     ? BouncingWidget(
                         theme: _theme,
-                        animation: _bounceAnimation,
+                        animation: bounceAnimation,
                         pressedOffset:
                             _renderBox?.globalToLocal(_pressedOffset),
                         child: widget.child,
@@ -289,7 +298,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
     _bounceStopwatch.reset();
     _bounceStopwatch.start();
 
-    _bounceController.forward();
+    _bounceController?.forward();
   }
 
   void _debounce() {
@@ -304,7 +313,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
         : Duration(milliseconds: minDelayMS);
 
     _debounceTimer = Timer(debounceDelay, () {
-      _bounceController.reverse();
+      _bounceController?.reverse();
     });
   }
 

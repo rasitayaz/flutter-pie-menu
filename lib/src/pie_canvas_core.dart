@@ -263,220 +263,228 @@ class PieCanvasCoreState extends State<PieCanvasCore>
       _tooltip = _actions[hoveredAction].tooltip;
     }
 
-    return Material(
-      type: MaterialType.transparency,
-      child: MouseRegion(
-        cursor: hoveredAction != null
-            ? SystemMouseCursors.click
-            : SystemMouseCursors.basic,
-        child: Stack(
-          children: [
-            Listener(
-              behavior: HitTestBehavior.translucent,
-              onPointerDown: (event) => _pointerDown(event.position),
-              onPointerMove: (event) => _pointerMove(event.position),
-              onPointerHover: _state.menuOpen
-                  ? (event) => _pointerMove(event.position)
-                  : null,
-              onPointerUp: (event) => _pointerUp(event.position),
-              child: IgnorePointer(
-                ignoring: _state.menuOpen,
-                child: widget.child,
-              ),
-            ),
-            IgnorePointer(
-              child: AnimatedBuilder(
-                animation: _fadeAnimation,
-                builder: (context, child) {
-                  return Opacity(
-                    opacity: _fadeAnimation.value,
-                    child: child,
-                  );
-                },
-                child: Stack(
-                  children: [
-                    //* overlay start *//
-                    if (menuRenderBox != null && menuRenderBox.attached)
-                      ...() {
-                        final menuOffset =
-                            menuRenderBox.localToGlobal(Offset.zero);
-
-                        switch (_theme.overlayStyle) {
-                          case PieOverlayStyle.around:
-                            return [
-                              Positioned.fill(
-                                child: CustomPaint(
-                                  painter: OverlayPainter(
-                                    color: _theme.effectiveOverlayColor,
-                                    menuOffset: Offset(
-                                      menuOffset.dx - cx,
-                                      menuOffset.dy - cy,
-                                    ),
-                                    menuSize: menuRenderBox.size,
-                                  ),
-                                ),
-                              ),
-                            ];
-                          case PieOverlayStyle.behind:
-                            final bounceAnimation = _childBounceAnimation;
-
-                            return [
-                              Positioned.fill(
-                                child: ColoredBox(
-                                  color: _theme.effectiveOverlayColor,
-                                ),
-                              ),
-                              Positioned(
-                                left: menuOffset.dx - cx,
-                                top: menuOffset.dy - cy,
-                                child: AnimatedOpacity(
-                                  opacity: _state.menuOpen &&
-                                          _state.hoveredAction != null
-                                      ? _theme.childOpacityOnButtonHover
-                                      : 1,
-                                  duration: _theme.hoverDuration,
-                                  curve: Curves.ease,
-                                  child: SizedBox.fromSize(
-                                    size: menuRenderBox.size,
-                                    child: _theme.childBounceEnabled &&
-                                            bounceAnimation != null
-                                        ? BouncingWidget(
-                                            theme: _theme,
-                                            animation: bounceAnimation,
-                                            pressedOffset: menuRenderBox
-                                                .globalToLocal(_pointerOffset),
-                                            child:
-                                                _menuChild ?? const SizedBox(),
-                                          )
-                                        : _menuChild,
-                                  ),
-                                ),
-                              ),
-                            ];
-                        }
-                      }.call(),
-                    //* overlay end *//
-
-                    //* tooltip start *//
-                    () {
-                      final tooltipAlignment = _theme.tooltipCanvasAlignment;
-
-                      Widget child = AnimatedOpacity(
-                        opacity: hoveredAction != null ? 1 : 0,
-                        duration: _theme.hoverDuration,
-                        curve: Curves.ease,
-                        child: Padding(
-                          padding: _theme.tooltipPadding,
-                          child: DefaultTextStyle.merge(
-                            textAlign: _theme.tooltipTextAlign ??
-                                (px < cw / 2
-                                    ? TextAlign.right
-                                    : TextAlign.left),
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: _theme.brightness == Brightness.light
-                                  ? Colors.black
-                                  : Colors.white,
-                            )
-                                .merge(widget.theme.tooltipTextStyle)
-                                .merge(_theme.tooltipTextStyle),
-                            child: _tooltip ?? const SizedBox(),
-                          ),
-                        ),
-                      );
-
-                      if (_theme.tooltipUseFittedBox) {
-                        child = FittedBox(child: child);
-                      }
-
-                      if (tooltipAlignment != null) {
-                        return Align(
-                          alignment: tooltipAlignment,
-                          child: child,
-                        );
-                      } else {
-                        final offsets = [
-                          _pointerOffset,
-                          for (var i = 0; i < _actions.length; i++)
-                            _getActionOffset(i),
-                        ];
-
-                        double? getTopDistance() {
-                          if (py >= ch / 2) return null;
-
-                          final dyMax = offsets
-                              .map((o) => o.dy)
-                              .reduce((dy1, dy2) => max(dy1, dy2));
-
-                          return dyMax - cy + _theme.buttonSize / 2;
-                        }
-
-                        double? getBottomDistance() {
-                          if (py < ch / 2) return null;
-
-                          final dyMin = offsets
-                              .map((o) => o.dy)
-                              .reduce((dy1, dy2) => min(dy1, dy2));
-
-                          return ch - dyMin + cy + _theme.buttonSize / 2;
-                        }
-
-                        return Positioned(
-                          top: getTopDistance(),
-                          bottom: getBottomDistance(),
-                          left: 0,
-                          right: 0,
-                          child: Align(
-                            alignment: px < cw / 2
-                                ? Alignment.centerRight
-                                : Alignment.centerLeft,
-                            child: child,
-                          ),
-                        );
-                      }
-                    }.call(),
-                    //* tooltip end *//
-
-                    //* action buttons start *//
-                    Flow(
-                      delegate: PieDelegate(
-                        bounceAnimation: _buttonBounceAnimation,
-                        pointerOffset: _pointerOffset,
-                        canvasOffset: _canvasOffset,
-                        baseAngle: _baseAngle,
-                        angleDiff: _angleDiff,
-                        theme: _theme,
-                      ),
-                      children: [
-                        DecoratedBox(
-                          decoration: _theme.pointerDecoration ??
-                              BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: _theme.pointerColor ??
-                                      (_theme.brightness == Brightness.light
-                                          ? Colors.black.withOpacity(0.35)
-                                          : Colors.white.withOpacity(0.5)),
-                                  width: 4,
-                                ),
-                              ),
-                        ),
-                        for (int i = 0; i < _actions.length; i++)
-                          PieButton(
-                            theme: _theme,
-                            action: _actions[i],
-                            angle: _getActionAngle(i),
-                            hovered: i == hoveredAction,
-                          ),
-                      ],
-                    ),
-                    //* action buttons end *//
-                  ],
+    return NotificationListener<ScrollUpdateNotification>(
+      onNotification: (notification) {
+        setState(() {});
+        return false;
+      },
+      child: Material(
+        type: MaterialType.transparency,
+        child: MouseRegion(
+          cursor: hoveredAction != null
+              ? SystemMouseCursors.click
+              : SystemMouseCursors.basic,
+          child: Stack(
+            children: [
+              Listener(
+                behavior: HitTestBehavior.translucent,
+                onPointerDown: (event) => _pointerDown(event.position),
+                onPointerMove: (event) => _pointerMove(event.position),
+                onPointerHover: _state.menuOpen
+                    ? (event) => _pointerMove(event.position)
+                    : null,
+                onPointerUp: (event) => _pointerUp(event.position),
+                child: IgnorePointer(
+                  ignoring: _state.menuOpen,
+                  child: widget.child,
                 ),
               ),
-            ),
-          ],
+              IgnorePointer(
+                child: AnimatedBuilder(
+                  animation: _fadeAnimation,
+                  builder: (context, child) {
+                    return Opacity(
+                      opacity: _fadeAnimation.value,
+                      child: child,
+                    );
+                  },
+                  child: Stack(
+                    children: [
+                      //* overlay start *//
+                      if (menuRenderBox != null && menuRenderBox.attached)
+                        ...() {
+                          final menuOffset =
+                              menuRenderBox.localToGlobal(Offset.zero);
+
+                          switch (_theme.overlayStyle) {
+                            case PieOverlayStyle.around:
+                              return [
+                                Positioned.fill(
+                                  child: CustomPaint(
+                                    painter: OverlayPainter(
+                                      color: _theme.effectiveOverlayColor,
+                                      menuOffset: Offset(
+                                        menuOffset.dx - cx,
+                                        menuOffset.dy - cy,
+                                      ),
+                                      menuSize: menuRenderBox.size,
+                                    ),
+                                  ),
+                                ),
+                              ];
+                            case PieOverlayStyle.behind:
+                              final bounceAnimation = _childBounceAnimation;
+
+                              return [
+                                Positioned.fill(
+                                  child: ColoredBox(
+                                    color: _theme.effectiveOverlayColor,
+                                  ),
+                                ),
+                                Positioned(
+                                  left: menuOffset.dx - cx,
+                                  top: menuOffset.dy - cy,
+                                  child: AnimatedOpacity(
+                                    opacity: _state.menuOpen &&
+                                            _state.hoveredAction != null
+                                        ? _theme.childOpacityOnButtonHover
+                                        : 1,
+                                    duration: _theme.hoverDuration,
+                                    curve: Curves.ease,
+                                    child: SizedBox.fromSize(
+                                      size: menuRenderBox.size,
+                                      child: _theme.childBounceEnabled &&
+                                              bounceAnimation != null
+                                          ? BouncingWidget(
+                                              theme: _theme,
+                                              animation: bounceAnimation,
+                                              pressedOffset:
+                                                  menuRenderBox.globalToLocal(
+                                                _pointerOffset,
+                                              ),
+                                              child: _menuChild ??
+                                                  const SizedBox(),
+                                            )
+                                          : _menuChild,
+                                    ),
+                                  ),
+                                ),
+                              ];
+                          }
+                        }.call(),
+                      //* overlay end *//
+
+                      //* tooltip start *//
+                      () {
+                        final tooltipAlignment = _theme.tooltipCanvasAlignment;
+
+                        Widget child = AnimatedOpacity(
+                          opacity: hoveredAction != null ? 1 : 0,
+                          duration: _theme.hoverDuration,
+                          curve: Curves.ease,
+                          child: Padding(
+                            padding: _theme.tooltipPadding,
+                            child: DefaultTextStyle.merge(
+                              textAlign: _theme.tooltipTextAlign ??
+                                  (px < cw / 2
+                                      ? TextAlign.right
+                                      : TextAlign.left),
+                              style: TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: _theme.brightness == Brightness.light
+                                    ? Colors.black
+                                    : Colors.white,
+                              )
+                                  .merge(widget.theme.tooltipTextStyle)
+                                  .merge(_theme.tooltipTextStyle),
+                              child: _tooltip ?? const SizedBox(),
+                            ),
+                          ),
+                        );
+
+                        if (_theme.tooltipUseFittedBox) {
+                          child = FittedBox(child: child);
+                        }
+
+                        if (tooltipAlignment != null) {
+                          return Align(
+                            alignment: tooltipAlignment,
+                            child: child,
+                          );
+                        } else {
+                          final offsets = [
+                            _pointerOffset,
+                            for (var i = 0; i < _actions.length; i++)
+                              _getActionOffset(i),
+                          ];
+
+                          double? getTopDistance() {
+                            if (py >= ch / 2) return null;
+
+                            final dyMax = offsets
+                                .map((o) => o.dy)
+                                .reduce((dy1, dy2) => max(dy1, dy2));
+
+                            return dyMax - cy + _theme.buttonSize / 2;
+                          }
+
+                          double? getBottomDistance() {
+                            if (py < ch / 2) return null;
+
+                            final dyMin = offsets
+                                .map((o) => o.dy)
+                                .reduce((dy1, dy2) => min(dy1, dy2));
+
+                            return ch - dyMin + cy + _theme.buttonSize / 2;
+                          }
+
+                          return Positioned(
+                            top: getTopDistance(),
+                            bottom: getBottomDistance(),
+                            left: 0,
+                            right: 0,
+                            child: Align(
+                              alignment: px < cw / 2
+                                  ? Alignment.centerRight
+                                  : Alignment.centerLeft,
+                              child: child,
+                            ),
+                          );
+                        }
+                      }.call(),
+                      //* tooltip end *//
+
+                      //* action buttons start *//
+                      Flow(
+                        delegate: PieDelegate(
+                          bounceAnimation: _buttonBounceAnimation,
+                          pointerOffset: _pointerOffset,
+                          canvasOffset: _canvasOffset,
+                          baseAngle: _baseAngle,
+                          angleDiff: _angleDiff,
+                          theme: _theme,
+                        ),
+                        children: [
+                          DecoratedBox(
+                            decoration: _theme.pointerDecoration ??
+                                BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: _theme.pointerColor ??
+                                        (_theme.brightness == Brightness.light
+                                            ? Colors.black.withOpacity(0.35)
+                                            : Colors.white.withOpacity(0.5)),
+                                    width: 4,
+                                  ),
+                                ),
+                          ),
+                          for (int i = 0; i < _actions.length; i++)
+                            PieButton(
+                              theme: _theme,
+                              action: _actions[i],
+                              angle: _getActionAngle(i),
+                              hovered: i == hoveredAction,
+                            ),
+                        ],
+                      ),
+                      //* action buttons end *//
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -495,7 +503,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     required bool rightClicked,
     required RenderBox renderBox,
     required Widget child,
-    required Animation<double> bounceAnimation,
+    required Animation<double>? bounceAnimation,
     required Key menuKey,
     required List<PieAction> actions,
     required PieTheme theme,
