@@ -1,3 +1,8 @@
+## 3.2.2
+
+* Fixed exceptions thrown from bouncing widget. [#57](https://github.com/rasitayaz/flutter-pie-menu/issues/57)
+* Fixed inconsistency in menu child positioning when the scroll position changes while the menu is open.
+
 ## 3.2.1
 
 * Fixed some stateful widgets are trying to set their state after being disposed.
