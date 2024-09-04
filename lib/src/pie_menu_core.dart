@@ -86,6 +86,9 @@ class _PieMenuCoreState extends State<PieMenuCore>
   /// Offset of the press event.
   var _pressedOffset = Offset.zero;
 
+  // Local offset of the press event.
+  var _localPressedOffset = Offset.zero;
+
   /// Button used for the press event.
   var _pressedButton = 0;
 
@@ -212,12 +215,11 @@ class _PieMenuCoreState extends State<PieMenuCore>
                     : 1,
                 duration: _theme.hoverDuration,
                 curve: Curves.ease,
-                child: bounceAnimation != null && _pressedOffset != Offset.zero
+                child: bounceAnimation != null
                     ? BouncingWidget(
                         theme: _theme,
                         animation: bounceAnimation,
-                        pressedOffset:
-                            _renderBox?.globalToLocal(_pressedOffset),
+                        pressedOffset: _localPressedOffset,
                         child: widget.child,
                       )
                     : widget.child,
@@ -232,6 +234,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
   void _pointerDown(PointerDownEvent event) {
     setState(() {
       _pressedOffset = event.position;
+      _localPressedOffset = event.localPosition;
       _pressedButton = event.buttons;
     });
 

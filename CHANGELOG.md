@@ -1,3 +1,7 @@
+## 3.2.3
+
+* Another hotfix for exceptions thrown from bouncing widget.
+
 ## 3.2.2
 
 * Fixed exceptions thrown from bouncing widget. [#57](https://github.com/rasitayaz/flutter-pie-menu/issues/57)
