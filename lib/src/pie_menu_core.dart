@@ -78,10 +78,22 @@ class _PieMenuCoreState extends State<PieMenuCore>
   );
 
   /// Controls [_bounceAnimation].
-  AnimationController? _bounceController;
+  late final _bounceController = AnimationController(
+    duration: _theme.childBounceDuration,
+    vsync: this,
+  );
 
   /// Bounce animation for the child widget.
-  Animation<double>? _bounceAnimation;
+  late final _bounceAnimation = Tween(
+    begin: 0.0,
+    end: 1.0,
+  ).animate(
+    CurvedAnimation(
+      parent: _bounceController,
+      curve: _theme.childBounceCurve,
+      reverseCurve: _theme.childBounceReverseCurve,
+    ),
+  );
 
   /// Offset of the press event.
   var _pressedOffset = Offset.zero;
@@ -122,25 +134,6 @@ class _PieMenuCoreState extends State<PieMenuCore>
   void initState() {
     super.initState();
     widget.controller?.addListener(_handleControllerEvent);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_theme.childBounceEnabled) {
-        final controller = _bounceController = AnimationController(
-          duration: _theme.childBounceDuration,
-          vsync: this,
-        );
-        _bounceAnimation = Tween(
-          begin: 0.0,
-          end: 1.0,
-        ).animate(
-          CurvedAnimation(
-            parent: controller,
-            curve: _theme.childBounceCurve,
-            reverseCurve: _theme.childBounceReverseCurve,
-          ),
-        );
-      }
-    });
   }
 
   @override
@@ -152,7 +145,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
   @override
   void dispose() {
     _overlayFadeController.dispose();
-    _bounceController?.dispose();
+    _bounceController.dispose();
     _debounceTimer?.cancel();
     _bounceStopwatch.stop();
     widget.controller?.removeListener(_handleControllerEvent);
@@ -215,7 +208,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
                     : 1,
                 duration: _theme.hoverDuration,
                 curve: Curves.ease,
-                child: bounceAnimation != null
+                child: _theme.childBounceEnabled
                     ? BouncingWidget(
                         theme: _theme,
                         animation: bounceAnimation,
@@ -301,7 +294,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
     _bounceStopwatch.reset();
     _bounceStopwatch.start();
 
-    _bounceController?.forward();
+    _bounceController.forward();
   }
 
   void _debounce() {
@@ -316,7 +309,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
         : Duration(milliseconds: minDelayMS);
 
     _debounceTimer = Timer(debounceDelay, () {
-      _bounceController?.reverse();
+      _bounceController.reverse();
     });
   }
 

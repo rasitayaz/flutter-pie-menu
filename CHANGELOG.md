@@ -1,3 +1,7 @@
+## 3.2.5
+
+* Fixed child widget initializing twice when bouncing is enabled.
+
 ## 3.2.4
 
 * Hotfix for scrollable performance issue.
