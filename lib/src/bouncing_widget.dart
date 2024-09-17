@@ -75,6 +75,7 @@ class _BouncingWidgetState extends State<BouncingWidget> {
         return Transform(
           transform: transform,
           origin: Offset(lastSize.width / 2, lastSize.height / 2),
+          filterQuality: widget.theme.childBounceFilterQuality,
           child: sizeWrapper,
         );
       },

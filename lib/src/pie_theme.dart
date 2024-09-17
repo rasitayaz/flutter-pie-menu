@@ -64,6 +64,7 @@ class PieTheme {
     this.childBounceFactor = 0.95,
     this.childBounceCurve = Curves.easeOutCubic,
     this.childBounceReverseCurve = Curves.easeInCubic,
+    this.childBounceFilterQuality,
     this.fadeDuration = const Duration(milliseconds: 250),
     this.hoverDuration = const Duration(milliseconds: 250),
     this.delayDuration = const Duration(milliseconds: 350),
@@ -178,6 +179,9 @@ class PieTheme {
   /// Reverse curve for the menu child bounce animation.
   final Curve? childBounceReverseCurve;
 
+  /// Filter quality of the menu child bounce animation.
+  final FilterQuality? childBounceFilterQuality;
+
   /// Duration of [PieMenu] fade animation.
   final Duration fadeDuration;
 
@@ -256,6 +260,7 @@ class PieTheme {
     double? childBounceDistance,
     Curve? childBounceCurve,
     Curve? childBounceReverseCurve,
+    FilterQuality? childBounceFilterQuality,
     Duration? fadeDuration,
     Duration? hoverDuration,
     Duration? delayDuration,
@@ -296,6 +301,8 @@ class PieTheme {
       childBounceCurve: childBounceCurve ?? this.childBounceCurve,
       childBounceReverseCurve:
           childBounceReverseCurve ?? this.childBounceReverseCurve,
+      childBounceFilterQuality:
+          childBounceFilterQuality ?? this.childBounceFilterQuality,
       fadeDuration: fadeDuration ?? this.fadeDuration,
       hoverDuration: hoverDuration ?? this.hoverDuration,
       delayDuration: delayDuration ?? this.delayDuration,
