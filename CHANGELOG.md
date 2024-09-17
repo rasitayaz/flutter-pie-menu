@@ -1,3 +1,7 @@
+## 3.2.6
+
+* Added `childBounceFilterQuality` option to `PieTheme` to adjust the quality of the child bounce transformation.
+
 ## 3.2.5
 
 * Fixed child widget initializing twice when bouncing is enabled.
