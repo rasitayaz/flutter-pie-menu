@@ -1,4 +1,4 @@
-## 3.2.7
+## 3.2.7
 
 * Added widget mounted checks to fix exceptions thrown from pointer events of a disposed Pie Menu.
 
