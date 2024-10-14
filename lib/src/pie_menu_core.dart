@@ -225,6 +225,8 @@ class _PieMenuCoreState extends State<PieMenuCore>
   }
 
   void _pointerDown(PointerDownEvent event) {
+    if (!mounted) return;
+
     setState(() {
       _pressedOffset = event.position;
       _localPressedOffset = event.localPosition;
@@ -261,7 +263,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
   }
 
   void _pointerMove(PointerMoveEvent event) {
-    if (_state.menuOpen) return;
+    if (!mounted || _state.menuOpen) return;
 
     if ((_pressedOffset - event.position).distance > 8) {
       _pressCanceled = true;
@@ -270,6 +272,8 @@ class _PieMenuCoreState extends State<PieMenuCore>
   }
 
   void _pointerUp(PointerUpEvent event) {
+    if (!mounted) return;
+
     _debounce();
 
     if (_pressCanceled) return;
@@ -288,7 +292,9 @@ class _PieMenuCoreState extends State<PieMenuCore>
   }
 
   void _bounce() {
-    if (!_theme.childBounceEnabled || _bounceStopwatch.isRunning) return;
+    if (!mounted || !_theme.childBounceEnabled || _bounceStopwatch.isRunning) {
+      return;
+    }
 
     _debounceTimer?.cancel();
     _bounceStopwatch.reset();
@@ -298,7 +304,9 @@ class _PieMenuCoreState extends State<PieMenuCore>
   }
 
   void _debounce() {
-    if (!_theme.childBounceEnabled || !_bounceStopwatch.isRunning) return;
+    if (!mounted || !_theme.childBounceEnabled || !_bounceStopwatch.isRunning) {
+      return;
+    }
 
     _bounceStopwatch.stop();
 
