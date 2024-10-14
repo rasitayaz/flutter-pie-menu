@@ -1,3 +1,7 @@
+## 3.2.7
+
+* Added widget mounted checks to fix exceptions thrown from pointer events of a disposed Pie Menu.
+
 ## 3.2.6
 
 * Added `childBounceFilterQuality` option to `PieTheme` to adjust the quality of the child bounce transformation.
