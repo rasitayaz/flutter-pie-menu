@@ -370,10 +370,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
       return 0;
     }
 
-    // Calculate the angle for this submenu item using the full submenu angle difference
-    // This ensures consistent spacing and predictable positions
-    return radians(
-        _submenuBaseAngle - _theme.angleOffset - _submenuAngleDiff * index);
+    return radians(_submenuBaseAngle - _submenuAngleDiff * index);
   }
 
   Offset _getActionOffset(int index) {
@@ -800,6 +797,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                             angleDiff: _submenuAngleDiff,
                             radius: _submenuRadius, // Use 2x radius directly
                             theme: _theme,
+                            applyAngleOffset:
+                                false, // Don't apply angleOffset again since it's already in _submenuBaseAngle
                           ),
                           children: [
                             // Add an empty Box as the first child that won't be visible

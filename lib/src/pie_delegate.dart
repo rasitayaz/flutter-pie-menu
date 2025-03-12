@@ -18,6 +18,7 @@ class PieDelegate extends FlowDelegate {
     required this.theme,
   })  : centerOffset = pointerOffset,
         radius = theme.radius,
+        applyAngleOffset = true,
         super(repaint: bounceAnimation);
 
   /// Creates a custom delegate with specific center, radius and angle settings.
@@ -32,6 +33,7 @@ class PieDelegate extends FlowDelegate {
     required this.angleDiff,
     required this.radius,
     required this.theme,
+    this.applyAngleOffset = true,
   })  : pointerOffset = centerOffset,
         super(repaint: bounceAnimation);
 
@@ -60,6 +62,10 @@ class PieDelegate extends FlowDelegate {
   /// Theme to use for the [PieMenu].
   final PieTheme theme;
 
+  /// Whether to apply the theme's angleOffset in the paintChildren method.
+  /// Set to false when the baseAngle already includes the offset.
+  final bool applyAngleOffset;
+
   @override
   bool shouldRepaint(PieDelegate oldDelegate) {
     return bounceAnimation != oldDelegate.bounceAnimation;
@@ -73,8 +79,10 @@ class PieDelegate extends FlowDelegate {
 
     for (var i = 0; i < count; ++i) {
       final size = context.getChildSize(i)!;
-      final angleInRadians =
-          radians(baseAngle - theme.angleOffset - angleDiff * (i - 1));
+      final angleInRadians = applyAngleOffset
+          ? radians(baseAngle - theme.angleOffset - angleDiff * (i - 1))
+          : radians(baseAngle - angleDiff * (i - 1));
+
       if (i == 0 && centerOffset == pointerOffset) {
         // Only draw the center pointer for the main menu
         context.paintChild(
