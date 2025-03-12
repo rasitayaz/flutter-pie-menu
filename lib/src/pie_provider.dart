@@ -8,6 +8,7 @@ class PieState {
     required this.menuKey,
     required this.menuOpen,
     required this.hoveredAction,
+    this.hoveredSubmenuAction,
   });
 
   /// Unique key of the currently open menu.
@@ -18,6 +19,9 @@ class PieState {
 
   /// Whether any menu action is currently hovered.
   final int? hoveredAction;
+
+  /// Whether any submenu action is currently hovered.
+  final int? hoveredSubmenuAction;
 }
 
 /// Provides [PieState] to [PieCanvasCore] and [PieMenuCore].
@@ -72,13 +76,18 @@ class PieNotifier extends ChangeNotifier {
     bool clearMenuKey = false,
     bool? menuOpen,
     int? hoveredAction,
+    int? hoveredSubmenuAction,
     bool clearHoveredAction = false,
+    bool clearHoveredSubmenuAction = false,
   }) {
     state = PieState(
       menuKey: clearMenuKey ? null : menuKey ?? state.menuKey,
       menuOpen: menuOpen ?? state.menuOpen,
       hoveredAction:
           clearHoveredAction ? null : hoveredAction ?? state.hoveredAction,
+      hoveredSubmenuAction: clearHoveredSubmenuAction
+          ? null
+          : hoveredSubmenuAction ?? state.hoveredSubmenuAction,
     );
 
     notifyListeners();

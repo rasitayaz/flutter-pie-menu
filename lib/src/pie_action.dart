@@ -16,7 +16,9 @@ class PieAction {
     this.buttonTheme,
     this.buttonThemeHovered,
     required this.child,
-  }) : builder = null;
+  })  : builder = null,
+        subActions = null,
+        isSubmenu = false;
 
   /// Creates a [PieAction] with a builder which provides
   /// whether the action is hovered or not as a parameter.
@@ -26,7 +28,25 @@ class PieAction {
     this.buttonTheme,
     this.buttonThemeHovered,
     required this.builder,
-  }) : child = null;
+  })  : child = null,
+        subActions = null,
+        isSubmenu = false;
+
+  /// Creates a [PieAction] that opens a submenu when selected.
+  ///
+  /// Instead of triggering an action when selected, this will open
+  /// a nested menu with the provided [subActions] centered around this action.
+  PieAction.submenu({
+    required this.tooltip,
+    required List<PieAction> submenuActions,
+    this.buttonTheme,
+    this.buttonThemeHovered,
+    required this.child,
+    Function()? onSelectAction,
+  })  : builder = null,
+        onSelect = onSelectAction ?? (() {}),
+        subActions = submenuActions,
+        isSubmenu = true;
 
   /// Widget to display on [PieCanvas] when this action is hovered.
   final Widget tooltip;
@@ -54,4 +74,15 @@ class PieAction {
   ///
   /// Useful for custom widgets instead of icons.
   final Widget Function(bool hovered)? builder;
+
+  /// List of actions to display in the submenu when this action is selected.
+  ///
+  /// Only applicable for submenu actions created with [PieAction.submenu].
+  final List<PieAction>? subActions;
+
+  /// Whether this action opens a submenu when selected.
+  ///
+  /// If true, [onSelect] will be ignored and a submenu will be displayed
+  /// when this action is selected, centered around this action.
+  final bool isSubmenu;
 }
