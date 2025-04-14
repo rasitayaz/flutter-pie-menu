@@ -139,7 +139,9 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   double get ch => _canvasSize.height;
 
   Offset get _canvasOffset {
-    return _canvasRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
+    final box = _canvasRenderBox;
+    if (box == null || !box.hasSize) return Offset.zero;
+    return box.localToGlobal(Offset.zero);
   }
 
   double get cx => _canvasOffset.dx;
