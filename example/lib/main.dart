@@ -236,11 +236,11 @@ class StylingPage extends StatelessWidget {
                               tooltipTextStyle: const TextStyle(
                                 color: Colors.white,
                               ),
-                              overlayColor: Colors.teal.withOpacity(0.7),
+                              overlayColor: Colors.teal.withValues(alpha: 0.7),
                               pointerSize: 40,
                               pointerDecoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Colors.red.withOpacity(0.5),
+                                color: Colors.red.withValues(alpha: 0.5),
                               ),
                               buttonTheme: const PieButtonTheme(
                                 backgroundColor: Colors.black,
@@ -282,7 +282,7 @@ class StylingPage extends StatelessWidget {
                                 /// Custom background color
                                 buttonTheme: PieButtonTheme(
                                   backgroundColor:
-                                      Colors.black.withOpacity(0.7),
+                                      Colors.black.withValues(alpha: 0.7),
                                   iconColor: Colors.white,
                                 ),
                                 child: const FaIcon(FontAwesomeIcons.palette),
@@ -292,7 +292,7 @@ class StylingPage extends StatelessWidget {
                                     const Text('Now with right click support!'),
                                 buttonTheme: PieButtonTheme(
                                   backgroundColor:
-                                      Colors.black.withOpacity(0.5),
+                                      Colors.black.withValues(alpha: 0.5),
                                   iconColor: Colors.white,
                                 ),
                                 onSelect: () {
@@ -448,7 +448,7 @@ class AboutPage extends StatelessWidget {
           backgroundColor: Colors.lime[200],
           iconColor: Colors.black,
         ),
-        overlayColor: Colors.blue[200]?.withOpacity(0.7),
+        overlayColor: Colors.blue[200]?.withValues(alpha: 0.7),
         rightClickShowsMenu: true,
       ),
       child: Center(
