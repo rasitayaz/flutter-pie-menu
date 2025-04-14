@@ -144,6 +144,12 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     return box.localToGlobal(Offset.zero);
   }
 
+  Offset get _menuOffset {
+    final box = _menuRenderBox;
+    if (box == null || !box.attached) return Offset.zero;
+    return box.localToGlobal(Offset.zero);
+  }
+
   double get cx => _canvasOffset.dx;
   double get cy => _canvasOffset.dy;
 
@@ -305,9 +311,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                       //* overlay start *//
                       if (menuRenderBox != null && menuRenderBox.attached)
                         ...() {
-                          final menuOffset =
-                              menuRenderBox.localToGlobal(Offset.zero);
-
                           switch (_theme.overlayStyle) {
                             case PieOverlayStyle.around:
                               return [
@@ -316,8 +319,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                                     painter: OverlayPainter(
                                       color: _theme.effectiveOverlayColor,
                                       menuOffset: Offset(
-                                        menuOffset.dx - cx,
-                                        menuOffset.dy - cy,
+                                        _menuOffset.dx - cx,
+                                        _menuOffset.dy - cy,
                                       ),
                                       menuSize: menuRenderBox.size,
                                     ),
@@ -334,8 +337,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                                   ),
                                 ),
                                 Positioned(
-                                  left: menuOffset.dx - cx,
-                                  top: menuOffset.dy - cy,
+                                  left: _menuOffset.dx - cx,
+                                  top: _menuOffset.dy - cy,
                                   child: AnimatedOpacity(
                                     opacity: _state.menuOpen &&
                                             _state.hoveredAction != null
@@ -363,7 +366,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                                 ),
                               ];
                           }
-                        }.call(),
+                        }(),
                       //* overlay end *//
 
                       //* tooltip start *//
@@ -444,7 +447,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                             ),
                           );
                         }
-                      }.call(),
+                      }(),
                       //* tooltip end *//
 
                       //* action buttons start *//

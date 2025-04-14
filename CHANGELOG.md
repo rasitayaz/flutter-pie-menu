@@ -1,3 +1,7 @@
+## 3.2.9
+
+* Fixed other `RenderBox` related issues.
+
 ## 3.2.8
 
 * Fixed an issue related to `RenderBox` of the canvas.
