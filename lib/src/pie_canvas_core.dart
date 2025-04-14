@@ -465,8 +465,10 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                                   border: Border.all(
                                     color: _theme.pointerColor ??
                                         (_theme.brightness == Brightness.light
-                                            ? Colors.black.withOpacity(0.35)
-                                            : Colors.white.withOpacity(0.5)),
+                                            ? Colors.black
+                                                .withValues(alpha: 0.35)
+                                            : Colors.white
+                                                .withValues(alpha: 0.5)),
                                     width: 4,
                                   ),
                                 ),

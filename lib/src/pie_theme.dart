@@ -218,8 +218,8 @@ class PieTheme {
   Color get effectiveOverlayColor {
     return overlayColor ??
         (brightness == Brightness.light
-            ? Colors.white.withOpacity(0.8)
-            : Colors.black.withOpacity(0.8));
+            ? Colors.white.withValues(alpha: 0.8)
+            : Colors.black.withValues(alpha: 0.8));
   }
 
   /// Returns the [PieTheme] defined in the closest [PieCanvas] instance
