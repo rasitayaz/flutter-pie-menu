@@ -1,3 +1,7 @@
+## 3.2.10
+
+* Performance improvements.
+
 ## 3.2.9
 
 * Fixed other `RenderBox` related issues.
