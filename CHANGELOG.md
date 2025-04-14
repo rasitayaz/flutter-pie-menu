@@ -1,3 +1,8 @@
+## 3.2.8
+
+* Fixed an issue related to `RenderBox` of the canvas.
+* Replaced deprecated `withOpacity` methods with `withValues`.
+
 ## 3.2.7
 
 * Added widget mounted checks to fix exceptions thrown from pointer events of a disposed Pie Menu.
