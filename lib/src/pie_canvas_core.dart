@@ -79,6 +79,9 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   /// Current pointer offset.
   var _pointerOffset = Offset.zero;
 
+  /// Pointer offset relative to the menu.
+  var _localPointerOffset = Offset.zero;
+
   /// Initially pressed offset.
   var _pressedOffset = Offset.zero;
 
@@ -127,6 +130,12 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   /// Current shared state.
   PieState get _state => _notifier.state;
 
+  /// Offset of the canvas relative to the screen.
+  var _canvasOffset = Offset.zero;
+
+  /// Offset of the menu relative to the screen.
+  var _menuOffset = Offset.zero;
+
   /// RenderBox of the canvas.
   RenderBox? get _canvasRenderBox {
     final object = context.findRenderObject();
@@ -137,18 +146,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
   double get cw => _canvasSize.width;
   double get ch => _canvasSize.height;
-
-  Offset get _canvasOffset {
-    final box = _canvasRenderBox;
-    if (box == null || !box.hasSize) return Offset.zero;
-    return box.localToGlobal(Offset.zero);
-  }
-
-  Offset get _menuOffset {
-    final box = _menuRenderBox;
-    if (box == null || !box.attached) return Offset.zero;
-    return box.localToGlobal(Offset.zero);
-  }
 
   double get cx => _canvasOffset.dx;
   double get cy => _canvasOffset.dy;
@@ -233,7 +230,27 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance
+      ..addObserver(this)
+      ..addPostFrameCallback((_) {
+        _canvasOffset =
+            _canvasRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
+      });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_state.menuOpen) {
+        setState(() {
+          _canvasOffset =
+              _canvasRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
+          _menuOffset =
+              _menuRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
+        });
+      }
+    });
   }
 
   @override
@@ -273,7 +290,12 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
     return NotificationListener<ScrollUpdateNotification>(
       onNotification: (notification) {
-        if (_state.menuOpen) setState(() {});
+        if (_state.menuOpen) {
+          setState(() {
+            _menuOffset =
+                _menuRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
+          });
+        }
         return false;
       },
       child: Material(
@@ -354,9 +376,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                                               theme: _theme,
                                               animation: bounceAnimation,
                                               pressedOffset:
-                                                  menuRenderBox.globalToLocal(
-                                                _pointerOffset,
-                                              ),
+                                                  _localPointerOffset,
                                               child: _menuChild ??
                                                   const SizedBox(),
                                             )
@@ -554,6 +574,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
       _pointerOffset += menuDisplacement;
       _pressedOffset = offset ?? _pointerOffset;
+      _localPointerOffset = renderBox.globalToLocal(_pointerOffset);
 
       _attachTimer = Timer(
         rightClicked ? Duration.zero : _theme.delayDuration,
@@ -564,6 +585,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
           _fadeController.forward(from: 0);
 
           _menuRenderBox = renderBox;
+          _menuOffset = renderBox.localToGlobal(Offset.zero);
           _menuChild = child;
           _childBounceAnimation = bounceAnimation;
           _onMenuToggle = onMenuToggle;
