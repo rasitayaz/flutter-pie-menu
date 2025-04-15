@@ -85,8 +85,38 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   /// Initially pressed offset.
   var _pressedOffset = Offset.zero;
 
-  /// Actions of the current [PieMenu].
-  var _actions = <PieAction>[];
+  /// Main menu actions list
+  var _mainActions = <PieAction>[];
+
+  /// Currently active submenu actions (if any)
+  var _submenuActions = <PieAction>[];
+
+  /// Currently active submenu parent index
+  int? _hoveredSubmenuParentIndex;
+
+  /// Whether a submenu is currently visible and fully initialized
+  bool get _submenuVisible =>
+      _hoveredSubmenuParentIndex != null &&
+      _hoveredSubmenuParentPosition != null &&
+      _submenuActions.isNotEmpty;
+
+  /// Position of the current submenu parent action button
+  Offset? _hoveredSubmenuParentPosition;
+
+  /// Flag to track submenu transition state
+  bool _isInSubmenuTransition = false;
+
+  /// Last update timestamp for submenu to prevent race conditions
+  int _lastSubmenuUpdateTime = 0;
+
+  /// Timer for handling delayed submenu recreation during transitions
+  Timer? _submenuTransitionTimer;
+
+  /// Tracks whether we're moving toward the submenu to prevent unwanted closing
+  bool _isMovingTowardSubmenu = false;
+
+  /// Tracks the global positions of each action button.
+  final _actionPositions = <int, Offset>{};
 
   /// Starts when the pointer is down,
   /// is triggered after the delay duration specified in [PieTheme],
@@ -100,6 +130,12 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
   /// Functional callback triggered when the current menu opens or closes.
   Function(bool menuOpen)? _onMenuToggle;
+
+  /// Tooltip widget of the currently hovered action.
+  Widget? _tooltip;
+
+  /// Secondary tooltip widget for submenu actions
+  Widget? _submenuTooltip;
 
   /// Size of the screen. Used to close the menu when the screen size changes.
   var _physicalSize = PlatformDispatcher.instance.views.first.physicalSize;
@@ -120,9 +156,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
   /// Bounce animation for the child widget of the current menu.
   Animation<double>? _childBounceAnimation;
-
-  /// Tooltip widget of the currently hovered action.
-  Widget? _tooltip;
 
   /// Controls the shared state.
   PieNotifier get _notifier => PieNotifier.of(context);
@@ -162,9 +195,19 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     return degrees(angleInRadians);
   }
 
+  /// Submenu radius - exactly 2.2x the main menu radius for a perfect concentric circle
+  double get _submenuRadius => _theme.radius * 2.2;
+
+  /// Angle difference for submenu items
+  double get _submenuAngleDiff {
+    // found this manually appealing but we could make it
+    // dynamic based on the number of items in the submenu
+    return 27.5;
+  }
+
   /// Angle of the first [PieButton] in degrees.
   double get _baseAngle {
-    final arc = (_actions.length - 1) * _angleDiff;
+    final arc = (_mainActions.length - 1) * _angleDiff;
     final customAngle = _theme.customAngle;
 
     if (customAngle != null) {
@@ -215,16 +258,238 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     }
   }
 
+  /// Base angle for submenu items - center them around the parent menu item's angle
+  double get _submenuBaseAngle {
+    if (!_submenuVisible) {
+      return _baseAngle;
+    }
+
+    final parentIndex = _hoveredSubmenuParentIndex!;
+    // Get the exact angle of the parent menu item in radians
+    final parentAngle = _getActionAngle(parentIndex);
+    // Convert to degrees for easier calculations
+    final parentAngleDegrees = degrees(parentAngle);
+
+    // Total angular spread of submenu items
+    final totalSpread = (_submenuActions.length - 1) * _submenuAngleDiff;
+
+    // Base angle centered around parent's angle
+    double baseAngle = parentAngleDegrees + totalSpread / 2;
+
+    // Check if any submenu items would be out of bounds and adjust if needed
+    if (_submenuActions.length > 0) {
+      baseAngle = _adjustSubmenuBaseAngleForBounds(baseAngle, totalSpread);
+    }
+
+    return baseAngle;
+  }
+
+  /// Adjusts the submenu base angle to ensure all items stay within canvas bounds
+  double _adjustSubmenuBaseAngleForBounds(
+      double baseAngle, double totalSpread) {
+    // We'll check each submenu item's position with the current base angle
+    final List<Offset> itemPositions = [];
+    final List<bool> isOutOfBoundsLeft = [];
+    final List<bool> isOutOfBoundsRight = [];
+
+    // Calculate positions for all items with the current base angle
+    for (int i = 0; i < _submenuActions.length; i++) {
+      // Calculate the angle for this item
+      final itemAngle =
+          radians(baseAngle - _theme.angleOffset - _submenuAngleDiff * i);
+
+      // Calculate the position
+      final itemPosition = Offset(
+          _pointerOffset.dx + _submenuRadius * cos(itemAngle),
+          _pointerOffset.dy - _submenuRadius * sin(itemAngle));
+
+      itemPositions.add(itemPosition);
+
+      // Check if out of bounds
+      isOutOfBoundsLeft.add(itemPosition.dx - _theme.buttonSize / 2 < cx);
+      isOutOfBoundsRight.add(itemPosition.dx + _theme.buttonSize / 2 > cx + cw);
+    }
+
+    // If any items are out of bounds, we need to adjust
+    if (isOutOfBoundsLeft.contains(true) || isOutOfBoundsRight.contains(true)) {
+      // Determine which direction to rotate
+      final totalOutOfBoundsLeft = isOutOfBoundsLeft.where((b) => b).length;
+      final totalOutOfBoundsRight = isOutOfBoundsRight.where((b) => b).length;
+
+      // Default to rotating based on which side has more items out of bounds
+      bool rotateClockwise = totalOutOfBoundsLeft > totalOutOfBoundsRight;
+
+      // If all items are on the same side, rotate away from that side
+      if (totalOutOfBoundsLeft > 0 && totalOutOfBoundsRight == 0) {
+        rotateClockwise = true; // Rotate clockwise to move items right
+      } else if (totalOutOfBoundsRight > 0 && totalOutOfBoundsLeft == 0) {
+        rotateClockwise = false; // Rotate counterclockwise to move items left
+      }
+
+      // Calculate the minimum adjustment needed
+      double maxAdjustment = 0;
+
+      for (int i = 0; i < itemPositions.length; i++) {
+        final position = itemPositions[i];
+        double adjustment = 0;
+
+        // Add a 30px safety margin to ensure items are fully within bounds
+        const safetyMargin = 30.0;
+
+        if (isOutOfBoundsLeft[i]) {
+          // Calculate how much we need to rotate to move it into bounds
+          final distanceOutOfBounds =
+              cx - (position.dx - _theme.buttonSize / 2) + safetyMargin;
+          final angleToRotate = asin(distanceOutOfBounds / _submenuRadius);
+          adjustment = degrees(angleToRotate);
+        } else if (isOutOfBoundsRight[i]) {
+          // Calculate how much we need to rotate to move it into bounds
+          final distanceOutOfBounds =
+              (position.dx + _theme.buttonSize / 2) - (cx + cw) + safetyMargin;
+          final angleToRotate = asin(distanceOutOfBounds / _submenuRadius);
+          adjustment = degrees(angleToRotate);
+        }
+
+        maxAdjustment = max(maxAdjustment, adjustment);
+      }
+
+      // Apply the adjustment with a small buffer for good measure
+      maxAdjustment += 5; // Add 5 degrees buffer
+
+      if (rotateClockwise) {
+        baseAngle -= maxAdjustment;
+      } else {
+        baseAngle += maxAdjustment;
+      }
+    }
+
+    return baseAngle;
+  }
+
   double _getActionAngle(int index) {
     return radians(_baseAngle - _theme.angleOffset - _angleDiff * index);
   }
 
+  double _getSubmenuActionAngle(int index) {
+    if (!_submenuVisible) {
+      return 0;
+    }
+
+    return radians(_submenuBaseAngle - _submenuAngleDiff * index);
+  }
+
   Offset _getActionOffset(int index) {
     final angle = _getActionAngle(index);
-    return Offset(
+    final offset = Offset(
       _pointerOffset.dx + _theme.radius * cos(angle),
       _pointerOffset.dy - _theme.radius * sin(angle),
     );
+
+    // Track the position of this action button
+    _actionPositions[index] = offset;
+
+    return offset;
+  }
+
+  Offset _getSubmenuActionOffset(int index) {
+    if (!_submenuVisible) {
+      return Offset.zero;
+    }
+
+    // Get the angle for this submenu item
+    final angle = _getSubmenuActionAngle(index);
+
+    // Use the same center point as the main menu (_pointerOffset)
+    // But with double the radius to create a perfect concentric circle
+    // This ensures consistent spacing and layout
+    return Offset(_pointerOffset.dx + _submenuRadius * cos(angle),
+        _pointerOffset.dy - _submenuRadius * sin(angle));
+  }
+
+  /// Handles submenu transitions with minimal complexity
+  void _handleSubmenuTransition({
+    required int? newParentIndex,
+    bool forceRefresh = false,
+  }) {
+    // Cancel any pending transitions
+    _submenuTransitionTimer?.cancel();
+
+    // If this is the same parent and no refresh is requested, do nothing
+    if (!forceRefresh && newParentIndex == _hoveredSubmenuParentIndex) {
+      return;
+    }
+
+    // If we're just closing the submenu
+    if (newParentIndex == null) {
+      setState(() {
+        _hoveredSubmenuParentIndex = null;
+        _hoveredSubmenuParentPosition = null;
+        _submenuActions = [];
+        _isInSubmenuTransition = false;
+        _isMovingTowardSubmenu = false;
+      });
+
+      // Clear submenu hover state
+      _notifier.update(clearHoveredSubmenuAction: true);
+      return;
+    }
+
+    // Validation checks
+    if (newParentIndex < 0 || newParentIndex >= _mainActions.length) {
+      return;
+    }
+
+    final action = _mainActions[newParentIndex];
+    if (!action.isSubmenu ||
+        action.subActions == null ||
+        action.subActions!.isEmpty) {
+      return;
+    }
+
+    // If we're switching between different parent menu items, add a brief delay
+    // to prevent visual confusion and ensure correct positioning
+    if (_hoveredSubmenuParentIndex != null &&
+        _hoveredSubmenuParentIndex != newParentIndex) {
+      _isInSubmenuTransition = true;
+
+      // First clear the old submenu
+      setState(() {
+        _hoveredSubmenuParentIndex = null;
+        _hoveredSubmenuParentPosition = null;
+        _submenuActions = [];
+      });
+
+      // Add a small delay before showing the new one
+      _submenuTransitionTimer = Timer(const Duration(milliseconds: 50), () {
+        if (!mounted) return;
+
+        // Calculate the position and show the new submenu
+        final newParentPosition = _getActionOffset(newParentIndex);
+
+        setState(() {
+          _hoveredSubmenuParentIndex = newParentIndex;
+          _hoveredSubmenuParentPosition = newParentPosition;
+          _submenuActions = action.subActions!;
+          _isInSubmenuTransition = false;
+
+          // Clear any hover state on initial submenu display
+          _notifier.update(clearHoveredSubmenuAction: true);
+        });
+      });
+    } else {
+      // Just show the submenu directly for the initial open (no transition needed)
+      final newParentPosition = _getActionOffset(newParentIndex);
+
+      setState(() {
+        _hoveredSubmenuParentIndex = newParentIndex;
+        _hoveredSubmenuParentPosition = newParentPosition;
+        _submenuActions = action.subActions!;
+        _isInSubmenuTransition = false;
+
+        // Clear any hover state on initial submenu display
+        _notifier.update(clearHoveredSubmenuAction: true);
+      });
+    }
   }
 
   @override
@@ -259,6 +524,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     _fadeController.dispose();
     _attachTimer?.cancel();
     _detachTimer?.cancel();
+    _submenuTransitionTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -284,8 +550,22 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   Widget build(BuildContext context) {
     final menuRenderBox = _menuRenderBox;
     final hoveredAction = _state.hoveredAction;
+
+    // Update tooltip based on hovered action
     if (hoveredAction != null) {
-      _tooltip = _actions[hoveredAction].tooltip;
+      _tooltip = hoveredAction < _mainActions.length
+          ? _mainActions[hoveredAction].tooltip
+          : null;
+    }
+
+    // Update submenu tooltip
+    final hoveredSubmenuAction = _state.hoveredSubmenuAction;
+    if (hoveredSubmenuAction != null && _submenuVisible) {
+      _submenuTooltip = hoveredSubmenuAction < _submenuActions.length
+          ? _submenuActions[hoveredSubmenuAction].tooltip
+          : null;
+    } else {
+      _submenuTooltip = null;
     }
 
     return NotificationListener<ScrollUpdateNotification>(
@@ -301,7 +581,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
       child: Material(
         type: MaterialType.transparency,
         child: MouseRegion(
-          cursor: hoveredAction != null
+          cursor: hoveredAction != null || hoveredSubmenuAction != null
               ? SystemMouseCursors.click
               : SystemMouseCursors.basic,
           child: Stack(
@@ -363,7 +643,9 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                                   top: _menuOffset.dy - cy,
                                   child: AnimatedOpacity(
                                     opacity: _state.menuOpen &&
-                                            _state.hoveredAction != null
+                                            (_state.hoveredAction != null ||
+                                                _state.hoveredSubmenuAction !=
+                                                    null)
                                         ? _theme.childOpacityOnButtonHover
                                         : 1,
                                     duration: _theme.hoverDuration,
@@ -393,8 +675,12 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                       () {
                         final tooltipAlignment = _theme.tooltipCanvasAlignment;
 
-                        Widget child = AnimatedOpacity(
-                          opacity: hoveredAction != null ? 1 : 0,
+                        // Tooltip widget
+                        Widget tooltipWidget = AnimatedOpacity(
+                          opacity: hoveredAction != null ||
+                                  hoveredSubmenuAction != null
+                              ? 1
+                              : 0,
                           duration: _theme.hoverDuration,
                           curve: Curves.ease,
                           child: Padding(
@@ -413,31 +699,48 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                               )
                                   .merge(widget.theme.tooltipTextStyle)
                                   .merge(_theme.tooltipTextStyle),
-                              child: _tooltip ?? const SizedBox(),
+                              child: _submenuTooltip ??
+                                  _tooltip ??
+                                  const SizedBox(),
                             ),
                           ),
                         );
 
                         if (_theme.tooltipUseFittedBox) {
-                          child = FittedBox(child: child);
+                          tooltipWidget = FittedBox(child: tooltipWidget);
                         }
 
                         if (tooltipAlignment != null) {
                           return Align(
                             alignment: tooltipAlignment,
-                            child: child,
+                            child: tooltipWidget,
                           );
                         } else {
-                          final offsets = [
+                          final mainOffsets = [
                             _pointerOffset,
-                            for (var i = 0; i < _actions.length; i++)
+                            for (var i = 0; i < _mainActions.length; i++)
                               _getActionOffset(i),
+                          ];
+
+                          final submenuOffsets = _submenuVisible
+                              ? [
+                                  _hoveredSubmenuParentPosition!,
+                                  for (var i = 0;
+                                      i < _submenuActions.length;
+                                      i++)
+                                    _getSubmenuActionOffset(i),
+                                ]
+                              : <Offset>[];
+
+                          final allOffsets = [
+                            ...mainOffsets,
+                            ...submenuOffsets
                           ];
 
                           double? getTopDistance() {
                             if (py >= ch / 2) return null;
 
-                            final dyMax = offsets
+                            final dyMax = allOffsets
                                 .map((o) => o.dy)
                                 .reduce((dy1, dy2) => max(dy1, dy2));
 
@@ -447,7 +750,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                           double? getBottomDistance() {
                             if (py < ch / 2) return null;
 
-                            final dyMin = offsets
+                            final dyMin = allOffsets
                                 .map((o) => o.dy)
                                 .reduce((dy1, dy2) => min(dy1, dy2));
 
@@ -463,14 +766,14 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                               alignment: px < cw / 2
                                   ? Alignment.centerRight
                                   : Alignment.centerLeft,
-                              child: child,
+                              child: tooltipWidget,
                             ),
                           );
                         }
                       }(),
                       //* tooltip end *//
 
-                      //* action buttons start *//
+                      //* main menu buttons start *//
                       Flow(
                         delegate: PieDelegate(
                           bounceAnimation: _buttonBounceAnimation,
@@ -496,16 +799,48 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                                   ),
                                 ),
                           ),
-                          for (int i = 0; i < _actions.length; i++)
+                          for (int i = 0; i < _mainActions.length; i++)
                             PieButton(
                               theme: _theme,
-                              action: _actions[i],
+                              action: _mainActions[i],
                               angle: _getActionAngle(i),
                               hovered: i == hoveredAction,
                             ),
                         ],
                       ),
-                      //* action buttons end *//
+                      //* main menu buttons end *//
+
+                      //* submenu buttons start *//
+                      if (_submenuVisible)
+                        Flow(
+                          delegate: PieDelegate.custom(
+                            bounceAnimation: _buttonBounceAnimation,
+                            // Adding a tiny offset to ensure centerOffset != pointerOffset
+                            // This prevents the first submenu item from being positioned at the center
+                            centerOffset:
+                                _pointerOffset + const Offset(0.001, 0.001),
+                            canvasOffset: _canvasOffset,
+                            baseAngle: _submenuBaseAngle,
+                            angleDiff: _submenuAngleDiff,
+                            radius: _submenuRadius, // Use 2x radius directly
+                            theme: _theme,
+                            applyAngleOffset:
+                                false, // Don't apply angleOffset again since it's already in _submenuBaseAngle
+                          ),
+                          children: [
+                            // Add an empty Box as the first child that won't be visible
+                            // This ensures all actual menu items are at index > 0 and will be positioned on the circle
+                            const SizedBox.shrink(),
+                            for (int i = 0; i < _submenuActions.length; i++)
+                              PieButton(
+                                theme: _theme,
+                                action: _submenuActions[i],
+                                angle: _getSubmenuActionAngle(i),
+                                hovered: i == _state.hoveredSubmenuAction,
+                              ),
+                          ],
+                        ),
+                      //* submenu buttons end *//
                     ],
                   ),
                 ),
@@ -545,6 +880,18 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     );
 
     _theme = theme;
+
+    // Reset and initialize all state
+    _mainActions = actions;
+    _submenuActions = [];
+    _hoveredSubmenuParentIndex = null;
+    _hoveredSubmenuParentPosition = null;
+    _isInSubmenuTransition = false;
+    _isMovingTowardSubmenu = false;
+    _actionPositions.clear();
+
+    // Cancel any pending submenu transitions
+    _submenuTransitionTimer?.cancel();
 
     _contextMenuSubscription = _platform.listenContextMenu(
       shouldPreventDefault: rightClicked,
@@ -589,13 +936,14 @@ class PieCanvasCoreState extends State<PieCanvasCore>
           _menuChild = child;
           _childBounceAnimation = bounceAnimation;
           _onMenuToggle = onMenuToggle;
-          _actions = actions;
           _tooltip = null;
+          _submenuTooltip = null;
 
           _notifier.update(
             menuOpen: true,
             menuKey: menuKey,
             clearHoveredAction: true,
+            clearHoveredSubmenuAction: true,
           );
 
           _notifyToggleListeners(menuOpen: true);
@@ -615,6 +963,9 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     final subscription = _contextMenuSubscription;
     if (subscription is StreamSubscription) subscription.cancel();
 
+    // Cancel any pending submenu transitions
+    _submenuTransitionTimer?.cancel();
+
     if (animate) {
       _fadeController.reverse();
     } else {
@@ -628,10 +979,17 @@ class PieCanvasCoreState extends State<PieCanvasCore>
         _pressed = false;
         _pressedAgain = false;
 
+        // Clear submenu state properly
+        _hoveredSubmenuParentIndex = null;
+        _hoveredSubmenuParentPosition = null;
+        _submenuActions = [];
+        _isInSubmenuTransition = false;
+
         _notifier.update(
           clearMenuKey: true,
           menuOpen: false,
           clearHoveredAction: true,
+          clearHoveredSubmenuAction: true,
         );
       },
     );
@@ -650,15 +1008,38 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     if (_state.menuOpen) {
       if (_pressedAgain || _isBeyondPointerBounds(offset)) {
         final hoveredAction = _state.hoveredAction;
+        final hoveredSubmenuAction = _state.hoveredSubmenuAction;
 
-        if (hoveredAction != null) {
-          _actions[hoveredAction].onSelect();
+        // Check if submenu action is hovered
+        if (hoveredSubmenuAction != null && _submenuVisible) {
+          // Execute the submenu action
+          _submenuActions[hoveredSubmenuAction].onSelect();
+
+          // Close the menu
+          _notifier.update(menuOpen: false);
+          _notifyToggleListeners(menuOpen: false);
+          _detachMenu();
         }
+        // Otherwise check if main action is hovered
+        else if (hoveredAction != null) {
+          final action = _mainActions[hoveredAction];
 
-        _notifier.update(menuOpen: false);
-        _notifyToggleListeners(menuOpen: false);
+          // If it's not a submenu action (or already showing submenu), execute it
+          if (!action.isSubmenu ||
+              hoveredAction == _hoveredSubmenuParentIndex) {
+            action.onSelect();
 
-        _detachMenu();
+            // Close the menu
+            _notifier.update(menuOpen: false);
+            _notifyToggleListeners(menuOpen: false);
+            _detachMenu();
+          }
+        } else {
+          // No action hovered, close the menu
+          _notifier.update(menuOpen: false);
+          _notifyToggleListeners(menuOpen: false);
+          _detachMenu();
+        }
       }
     } else {
       _detachMenu();
@@ -671,45 +1052,211 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
   void _pointerMove(Offset offset) {
     if (_state.menuOpen) {
-      void hover(int? action) {
-        if (_state.hoveredAction != action) {
-          _notifier.update(
-            hoveredAction: action,
-            clearHoveredAction: action == null,
-          );
+      // 1. Determine which main menu action is hovered
+      final hoveredMainAction = _checkMainMenuHover(offset);
+
+      // 2. Check if we're hovering over a submenu item
+      int? hoveredSubmenuAction = null;
+      if (_submenuVisible && !_isInSubmenuTransition) {
+        hoveredSubmenuAction = _checkSubmenuHover(offset);
+
+        // If we're hovering over a submenu item, or moving toward the submenu
+        if (hoveredSubmenuAction != null) {
+          _isMovingTowardSubmenu = true;
         }
       }
 
-      final withinSafeDistance = (_pressedOffset - offset).distance < 8;
+      // 3. Check if the hovered main action has a submenu
+      final hasSubmenu = hoveredMainAction != null &&
+          _mainActions[hoveredMainAction].isSubmenu &&
+          _mainActions[hoveredMainAction].subActions != null &&
+          _mainActions[hoveredMainAction].subActions!.isNotEmpty;
 
-      if (_pressedOffset != _pointerOffset && !withinSafeDistance) {
-        _pressedOffset = _pointerOffset;
-      }
+      // 4. Handle submenu open/close logic
+      if (hoveredMainAction != _hoveredSubmenuParentIndex) {
+        // If we're hovering a new menu item with a submenu, show it
+        if (hasSubmenu) {
+          _isMovingTowardSubmenu = false;
+          _handleSubmenuTransition(newParentIndex: hoveredMainAction);
+        }
+        // If we moved away from the parent menu item
+        else if (_hoveredSubmenuParentIndex != null) {
+          // Only close the submenu if not hovering a submenu item and not moving toward it
+          if (hoveredSubmenuAction == null) {
+            // Check if we're moving toward the submenu
+            final isMovingTowardSubmenu = _isHeadingTowardSubmenu(offset);
 
-      final pointerDistance = (_pointerOffset - offset).distance;
-
-      if (withinSafeDistance ||
-          pointerDistance < _theme.radius - _theme.buttonSize * 0.5 ||
-          pointerDistance > _theme.radius + _theme.buttonSize * 0.8) {
-        hover(null);
-      } else {
-        var closestDistance = double.infinity;
-        var closestAction = 0;
-
-        for (var i = 0; i < _actions.length; i++) {
-          final actionOffset = _getActionOffset(i);
-          final distance = (actionOffset - offset).distance;
-          if (distance < closestDistance) {
-            closestDistance = distance;
-            closestAction = i;
+            // Only close if we're definitely not going to the submenu
+            if (!isMovingTowardSubmenu && !_isMovingTowardSubmenu) {
+              _handleSubmenuTransition(newParentIndex: null);
+            }
           }
         }
+      }
 
-        hover(closestDistance < _theme.buttonSize * 0.8 ? closestAction : null);
+      // 5. Update the global state with hover information
+      _notifier.update(
+        hoveredAction: hoveredMainAction,
+        hoveredSubmenuAction: hoveredSubmenuAction,
+        clearHoveredAction: hoveredMainAction == null,
+        clearHoveredSubmenuAction: hoveredSubmenuAction == null,
+      );
+
+      // Reset flag if no longer hovering submenu item
+      if (hoveredSubmenuAction == null && !_isHeadingTowardSubmenu(offset)) {
+        _isMovingTowardSubmenu = false;
       }
     } else if (_pressed && _isBeyondPointerBounds(offset)) {
       _detachMenu(animate: false);
     }
+  }
+
+  // Checks if the pointer is moving in the direction of the submenu
+  bool _isHeadingTowardSubmenu(Offset currentPosition) {
+    if (!_submenuVisible || _hoveredSubmenuParentPosition == null) {
+      return false;
+    }
+
+    // Calculate the submenu center as an average of all positions
+    Offset submenuCenter = _hoveredSubmenuParentPosition!;
+    if (_submenuActions.isNotEmpty) {
+      double sumX = 0, sumY = 0;
+      for (int i = 0; i < _submenuActions.length; i++) {
+        final pos = _getSubmenuActionOffset(i);
+        sumX += pos.dx;
+        sumY += pos.dy;
+      }
+      submenuCenter =
+          Offset(sumX / _submenuActions.length, sumY / _submenuActions.length);
+    }
+
+    // Get vector from parent item to submenu center
+    final submenuDirection = submenuCenter - _hoveredSubmenuParentPosition!;
+
+    // Get vector from parent item to current pointer
+    final pointerDirection = currentPosition - _hoveredSubmenuParentPosition!;
+
+    // Check if these vectors are pointing in a similar direction
+    // by using the dot product and checking if it's positive
+    final dotProduct = submenuDirection.dx * pointerDirection.dx +
+        submenuDirection.dy * pointerDirection.dy;
+
+    return dotProduct > 0;
+  }
+
+  // Check if the pointer is hovering over a main menu action
+  int? _checkMainMenuHover(Offset offset) {
+    // Check if pointer is within the menu range
+    final withinSafeDistance = (_pressedOffset - offset).distance < 8;
+
+    if (_pressedOffset != _pointerOffset && !withinSafeDistance) {
+      _pressedOffset = _pointerOffset;
+    }
+
+    final pointerDistance = (_pointerOffset - offset).distance;
+
+    if (withinSafeDistance ||
+        pointerDistance < _theme.radius - _theme.buttonSize * 0.5 ||
+        pointerDistance > _theme.radius + _theme.buttonSize * 0.8) {
+      return null;
+    } else {
+      var closestDistance = double.infinity;
+      var closestAction = 0;
+
+      for (var i = 0; i < _mainActions.length; i++) {
+        final actionOffset = _getActionOffset(i);
+        final distance = (actionOffset - offset).distance;
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestAction = i;
+        }
+      }
+
+      return closestDistance < _theme.buttonSize * 0.8 ? closestAction : null;
+    }
+  }
+
+  // Check if the pointer is hovering over a submenu action
+  int? _checkSubmenuHover(Offset offset) {
+    if (!_submenuVisible || _isInSubmenuTransition) {
+      return null;
+    }
+
+    // Use a larger hit target for submenu items to make them easier to select
+    final hitTargetSize = _theme.buttonSize * 1.2;
+
+    // Check each submenu item individually
+    var closestDistance = double.infinity;
+    var closestAction =
+        -1; // Start with -1 to ensure we find an actual closest item
+
+    for (var i = 0; i < _submenuActions.length; i++) {
+      final actionOffset = _getSubmenuActionOffset(i);
+      final distance = (actionOffset - offset).distance;
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestAction = i;
+      }
+    }
+
+    // Make sure we found a valid item and it's within hitTargetSize/2 radius
+    if (closestAction >= 0 && closestDistance < hitTargetSize / 2) {
+      return closestAction;
+    }
+
+    return null;
+  }
+
+  /// Method to get the appropriate PieTheme based on context
+  PieTheme _getThemeForSubmenu() {
+    // Create a copy of the current theme with modified radius
+    // Need to consider all the properties because PieTheme doesn't have a proper copyWith method
+    return PieTheme(
+      brightness: _theme.brightness,
+      overlayColor: _theme.overlayColor,
+      pointerColor: _theme.pointerColor,
+      pointerDecoration: _theme.pointerDecoration,
+      buttonTheme: _theme.buttonTheme,
+      buttonThemeHovered: _theme.buttonThemeHovered,
+      iconSize: _theme.iconSize,
+      radius: _submenuRadius, // Use our submenu radius
+      spacing: _theme.spacing,
+      customAngleDiff: _theme.customAngleDiff,
+      angleOffset: _theme.angleOffset,
+      customAngle: _theme.customAngle,
+      customAngleAnchor: _theme.customAngleAnchor,
+      menuAlignment: _theme.menuAlignment,
+      menuDisplacement: _theme.menuDisplacement,
+      buttonSize: _theme.buttonSize,
+      pointerSize: _theme.pointerSize,
+      tooltipPadding: _theme.tooltipPadding,
+      tooltipTextStyle: _theme.tooltipTextStyle,
+      tooltipTextAlign: _theme.tooltipTextAlign,
+      tooltipCanvasAlignment: _theme.tooltipCanvasAlignment,
+      tooltipUseFittedBox: _theme.tooltipUseFittedBox,
+      pieBounceDuration: _theme.pieBounceDuration,
+      childBounceEnabled: _theme.childBounceEnabled,
+      childTiltEnabled: _theme.childTiltEnabled,
+      childBounceDuration: _theme.childBounceDuration,
+      childBounceFactor: _theme.childBounceFactor,
+      childBounceCurve: _theme.childBounceCurve,
+      childBounceReverseCurve: _theme.childBounceReverseCurve,
+      childBounceFilterQuality: _theme.childBounceFilterQuality,
+      fadeDuration: _theme.fadeDuration,
+      hoverDuration: _theme.hoverDuration,
+      delayDuration: _theme.delayDuration,
+      leftClickShowsMenu: _theme.leftClickShowsMenu,
+      rightClickShowsMenu: _theme.rightClickShowsMenu,
+      overlayStyle: _theme.overlayStyle,
+      childOpacityOnButtonHover: _theme.childOpacityOnButtonHover,
+    );
+  }
+
+  // Get angle for main menu action
+  double _getMainActionAngle(int index) {
+    // Calculate angle based on index and total number of main actions
+    final angleDiff = 2 * pi / _mainActions.length;
+    return _baseAngle + (index * angleDiff);
   }
 }
 
