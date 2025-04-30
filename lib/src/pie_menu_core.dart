@@ -116,6 +116,14 @@ class _PieMenuCoreState extends State<PieMenuCore>
   /// Whether the press was canceled by a pointer move event or menu toggle.
   var _pressCanceled = false;
 
+  /// Used to control the long press recognizer.
+  late var _longPressDuration = _theme.longPressDuration;
+
+  /// Used for long press gesture recognition.
+  late var _longPressRecognizer = LongPressGestureRecognizer(
+    duration: _longPressDuration,
+  );
+
   /// Controls the shared state.
   PieNotifier get _notifier => PieNotifier.of(context);
 
@@ -137,6 +145,18 @@ class _PieMenuCoreState extends State<PieMenuCore>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_theme.longPressDuration != _longPressDuration) {
+      _longPressDuration = _theme.longPressDuration;
+      _longPressRecognizer.dispose();
+      _longPressRecognizer = LongPressGestureRecognizer(
+        duration: _longPressDuration,
+      );
+    }
+  }
+
+  @override
   void setState(VoidCallback fn) {
     if (!mounted) return;
     super.setState(fn);
@@ -149,6 +169,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
     _debounceTimer?.cancel();
     _bounceStopwatch.stop();
     widget.controller?.removeListener(_handleControllerEvent);
+    _longPressRecognizer.dispose();
 
     super.dispose();
   }
@@ -246,20 +267,24 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     if (rightClicked && !_theme.rightClickShowsMenu) return;
 
-    if (_theme.delayDuration < const Duration(milliseconds: 100) ||
+    if (_theme.longPressDuration < const Duration(milliseconds: 100) ||
         rightClicked) {
       _bounce();
     }
 
     if (leftClicked && !_theme.leftClickShowsMenu) return;
 
-    _attachMenu(rightClicked: rightClicked, offset: _pressedOffset);
+    if (rightClicked && _theme.rightClickShowsMenu) {
+      _attachMenu(rightClicked: true, offset: _pressedOffset);
+    }
 
-    final recognizer = LongPressGestureRecognizer(
-      duration: _theme.delayDuration,
-    );
-    recognizer.onLongPressUp = () {};
-    recognizer.addPointer(event);
+    if (!rightClicked && _theme.longPressShowsMenu) {
+      _longPressRecognizer
+        ..onLongPress = () {
+          _attachMenu(offset: _pressedOffset);
+        }
+        ..addPointer(event);
+    }
   }
 
   void _pointerMove(PointerMoveEvent event) {
@@ -276,19 +301,23 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     _debounce();
 
-    if (_pressCanceled) return;
+    if (_pressCanceled || _state.menuOpen) return;
 
-    if (_state.menuOpen && _theme.delayDuration != Duration.zero) {
-      return;
+    final isMouseEvent = event.kind == PointerDeviceKind.mouse;
+    final leftClicked = isMouseEvent && _pressedButton == kPrimaryMouseButton;
+    final rightClicked =
+        isMouseEvent && _pressedButton == kSecondaryMouseButton;
+
+    if (!rightClicked) {
+      widget.onPressed?.call();
+      widget.onPressedWithDevice?.call(event.kind);
     }
 
-    if (event.kind == PointerDeviceKind.mouse &&
-        _pressedButton != kPrimaryMouseButton) {
-      return;
-    }
+    if (!_theme.regularPressShowsMenu) return;
+    if (leftClicked && !_theme.leftClickShowsMenu) return;
+    if (rightClicked && !_theme.rightClickShowsMenu) return;
 
-    widget.onPressed?.call();
-    widget.onPressedWithDevice?.call(event.kind);
+    _attachMenu(offset: _pressedOffset);
   }
 
   void _bounce() {
@@ -310,7 +339,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     _bounceStopwatch.stop();
 
-    final minDelayMS = _theme.delayDuration == Duration.zero ? 100 : 75;
+    final minDelayMS = 100;
 
     final debounceDelay = _bounceStopwatch.elapsedMilliseconds > minDelayMS
         ? Duration.zero
