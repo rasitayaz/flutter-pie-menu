@@ -1,3 +1,8 @@
+## 3.3.0
+
+* Deprecated `delayDuration` in `PieTheme` in favor of `regularPressShowsMenu`, `longPressShowsMenu` and `longPressDuration`. If you were previously using `delayDuration` to show the menu on regular press, you can now use `regularPressShowsMenu` instead.
+* Fixed potential memory leak caused by `LongPressGestureRecognizer` not being disposed properly.
+
 ## 3.2.10
 
 * Performance improvements.
