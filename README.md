@@ -25,7 +25,7 @@ A Flutter package providing a highly customizable circular/radial context menu, 
     - [Custom button widgets](#custom-button-widgets)
     - [Display angle of menu buttons](#display-angle-of-menu-buttons)
     - [Specific menu position](#specific-menu-position)
-    - [Tap, long press or right click to open the menu](#tap-long-press-or-right-click-to-open-the-menu)
+    - [Regular press, long press or right click to open the menu](#regular-press-long-press-or-right-click-to-open-the-menu)
   - [Controllers and callbacks](#controllers-and-callbacks)
   - [Contributing](#contributing)
   - [Donation](#donation)
@@ -165,13 +165,15 @@ PieTheme(
 ),
 ```
 
-### Tap, long press or right click to open the menu
+### Regular press, long press or right click to open the menu
 
-Set `delayDuration` of your theme to `Duration.zero` to open the menu instantly on tap.
+Use `regularPressShowsMenu`, `longPressShowsMenu` and `longPressDuration` attributes of `PieTheme` to customize the menu opening behavior.
 
 ```dart
 PieTheme(
-  delayDuration: Duration.zero,
+  regularPressShowsMenu: true,
+  longPressShowsMenu: true,
+  longPressDuration: const Duration(milliseconds: 500),
 ),
 ```
 
