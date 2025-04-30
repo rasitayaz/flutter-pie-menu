@@ -67,12 +67,18 @@ class PieTheme {
     this.childBounceFilterQuality,
     this.fadeDuration = const Duration(milliseconds: 250),
     this.hoverDuration = const Duration(milliseconds: 250),
-    this.delayDuration = const Duration(milliseconds: 350),
+    @Deprecated(
+      "Deprecated in favor of 'regularPressShowsMenu', 'longPressShowsMenu' and 'longPressDuration'",
+    )
+    Duration? delayDuration,
+    Duration longPressDuration = const Duration(milliseconds: 350),
+    this.regularPressShowsMenu = false,
+    this.longPressShowsMenu = true,
     this.leftClickShowsMenu = true,
     this.rightClickShowsMenu = false,
     this.overlayStyle = PieOverlayStyle.behind,
     this.childOpacityOnButtonHover = 0.5,
-  });
+  }) : longPressDuration = delayDuration ?? longPressDuration;
 
   /// How the background and tooltip widgets should be displayed
   /// if they are not specified explicitly.
@@ -188,10 +194,14 @@ class PieTheme {
   /// Duration of [PieButton] hover animation.
   final Duration hoverDuration;
 
-  /// Long press duration for [PieMenu] to display.
-  ///
-  /// Can be set to [Duration.zero] to display the menu immediately on tap.
-  final Duration delayDuration;
+  /// Duration of long press gesture to display the menu.
+  final Duration longPressDuration;
+
+  /// Whether to display the menu on regular press.
+  final bool regularPressShowsMenu;
+
+  /// Whether to display the menu on long press.
+  final bool longPressShowsMenu;
 
   /// Whether to display the menu on left mouse click.
   final bool leftClickShowsMenu;
@@ -263,7 +273,13 @@ class PieTheme {
     FilterQuality? childBounceFilterQuality,
     Duration? fadeDuration,
     Duration? hoverDuration,
+    @Deprecated(
+      "Deprecated in favor of 'regularPressShowsMenu', 'longPressShowsMenu' and 'longPressDuration'",
+    )
     Duration? delayDuration,
+    bool? regularPressShowsMenu,
+    bool? longPressShowsMenu,
+    Duration? longPressDuration,
     bool? leftClickShowsMenu,
     bool? rightClickShowsMenu,
     PieOverlayStyle? overlayStyle,
@@ -305,7 +321,11 @@ class PieTheme {
           childBounceFilterQuality ?? this.childBounceFilterQuality,
       fadeDuration: fadeDuration ?? this.fadeDuration,
       hoverDuration: hoverDuration ?? this.hoverDuration,
-      delayDuration: delayDuration ?? this.delayDuration,
+      longPressDuration:
+          longPressDuration ?? delayDuration ?? this.longPressDuration,
+      regularPressShowsMenu:
+          regularPressShowsMenu ?? this.regularPressShowsMenu,
+      longPressShowsMenu: longPressShowsMenu ?? this.longPressShowsMenu,
       leftClickShowsMenu: leftClickShowsMenu ?? this.leftClickShowsMenu,
       rightClickShowsMenu: rightClickShowsMenu ?? this.rightClickShowsMenu,
       overlayStyle: overlayStyle ?? this.overlayStyle,

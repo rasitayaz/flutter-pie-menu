@@ -576,31 +576,28 @@ class PieCanvasCoreState extends State<PieCanvasCore>
       _pressedOffset = offset ?? _pointerOffset;
       _localPointerOffset = renderBox.globalToLocal(_pointerOffset);
 
-      _attachTimer = Timer(
-        rightClicked ? Duration.zero : _theme.delayDuration,
-        () {
-          _detachTimer?.cancel();
+      _attachTimer = Timer(Duration.zero, () {
+        _detachTimer?.cancel();
 
-          _buttonBounceController.forward(from: 0);
-          _fadeController.forward(from: 0);
+        _buttonBounceController.forward(from: 0);
+        _fadeController.forward(from: 0);
 
-          _menuRenderBox = renderBox;
-          _menuOffset = renderBox.localToGlobal(Offset.zero);
-          _menuChild = child;
-          _childBounceAnimation = bounceAnimation;
-          _onMenuToggle = onMenuToggle;
-          _actions = actions;
-          _tooltip = null;
+        _menuRenderBox = renderBox;
+        _menuOffset = renderBox.localToGlobal(Offset.zero);
+        _menuChild = child;
+        _childBounceAnimation = bounceAnimation;
+        _onMenuToggle = onMenuToggle;
+        _actions = actions;
+        _tooltip = null;
 
-          _notifier.update(
-            menuOpen: true,
-            menuKey: menuKey,
-            clearHoveredAction: true,
-          );
+        _notifier.update(
+          menuOpen: true,
+          menuKey: menuKey,
+          clearHoveredAction: true,
+        );
 
-          _notifyToggleListeners(menuOpen: true);
-        },
-      );
+        _notifyToggleListeners(menuOpen: true);
+      });
     }
   }
 
@@ -645,8 +642,6 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   }
 
   void _pointerUp(Offset offset) {
-    _attachTimer?.cancel();
-
     if (_state.menuOpen) {
       if (_pressedAgain || _isBeyondPointerBounds(offset)) {
         final hoveredAction = _state.hoveredAction;
@@ -660,7 +655,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
         _detachMenu();
       }
-    } else {
+    } else if (!_theme.regularPressShowsMenu) {
       _detachMenu();
     }
 
