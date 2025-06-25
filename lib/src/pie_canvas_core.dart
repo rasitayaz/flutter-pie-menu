@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pie_menu/src/bouncing_widget.dart';
 import 'package:pie_menu/src/pie_action.dart';
 import 'package:pie_menu/src/pie_button.dart';
@@ -668,6 +669,9 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     if (_state.menuOpen) {
       void hover(int? action) {
         if (_state.hoveredAction != action) {
+          if (action != null) {
+            HapticFeedback.lightImpact();
+          }
           _notifier.update(
             hoveredAction: action,
             clearHoveredAction: action == null,
