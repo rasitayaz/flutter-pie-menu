@@ -104,6 +104,9 @@ class _PieMenuCoreState extends State<PieMenuCore>
   /// Button used for the press event.
   var _pressedButton = 0;
 
+  /// Device kind used for the press event.
+  PointerDeviceKind? _pressedDeviceKind;
+
   /// Whether the menu was open in the previous rebuild.
   var _previouslyOpen = false;
 
@@ -214,11 +217,10 @@ class _PieMenuCoreState extends State<PieMenuCore>
           child: Listener(
             onPointerDown: _pointerDown,
             onPointerMove: _pointerMove,
-            onPointerUp: _pointerUp,
             child: GestureDetector(
-              onTapDown: (details) => _bounce(),
-              onTapCancel: () => _debounce(),
-              onTapUp: (details) => _debounce(),
+              onTapDown: _onTapDown,
+              onTapCancel: _onTapCancel,
+              onTapUp: _onTapUp,
               dragStartBehavior: DragStartBehavior.down,
               child: AnimatedOpacity(
                 opacity: _theme.overlayStyle == PieOverlayStyle.around &&
@@ -252,13 +254,14 @@ class _PieMenuCoreState extends State<PieMenuCore>
       _pressedOffset = event.position;
       _localPressedOffset = event.localPosition;
       _pressedButton = event.buttons;
+      _pressedDeviceKind = event.kind;
     });
 
     if (_state.menuOpen) return;
 
     _pressCanceled = false;
 
-    final isMouseEvent = event.kind == PointerDeviceKind.mouse;
+    final isMouseEvent = _pressedDeviceKind == PointerDeviceKind.mouse;
     final leftClicked = isMouseEvent && _pressedButton == kPrimaryMouseButton;
     final rightClicked =
         isMouseEvent && _pressedButton == kSecondaryMouseButton;
@@ -267,7 +270,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     if (rightClicked && !_theme.rightClickShowsMenu) return;
 
-    if (_theme.longPressDuration < const Duration(milliseconds: 100) ||
+    if (_theme.longPressDuration < Duration(milliseconds: 100) ||
         rightClicked) {
       _bounce();
     }
@@ -287,6 +290,10 @@ class _PieMenuCoreState extends State<PieMenuCore>
     }
   }
 
+  void _onTapDown(TapDownDetails details) {
+    _bounce();
+  }
+
   void _pointerMove(PointerMoveEvent event) {
     if (!mounted || _state.menuOpen) return;
 
@@ -296,21 +303,29 @@ class _PieMenuCoreState extends State<PieMenuCore>
     }
   }
 
-  void _pointerUp(PointerUpEvent event) {
+  void _onTapCancel() {
+    _debounce();
+  }
+
+  void _onTapUp(TapUpDetails details) {
     if (!mounted) return;
 
     _debounce();
 
     if (_pressCanceled || _state.menuOpen) return;
 
-    final isMouseEvent = event.kind == PointerDeviceKind.mouse;
+    final deviceKind = _pressedDeviceKind;
+
+    final isMouseEvent = deviceKind == PointerDeviceKind.mouse;
     final leftClicked = isMouseEvent && _pressedButton == kPrimaryMouseButton;
     final rightClicked =
         isMouseEvent && _pressedButton == kSecondaryMouseButton;
 
     if (!rightClicked) {
       widget.onPressed?.call();
-      widget.onPressedWithDevice?.call(event.kind);
+      if (deviceKind != null) {
+        widget.onPressedWithDevice?.call(deviceKind);
+      }
     }
 
     if (!_theme.regularPressShowsMenu) return;
