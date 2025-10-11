@@ -198,6 +198,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
     _previouslyOpen = _state.menuOpen;
 
     return Stack(
+      fit: StackFit.passthrough,
       children: [
         if (_theme.overlayStyle == PieOverlayStyle.around)
           Positioned.fill(
