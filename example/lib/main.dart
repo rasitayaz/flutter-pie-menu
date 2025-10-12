@@ -1,8 +1,13 @@
+import 'dart:math' as math;
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
 import 'package:pie_menu/pie_menu.dart';
+import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 extension ContextExtension on BuildContext {
@@ -38,20 +43,25 @@ class ExampleApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Pie Menu',
-      home: const HomePage(),
-      theme: ThemeData(
-        fontFamily: 'Poppins',
-        textTheme: const TextTheme().apply(fontFamily: 'Poppins'),
-        snackBarTheme: const SnackBarThemeData(
-          contentTextStyle: TextStyle(
+    return Sizer(
+      builder: (context, orientation, screenType) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Flutter Pie Menu',
+          home: const HomePage(),
+          themeMode: ThemeMode.dark,
+          theme: ThemeData(
             fontFamily: 'Poppins',
-            color: Colors.white,
+            textTheme: const TextTheme().apply(fontFamily: 'Poppins'),
+            snackBarTheme: const SnackBarThemeData(
+              contentTextStyle: TextStyle(
+                fontFamily: 'Poppins',
+                color: Colors.white,
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -70,11 +80,16 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return PieCanvas(
       theme: PieTheme(
-        rightClickShowsMenu: true,
-        tooltipTextStyle: const TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.w600,
-        ),
+        brightness: Brightness.dark,
+        buttonTheme: const PieButtonTheme(backgroundColor: Colors.transparent, iconColor: Colors.transparent),
+        buttonThemeHovered: const PieButtonTheme(backgroundColor: Colors.transparent, iconColor: Colors.transparent),
+        radius: 64,
+        buttonSize: 56,
+        pointerColor: Colors.transparent,
+        regularPressShowsMenu: true,
+        longPressShowsMenu: false,
+        leftClickShowsMenu: false,
+        rightClickShowsMenu: false,
         animationTheme: PieAnimationTheme(
           beforeOpenCurve: Easing.linear,
           beforeOpenDuration: Durations.extralong4,
@@ -117,6 +132,7 @@ class _HomePageState extends State<HomePage> {
           children: const [
             StylingPage(),
             ListViewPage(),
+            PinterestPage(),
             AboutPage(),
           ],
         ),
@@ -131,6 +147,10 @@ class _HomePageState extends State<HomePage> {
             BottomNavigationBarItem(
               icon: FaIcon(FontAwesomeIcons.list),
               label: 'ListView',
+            ),
+            BottomNavigationBarItem(
+              icon: FaIcon(FontAwesomeIcons.pinterest),
+              label: 'Pinterest',
             ),
             BottomNavigationBarItem(
               icon: FaIcon(FontAwesomeIcons.circleInfo),
@@ -451,7 +471,94 @@ class ListViewPage extends StatelessWidget {
   }
 }
 
-//* about the developer *//
+//* pinterest example *//
+class PinterestPage extends StatelessWidget {
+  const PinterestPage({super.key});
+  String imageUrl(int index) => 'https://picsum.photos/seed/$index/400/600';
+
+  @override
+  Widget build(BuildContext context) {
+    return PieCanvas(
+      theme: PieTheme(
+        brightness: Brightness.dark,
+        buttonTheme: const PieButtonTheme(backgroundColor: Colors.transparent, iconColor: Colors.transparent),
+        buttonThemeHovered: const PieButtonTheme(backgroundColor: Colors.transparent, iconColor: Colors.transparent),
+        radius: 64,
+        buttonSize: 56,
+        pointerColor: Colors.transparent,
+        regularPressShowsMenu: true,
+        longPressShowsMenu: false,
+        leftClickShowsMenu: false,
+        rightClickShowsMenu: false,
+        animationTheme: PieAnimationTheme(
+          beforeOpenCurve: Easing.linear,
+          beforeOpenDuration: Durations.extralong4,
+          beforeOpenReverseCurve: Curves.bounceOut,
+          beforeOpenBuilder: (child, size, pressedOffset, animation) => child,
+          pieMenuOpenCurve: Curves.linear,
+          pieMenuOpenDuration: Durations.short1,
+          pieMenuOpenReverseCurve: Curves.linear,
+          whileMenuOpenChildBuilder: (child, size, pressedOffset, animation) {
+            return AnimatedBuilder(
+              animation: animation,
+              child: child,
+              builder: (context, child) {
+                final transform = Matrix4.identity();
+                final centerX = size.width / 2;
+                final centerY = size.height / 2;
+                transform
+                  ..setEntry(3, 2, 0.001)
+                  ..translate(centerX, centerY)
+                  ..rotateZ(-0.15 * animation.value)
+                  ..translate(-centerX, -centerY);
+                return Transform(
+                  transform: transform,
+                  child: child,
+                );
+              },
+            );
+          },
+        ),
+      ),
+      child: MasonryGridView.count(
+        itemCount: 50,
+        crossAxisCount: 2,
+        mainAxisSpacing: 2,
+        crossAxisSpacing: 2,
+        itemBuilder: (context, index) {
+          return PieMenu(
+            actions: [
+              PieActionIcon(icon: 'assets/icons/eyes.png', onSelect: () {}),
+              PieActionIcon(icon: 'assets/icons/heart-fiery.png', onSelect: () {}),
+            ],
+            child: Hero(
+              tag: 'focused-$index',
+              child: Image.network(imageUrl(index), height: (index % 5 + 1) * 100, fit: BoxFit.cover),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class PieActionIcon extends PieAction {
+  PieActionIcon({required String icon, required VoidCallback super.onSelect})
+      : super.builder(
+          tooltip: const SizedBox.shrink(),
+          builder: (hovered) => LiquidGlass(
+            settings:
+                const LiquidGlassSettings(ambientStrength: 0.5, lightAngle: 0.2 * math.pi, glassColor: Colors.white12),
+            shape: const LiquidRoundedSuperellipse(borderRadius: Radius.circular(40)),
+            glassContainsChild: false,
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox.square(dimension: 36, child: Image.asset(icon)),
+            ),
+          ),
+        );
+}
+
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
 
