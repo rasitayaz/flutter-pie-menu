@@ -59,6 +59,24 @@ class _PieMenuCoreState extends State<PieMenuCore> with TickerProviderStateMixin
   /// Unique key for this menu. Used to control animations.
   final _uniqueKey = UniqueKey();
 
+  /// Controls [_whileMenuOpenChildAnimation].
+  late final _whileMenuOpenChildAnimationController = AnimationController(
+    duration: _theme.animationTheme.whileMenuOpenChildDuration,
+    vsync: this,
+  );
+
+  /// Animation for the child while the menu is open.
+  late final _whileMenuOpenChildAnimation = Tween(
+    begin: 0.0,
+    end: 1.0,
+  ).animate(
+    CurvedAnimation(
+      parent: _whileMenuOpenChildAnimationController,
+      curve: _theme.animationTheme.whileMenuOpenChildCurve,
+      reverseCurve: _theme.animationTheme.whileMenuOpenChildReverseCurve,
+    ),
+  );
+
   /// Controls [_overlayFadeAnimation].
   late final _overlayFadeController = AnimationController(
     duration: _theme.fadeDuration,
@@ -231,11 +249,13 @@ class _PieMenuCoreState extends State<PieMenuCore> with TickerProviderStateMixin
                     : 1,
                 duration: _theme.hoverDuration,
                 curve: Curves.ease,
-                child: AnimatedChild(
+                child: PieAnimatedChild(
                   beforeOpenBuilder: _theme.animationTheme.beforeOpenBuilder,
                   menuChild: widget.child,
                   animation: beforeOpenAnimation,
                   pressedOffset: _localPressedOffset,
+                  whileMenuOpenChildAnimation: _whileMenuOpenChildAnimation,
+                  whileMenuOpenChildBuilder: _theme.animationTheme.whileMenuOpenChildBuilder,
                 ),
               ),
             ),

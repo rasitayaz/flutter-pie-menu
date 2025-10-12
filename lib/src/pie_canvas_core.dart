@@ -35,21 +35,39 @@ class PieCanvasCoreState extends State<PieCanvasCore> with TickerProviderStateMi
   /// Controls platform-specific functionality, used to handle right-clicks.
   final _platform = BasePlatform();
 
-  /// Controls [_buttonBounceAnimation].
-  late final _buttonBounceController = AnimationController(
+  /// Controls [_pieMenuAnimation].
+  late final _pieMenuAnimationController = AnimationController(
     duration: _theme.animationTheme.pieMenuOpenDuration,
     vsync: this,
   );
 
-  /// Bouncing animation for the [PieButton]s.
-  late final _buttonBounceAnimation = Tween(
+  /// Animation for the [PieButton]s.
+  late final _pieMenuAnimation = Tween(
     begin: 0.0,
     end: 1.0,
   ).animate(
     CurvedAnimation(
-      parent: _buttonBounceController,
+      parent: _pieMenuAnimationController,
       curve: _theme.animationTheme.pieMenuOpenCurve,
       reverseCurve: _theme.animationTheme.pieMenuOpenReverseCurve,
+    ),
+  );
+
+  /// Controls [_whileMenuOpenChildAnimation].
+  late final _whileMenuOpenChildAnimationController = AnimationController(
+    duration: _theme.animationTheme.whileMenuOpenChildDuration,
+    vsync: this,
+  );
+
+  /// Animation for the child while the menu is open.
+  late final _whileMenuOpenChildAnimation = Tween(
+    begin: 0.0,
+    end: 1.0,
+  ).animate(
+    CurvedAnimation(
+      parent: _whileMenuOpenChildAnimationController,
+      curve: _theme.animationTheme.whileMenuOpenChildCurve,
+      reverseCurve: _theme.animationTheme.whileMenuOpenChildReverseCurve,
     ),
   );
 
@@ -230,7 +248,7 @@ class PieCanvasCoreState extends State<PieCanvasCore> with TickerProviderStateMi
 
   @override
   void dispose() {
-    _buttonBounceController.dispose();
+    _pieMenuAnimationController.dispose();
     _fadeController.dispose();
     _attachTimer?.cancel();
     _detachTimer?.cancel();
@@ -351,11 +369,14 @@ class PieCanvasCoreState extends State<PieCanvasCore> with TickerProviderStateMi
                                       child: SizedBox.fromSize(
                                         size: menuRenderBox.size,
                                         child: animation != null
-                                            ? AnimatedChild(
+                                            ? PieAnimatedChild(
                                                 beforeOpenBuilder: _theme.animationTheme.beforeOpenBuilder,
                                                 menuChild: _menuChild,
                                                 animation: animation,
                                                 pressedOffset: _localPointerOffset,
+                                                whileMenuOpenChildAnimation: _whileMenuOpenChildAnimation,
+                                                whileMenuOpenChildBuilder:
+                                                    _theme.animationTheme.whileMenuOpenChildBuilder,
                                               )
                                             : _menuChild,
                                       ),
@@ -436,7 +457,7 @@ class PieCanvasCoreState extends State<PieCanvasCore> with TickerProviderStateMi
                         //* action buttons start *//
                         Flow(
                           delegate: PieDelegate(
-                            bounceAnimation: _buttonBounceAnimation,
+                            bounceAnimation: _pieMenuAnimation,
                             pointerOffset: _pointerOffset,
                             canvasOffset: _canvasOffset,
                             baseAngle: _baseAngle,
@@ -541,8 +562,9 @@ class PieCanvasCoreState extends State<PieCanvasCore> with TickerProviderStateMi
       _attachTimer = Timer(Duration.zero, () {
         _detachTimer?.cancel();
 
-        _buttonBounceController.forward(from: 0);
+        _pieMenuAnimationController.forward(from: 0);
         _fadeController.forward(from: 0);
+        _whileMenuOpenChildAnimationController.forward(from: 0);
 
         _menuRenderBox = renderBox;
         _menuOffset = renderBox.localToGlobal(Offset.zero);
@@ -576,8 +598,10 @@ class PieCanvasCoreState extends State<PieCanvasCore> with TickerProviderStateMi
 
     if (animate) {
       _fadeController.reverse();
+      _whileMenuOpenChildAnimationController.reverse();
     } else {
       _fadeController.animateTo(0, duration: Duration.zero);
+      _whileMenuOpenChildAnimationController.animateTo(0, duration: Duration.zero);
     }
 
     _detachTimer = Timer(

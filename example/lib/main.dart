@@ -79,15 +79,30 @@ class _HomePageState extends State<HomePage> {
           beforeOpenCurve: Easing.linear,
           beforeOpenDuration: Durations.extralong4,
           beforeOpenReverseCurve: Curves.bounceOut,
-          beforeOpenBuilder: (child, pressedOffset, animation) {
-            return ScaleTransition(
-              scale: Tween<double>(begin: 1.0, end: 0.95).animate(animation),
-              child: child,
-            );
-          },
+          beforeOpenBuilder: (child, size, pressedOffset, animation) => child,
           pieMenuOpenCurve: Curves.linear,
           pieMenuOpenDuration: Durations.short1,
           pieMenuOpenReverseCurve: Curves.linear,
+          whileMenuOpenChildBuilder: (child, size, pressedOffset, animation) {
+            return AnimatedBuilder(
+              animation: animation,
+              child: child,
+              builder: (context, child) {
+                final transform = Matrix4.identity();
+                final centerX = size.width / 2;
+                final centerY = size.height / 2;
+                transform
+                  ..setEntry(3, 2, 0.001)
+                  ..translate(centerX, centerY)
+                  ..rotateZ(-0.15 * animation.value)
+                  ..translate(-centerX, -centerY);
+                return Transform(
+                  transform: transform,
+                  child: child,
+                );
+              },
+            );
+          },
         ),
       ),
       child: Scaffold(

@@ -11,6 +11,7 @@ class BouncingWidget extends StatefulWidget {
   const BouncingWidget({
     super.key,
     required this.animation,
+    required this.size,
     required this.pressedOffset,
     required this.child,
     this.bounceFactor = 0.95,
@@ -19,6 +20,7 @@ class BouncingWidget extends StatefulWidget {
   });
 
   final Animation<double> animation;
+  final Size size;
   final Offset? pressedOffset;
   final Widget child;
   final double bounceFactor;
@@ -30,30 +32,14 @@ class BouncingWidget extends StatefulWidget {
 }
 
 class _BouncingWidgetState extends State<BouncingWidget> {
-  var lastSize = Size.zero;
-
-  @override
-  void setState(VoidCallback fn) {
-    if (!mounted) return;
-    super.setState(fn);
-  }
-
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: widget.animation,
       builder: (context, child) {
-        final sizeWrapper = _WidgetSizeWrapper(
-          onSizeChange: (newSize) {
-            if (lastSize == newSize) return;
-            setState(() => lastSize = newSize);
-          },
-          child: widget.child,
-        );
+        if (widget.size == Size.zero) return child!;
 
-        if (lastSize == Size.zero) return sizeWrapper;
-
-        final v = 0.5 / max(lastSize.width, lastSize.height);
+        final v = 0.5 / max(widget.size.width, widget.size.height);
         final transform = Matrix4.identity()..setEntry(3, 2, v);
 
         transform.scale(
@@ -63,8 +49,8 @@ class _BouncingWidgetState extends State<BouncingWidget> {
         final offset = widget.pressedOffset;
 
         if (widget.tiltEnabled && offset != null) {
-          final x = offset.dx / lastSize.width;
-          final y = offset.dy / lastSize.height;
+          final x = offset.dx / widget.size.width;
+          final y = offset.dy / widget.size.height;
 
           const tiltAngle = pi / 10;
 
@@ -77,9 +63,9 @@ class _BouncingWidgetState extends State<BouncingWidget> {
 
         return Transform(
           transform: transform,
-          origin: Offset(lastSize.width / 2, lastSize.height / 2),
+          origin: Offset(widget.size.width / 2, widget.size.height / 2),
           filterQuality: widget.filterQuality,
-          child: sizeWrapper,
+          child: child,
         );
       },
       child: widget.child,
@@ -130,54 +116,114 @@ class _WidgetSizeWrapper extends SingleChildRenderObjectWidget {
   }
 }
 
-class AnimatedChild extends StatelessWidget {
-  const AnimatedChild._({
+class PieAnimatedChild extends StatefulWidget {
+  const PieAnimatedChild._({
     super.key,
     required this.menuChild,
     required this.pressedOffset,
-    required this.animation,
+    required this.beforeOpenAnimation,
     required this.beforeOpenBuilder,
+    required this.whileMenuOpenChildAnimation,
+    required this.whileMenuOpenChildBuilder,
   });
 
-  factory AnimatedChild({
+  factory PieAnimatedChild({
     Key? key,
     Widget? menuChild,
     Offset? pressedOffset,
     Animation<double> animation = const AlwaysStoppedAnimation(0),
+    Animation<double> whileMenuOpenChildAnimation = const AlwaysStoppedAnimation(0),
     Widget Function(
       Widget child,
+      Size size,
       Offset? pressedOffset,
       Animation<double> animation,
     )? beforeOpenBuilder,
+    Widget Function(
+      Widget child,
+      Size size,
+      Offset? pressedOffset,
+      Animation<double> animation,
+    )? whileMenuOpenChildBuilder,
   }) {
-    return AnimatedChild._(
+    return PieAnimatedChild._(
       key: key,
       menuChild: menuChild,
       pressedOffset: pressedOffset,
-      animation: animation,
+      beforeOpenAnimation: animation,
       beforeOpenBuilder: beforeOpenBuilder ??
-          (child, pressedOffset, animation) => BouncingWidget(
+          (child, size, pressedOffset, animation) => BouncingWidget(
                 animation: animation,
+                size: size,
                 pressedOffset: pressedOffset,
                 bounceFactor: 0.95,
                 filterQuality: null,
                 tiltEnabled: true,
                 child: child,
               ),
+      whileMenuOpenChildAnimation: whileMenuOpenChildAnimation,
+      whileMenuOpenChildBuilder: whileMenuOpenChildBuilder,
     );
   }
 
   final Widget Function(
     Widget child,
+    Size size,
     Offset? pressedOffset,
     Animation<double> animation,
   ) beforeOpenBuilder;
   final Widget? menuChild;
   final Offset? pressedOffset;
-  final Animation<double> animation;
+  final Animation<double> beforeOpenAnimation;
+  final Animation<double> whileMenuOpenChildAnimation;
+  final Widget Function(
+    Widget child,
+    Size size,
+    Offset? pressedOffset,
+    Animation<double> animation,
+  )? whileMenuOpenChildBuilder;
+
+  @override
+  State<PieAnimatedChild> createState() => _PieAnimatedChildState();
+}
+
+class _PieAnimatedChildState extends State<PieAnimatedChild> {
+  var lastSize = Size.zero;
+
+  @override
+  void setState(VoidCallback fn) {
+    if (!mounted) return;
+    super.setState(fn);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return beforeOpenBuilder(menuChild ?? const SizedBox.shrink(), pressedOffset, animation);
+    return Builder(
+      builder: (ctx) {
+        final sizeWrapper = _WidgetSizeWrapper(
+          onSizeChange: (newSize) {
+            if (lastSize == newSize) return;
+            setState(() => lastSize = newSize);
+          },
+          child: widget.menuChild ?? const SizedBox.shrink(),
+        );
+        if (lastSize == Size.zero) return sizeWrapper;
+
+        if (widget.whileMenuOpenChildBuilder != null) {
+          return widget.whileMenuOpenChildBuilder!(
+            widget.beforeOpenBuilder(
+              sizeWrapper,
+              lastSize,
+              widget.pressedOffset,
+              widget.beforeOpenAnimation,
+            ),
+            lastSize,
+            widget.pressedOffset,
+            widget.whileMenuOpenChildAnimation,
+          );
+        }
+        return widget.beforeOpenBuilder(sizeWrapper, lastSize, widget.pressedOffset, widget.beforeOpenAnimation);
+      },
+    );
   }
 }
