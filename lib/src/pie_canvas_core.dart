@@ -37,7 +37,7 @@ class PieCanvasCoreState extends State<PieCanvasCore> with TickerProviderStateMi
 
   /// Controls [_buttonBounceAnimation].
   late final _buttonBounceController = AnimationController(
-    duration: _theme.pieBounceDuration,
+    duration: _theme.animationTheme.pieMenuOpenDuration,
     vsync: this,
   );
 
@@ -48,7 +48,8 @@ class PieCanvasCoreState extends State<PieCanvasCore> with TickerProviderStateMi
   ).animate(
     CurvedAnimation(
       parent: _buttonBounceController,
-      curve: Curves.elasticOut,
+      curve: _theme.animationTheme.pieMenuOpenCurve,
+      reverseCurve: _theme.animationTheme.pieMenuOpenReverseCurve,
     ),
   );
 

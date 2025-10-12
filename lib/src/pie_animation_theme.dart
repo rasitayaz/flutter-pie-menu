@@ -7,6 +7,9 @@ class PieAnimationTheme {
     this.beforeOpenDuration = const Duration(milliseconds: 150),
     this.beforeOpenCurve = Curves.easeOutCubic,
     this.beforeOpenReverseCurve = Curves.easeInCubic,
+    this.pieMenuOpenDuration = const Duration(seconds: 1),
+    this.pieMenuOpenCurve = Curves.elasticOut,
+    this.pieMenuOpenReverseCurve = Curves.elasticOut,
   });
 
   /// Use this builder to provide any animation for the child
@@ -42,4 +45,13 @@ class PieAnimationTheme {
 
   /// The reverse curve of the animation that starts and ends AFTER the pie menu opens.
   final Curve beforeOpenReverseCurve;
+
+  /// Duration of [PieButton] opening animation.
+  final Duration pieMenuOpenDuration;
+
+  /// The curve of the animation that starts and ends BEFORE the pie menu opens.
+  final Curve pieMenuOpenCurve;
+
+  /// The reverse curve of the animation that starts and ends AFTER the pie menu opens.
+  final Curve pieMenuOpenReverseCurve;
 }

@@ -59,7 +59,6 @@ class PieTheme {
     this.tooltipTextAlign,
     this.tooltipCanvasAlignment,
     this.tooltipUseFittedBox = false,
-    this.pieBounceDuration = const Duration(seconds: 1),
     this.fadeDuration = const Duration(milliseconds: 250),
     this.hoverDuration = const Duration(milliseconds: 250),
     @Deprecated(
@@ -160,9 +159,6 @@ class PieTheme {
   /// Can be used to display long tooltip texts in a single line.
   final bool tooltipUseFittedBox;
 
-  /// Duration of [PieButton] bounce animation.
-  final Duration pieBounceDuration;
-
   /// Duration of [PieMenu] fade animation.
   final Duration fadeDuration;
 
@@ -236,7 +232,6 @@ class PieTheme {
     TextAlign? tooltipTextAlign,
     Alignment? tooltipCanvasAlignment,
     bool? tooltipUseFittedBox,
-    Duration? pieBounceDuration,
     Duration? fadeDuration,
     Duration? hoverDuration,
     @Deprecated(
@@ -274,7 +269,6 @@ class PieTheme {
       tooltipTextAlign: tooltipTextAlign ?? this.tooltipTextAlign,
       tooltipCanvasAlignment: tooltipCanvasAlignment ?? this.tooltipCanvasAlignment,
       tooltipUseFittedBox: tooltipUseFittedBox ?? this.tooltipUseFittedBox,
-      pieBounceDuration: pieBounceDuration ?? this.pieBounceDuration,
       fadeDuration: fadeDuration ?? this.fadeDuration,
       hoverDuration: hoverDuration ?? this.hoverDuration,
       longPressDuration: longPressDuration ?? delayDuration ?? this.longPressDuration,

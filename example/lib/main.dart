@@ -64,7 +64,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var _navigationIndex = 0;
+  var _navigationIndex = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +85,9 @@ class _HomePageState extends State<HomePage> {
               child: child,
             );
           },
+          pieMenuOpenCurve: Curves.linear,
+          pieMenuOpenDuration: Durations.short1,
+          pieMenuOpenReverseCurve: Curves.linear,
         ),
       ),
       child: Scaffold(
