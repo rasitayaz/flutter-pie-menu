@@ -3,8 +3,8 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:pie_menu/src/bouncing_widget.dart';
 import 'package:pie_menu/src/pie_action.dart';
+import 'package:pie_menu/src/pie_animated_child.dart';
 import 'package:pie_menu/src/pie_button.dart';
 import 'package:pie_menu/src/pie_canvas.dart';
 import 'package:pie_menu/src/pie_delegate.dart';
@@ -31,8 +31,7 @@ class PieCanvasCore extends StatefulWidget {
   PieCanvasCoreState createState() => PieCanvasCoreState();
 }
 
-class PieCanvasCoreState extends State<PieCanvasCore>
-    with TickerProviderStateMixin, WidgetsBindingObserver {
+class PieCanvasCoreState extends State<PieCanvasCore> with TickerProviderStateMixin, WidgetsBindingObserver {
   /// Controls platform-specific functionality, used to handle right-clicks.
   final _platform = BasePlatform();
 
@@ -118,8 +117,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   /// Child widget of the current menu.
   Widget? _menuChild;
 
-  /// Bounce animation for the child widget of the current menu.
-  Animation<double>? _childBounceAnimation;
+  /// Animation for the child widget of the current menu.
+  Animation<double>? _childBeforeOpenAnimation;
 
   /// Tooltip widget of the currently hovered action.
   Widget? _tooltip;
@@ -184,12 +183,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
     final cx = this.cx < padding.left ? padding.left : this.cx;
     final cy = this.cy < padding.top ? padding.top : this.cy;
-    final cw = this.cx + this.cw > size.width - padding.right
-        ? size.width - padding.right - cx
-        : this.cw;
-    final ch = this.cy + this.ch > size.height - padding.bottom
-        ? size.height - padding.bottom - cy
-        : this.ch;
+    final cw = this.cx + this.cw > size.width - padding.right ? size.width - padding.right - cx : this.cw;
+    final ch = this.cy + this.ch > size.height - padding.bottom ? size.height - padding.bottom - cy : this.ch;
 
     final px = _pointerOffset.dx - cx;
     final py = _pointerOffset.dy - cy;
@@ -203,8 +198,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
       return degrees(atan(slope));
     }
 
-    if ((ch >= 2 * safeDistance && py < safeDistance) ||
-        (ch < 2 * safeDistance && py < ch / 2)) {
+    if ((ch >= 2 * safeDistance && py < safeDistance) || (ch < 2 * safeDistance && py < ch / 2)) {
       final o = px < cw / 2 ? const Offset(0, 0) : Offset(cw, 0);
       return arc / 2 - 90 + angleBetween(o, p);
     } else if (py > ch - safeDistance && (px < cw * 2 / 5 || px > cw * 3 / 5)) {
@@ -263,8 +257,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   @override
   Widget build(BuildContext context) {
     if (_state.menuOpen) {
-      _canvasOffset =
-          _canvasRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
+      _canvasOffset = _canvasRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
       _menuOffset = _menuRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
     }
 
@@ -284,8 +277,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
         onNotification: (notification) {
           if (_state.menuOpen) {
             setState(() {
-              _menuOffset =
-                  _menuRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
+              _menuOffset = _menuRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
             });
           }
           return false;
@@ -293,18 +285,14 @@ class PieCanvasCoreState extends State<PieCanvasCore>
         child: Material(
           type: MaterialType.transparency,
           child: MouseRegion(
-            cursor: hoveredAction != null
-                ? SystemMouseCursors.click
-                : SystemMouseCursors.basic,
+            cursor: hoveredAction != null ? SystemMouseCursors.click : SystemMouseCursors.basic,
             child: Stack(
               children: [
                 Listener(
                   behavior: HitTestBehavior.translucent,
                   onPointerDown: (event) => _pointerDown(event.position),
                   onPointerMove: (event) => _pointerMove(event.position),
-                  onPointerHover: _state.menuOpen
-                      ? (event) => _pointerMove(event.position)
-                      : null,
+                  onPointerHover: _state.menuOpen ? (event) => _pointerMove(event.position) : null,
                   onPointerUp: (event) => _pointerUp(event.position),
                   child: IgnorePointer(
                     ignoring: _state.menuOpen,
@@ -342,7 +330,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                                   ),
                                 ];
                               case PieOverlayStyle.behind:
-                                final bounceAnimation = _childBounceAnimation;
+                                final animation = _childBeforeOpenAnimation;
 
                                 return [
                                   Positioned.fill(
@@ -354,23 +342,19 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                                     left: _menuOffset.dx - cx,
                                     top: _menuOffset.dy - cy,
                                     child: AnimatedOpacity(
-                                      opacity: _state.menuOpen &&
-                                              _state.hoveredAction != null
+                                      opacity: _state.menuOpen && _state.hoveredAction != null
                                           ? _theme.childOpacityOnButtonHover
                                           : 1,
                                       duration: _theme.hoverDuration,
                                       curve: Curves.ease,
                                       child: SizedBox.fromSize(
                                         size: menuRenderBox.size,
-                                        child: _theme.childBounceEnabled &&
-                                                bounceAnimation != null
-                                            ? BouncingWidget(
-                                                theme: _theme,
-                                                animation: bounceAnimation,
-                                                pressedOffset:
-                                                    _localPointerOffset,
-                                                child: _menuChild ??
-                                                    const SizedBox(),
+                                        child: animation != null
+                                            ? AnimatedChild(
+                                                beforeOpenBuilder: _theme.animationTheme.beforeOpenBuilder,
+                                                menuChild: _menuChild,
+                                                animation: animation,
+                                                pressedOffset: _localPointerOffset,
                                               )
                                             : _menuChild,
                                       ),
@@ -383,8 +367,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
 
                         //* tooltip start *//
                         () {
-                          final tooltipAlignment =
-                              _theme.tooltipCanvasAlignment;
+                          final tooltipAlignment = _theme.tooltipCanvasAlignment;
 
                           Widget child = AnimatedOpacity(
                             opacity: hoveredAction != null ? 1 : 0,
@@ -393,19 +376,12 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                             child: Padding(
                               padding: _theme.tooltipPadding,
                               child: DefaultTextStyle.merge(
-                                textAlign: _theme.tooltipTextAlign ??
-                                    (px < cw / 2
-                                        ? TextAlign.right
-                                        : TextAlign.left),
+                                textAlign: _theme.tooltipTextAlign ?? (px < cw / 2 ? TextAlign.right : TextAlign.left),
                                 style: TextStyle(
                                   fontSize: 32,
                                   fontWeight: FontWeight.bold,
-                                  color: _theme.brightness == Brightness.light
-                                      ? Colors.black
-                                      : Colors.white,
-                                )
-                                    .merge(widget.theme.tooltipTextStyle)
-                                    .merge(_theme.tooltipTextStyle),
+                                  color: _theme.brightness == Brightness.light ? Colors.black : Colors.white,
+                                ).merge(widget.theme.tooltipTextStyle).merge(_theme.tooltipTextStyle),
                                 child: _tooltip ?? const SizedBox(),
                               ),
                             ),
@@ -423,16 +399,13 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                           } else {
                             final offsets = [
                               _pointerOffset,
-                              for (var i = 0; i < _actions.length; i++)
-                                _getActionOffset(i),
+                              for (var i = 0; i < _actions.length; i++) _getActionOffset(i),
                             ];
 
                             double? getTopDistance() {
                               if (py >= ch / 2) return null;
 
-                              final dyMax = offsets
-                                  .map((o) => o.dy)
-                                  .reduce((dy1, dy2) => max(dy1, dy2));
+                              final dyMax = offsets.map((o) => o.dy).reduce((dy1, dy2) => max(dy1, dy2));
 
                               return dyMax - cy + _theme.buttonSize / 2;
                             }
@@ -440,9 +413,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                             double? getBottomDistance() {
                               if (py < ch / 2) return null;
 
-                              final dyMin = offsets
-                                  .map((o) => o.dy)
-                                  .reduce((dy1, dy2) => min(dy1, dy2));
+                              final dyMin = offsets.map((o) => o.dy).reduce((dy1, dy2) => min(dy1, dy2));
 
                               return ch - dyMin + cy + _theme.buttonSize / 2;
                             }
@@ -453,9 +424,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                               left: 0,
                               right: 0,
                               child: Align(
-                                alignment: px < cw / 2
-                                    ? Alignment.centerRight
-                                    : Alignment.centerLeft,
+                                alignment: px < cw / 2 ? Alignment.centerRight : Alignment.centerLeft,
                                 child: child,
                               ),
                             );
@@ -481,10 +450,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
                                     border: Border.all(
                                       color: _theme.pointerColor ??
                                           (_theme.brightness == Brightness.light
-                                              ? Colors.black
-                                                  .withValues(alpha: 0.35)
-                                              : Colors.white
-                                                  .withValues(alpha: 0.5)),
+                                              ? Colors.black.withValues(alpha: 0.35)
+                                              : Colors.white.withValues(alpha: 0.5)),
                                       width: 4,
                                     ),
                                   ),
@@ -524,7 +491,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     required bool rightClicked,
     required RenderBox renderBox,
     required Widget child,
-    required Animation<double>? bounceAnimation,
+    required Animation<double>? beforeOpenAnimation,
     required Key menuKey,
     required List<PieAction> actions,
     required PieTheme theme,
@@ -579,7 +546,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
         _menuRenderBox = renderBox;
         _menuOffset = renderBox.localToGlobal(Offset.zero);
         _menuChild = child;
-        _childBounceAnimation = bounceAnimation;
+        _childBeforeOpenAnimation = beforeOpenAnimation;
         _onMenuToggle = onMenuToggle;
         _actions = actions;
         _tooltip = null;

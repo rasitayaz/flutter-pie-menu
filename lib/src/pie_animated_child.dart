@@ -4,23 +4,26 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:pie_menu/src/pie_theme.dart';
 
 /// This widget is highly inspired by [Bounce](https://pub.dev/packages/bounce)
 /// package created by [Guillaume Cendre](https://github.com/mrcendre)
 class BouncingWidget extends StatefulWidget {
   const BouncingWidget({
     super.key,
-    required this.theme,
     required this.animation,
     required this.pressedOffset,
     required this.child,
+    this.bounceFactor = 0.95,
+    this.tiltEnabled = true,
+    this.filterQuality,
   });
 
-  final PieTheme theme;
   final Animation<double> animation;
   final Offset? pressedOffset;
   final Widget child;
+  final double bounceFactor;
+  final bool tiltEnabled;
+  final FilterQuality? filterQuality;
 
   @override
   State<BouncingWidget> createState() => _BouncingWidgetState();
@@ -54,12 +57,12 @@ class _BouncingWidgetState extends State<BouncingWidget> {
         final transform = Matrix4.identity()..setEntry(3, 2, v);
 
         transform.scale(
-          lerpDouble(1, widget.theme.childBounceFactor, widget.animation.value),
+          lerpDouble(1, widget.bounceFactor, widget.animation.value),
         );
 
         final offset = widget.pressedOffset;
 
-        if (widget.theme.childTiltEnabled && offset != null) {
+        if (widget.tiltEnabled && offset != null) {
           final x = offset.dx / lastSize.width;
           final y = offset.dy / lastSize.height;
 
@@ -75,7 +78,7 @@ class _BouncingWidgetState extends State<BouncingWidget> {
         return Transform(
           transform: transform,
           origin: Offset(lastSize.width / 2, lastSize.height / 2),
-          filterQuality: widget.theme.childBounceFilterQuality,
+          filterQuality: widget.filterQuality,
           child: sizeWrapper,
         );
       },
@@ -124,5 +127,57 @@ class _WidgetSizeWrapper extends SingleChildRenderObjectWidget {
   @override
   RenderObject createRenderObject(BuildContext context) {
     return _WidgetSizeRenderObject(onSizeChange);
+  }
+}
+
+class AnimatedChild extends StatelessWidget {
+  const AnimatedChild._({
+    super.key,
+    required this.menuChild,
+    required this.pressedOffset,
+    required this.animation,
+    required this.beforeOpenBuilder,
+  });
+
+  factory AnimatedChild({
+    Key? key,
+    Widget? menuChild,
+    Offset? pressedOffset,
+    Animation<double> animation = const AlwaysStoppedAnimation(0),
+    Widget Function(
+      Widget child,
+      Offset? pressedOffset,
+      Animation<double> animation,
+    )? beforeOpenBuilder,
+  }) {
+    return AnimatedChild._(
+      key: key,
+      menuChild: menuChild,
+      pressedOffset: pressedOffset,
+      animation: animation,
+      beforeOpenBuilder: beforeOpenBuilder ??
+          (child, pressedOffset, animation) => BouncingWidget(
+                animation: animation,
+                pressedOffset: pressedOffset,
+                bounceFactor: 0.95,
+                filterQuality: null,
+                tiltEnabled: true,
+                child: child,
+              ),
+    );
+  }
+
+  final Widget Function(
+    Widget child,
+    Offset? pressedOffset,
+    Animation<double> animation,
+  ) beforeOpenBuilder;
+  final Widget? menuChild;
+  final Offset? pressedOffset;
+  final Animation<double> animation;
+
+  @override
+  Widget build(BuildContext context) {
+    return beforeOpenBuilder(menuChild ?? const SizedBox.shrink(), pressedOffset, animation);
   }
 }

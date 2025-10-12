@@ -69,11 +69,22 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return PieCanvas(
-      theme: const PieTheme(
+      theme: PieTheme(
         rightClickShowsMenu: true,
-        tooltipTextStyle: TextStyle(
+        tooltipTextStyle: const TextStyle(
           fontSize: 32,
           fontWeight: FontWeight.w600,
+        ),
+        animationTheme: PieAnimationTheme(
+          beforeOpenCurve: Easing.linear,
+          beforeOpenDuration: Durations.extralong4,
+          beforeOpenReverseCurve: Curves.bounceOut,
+          beforeOpenBuilder: (child, pressedOffset, animation) {
+            return ScaleTransition(
+              scale: Tween<double>(begin: 1.0, end: 0.95).animate(animation),
+              child: child,
+            );
+          },
         ),
       ),
       child: Scaffold(
@@ -210,8 +221,7 @@ class StylingPage extends StatelessWidget {
                               ),
                               PieAction.builder(
                                 tooltip: const Text('this?!'),
-                                onSelect: () =>
-                                    context.showSnackBar('Pretty cool :)'),
+                                onSelect: () => context.showSnackBar('Pretty cool :)'),
                                 builder: (hovered) {
                                   return _buildTextButton('4', hovered);
                                 },
@@ -281,18 +291,15 @@ class StylingPage extends StatelessWidget {
 
                                 /// Custom background color
                                 buttonTheme: PieButtonTheme(
-                                  backgroundColor:
-                                      Colors.black.withValues(alpha: 0.7),
+                                  backgroundColor: Colors.black.withValues(alpha: 0.7),
                                   iconColor: Colors.white,
                                 ),
                                 child: const FaIcon(FontAwesomeIcons.palette),
                               ),
                               PieAction(
-                                tooltip:
-                                    const Text('Now with right click support!'),
+                                tooltip: const Text('Now with right click support!'),
                                 buttonTheme: PieButtonTheme(
-                                  backgroundColor:
-                                      Colors.black.withValues(alpha: 0.5),
+                                  backgroundColor: Colors.black.withValues(alpha: 0.5),
                                   iconColor: Colors.white,
                                 ),
                                 onSelect: () {
