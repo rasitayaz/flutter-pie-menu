@@ -26,8 +26,9 @@ class PieAnimationTheme {
   ///
   /// ```dart
   /// PieAnimationTheme(
-  ///   beforeOpenBuilder: (child, pressedOffset, animation) => BouncingWidget(
+  ///   beforeOpenBuilder: (child, size, pressedOffset, animation) => BouncingWidget(
   ///     animation: animation,
+  ///     size: size,
   ///     pressedOffset: pressedOffset,
   ///     bounceFactor: 0.5,
   ///     tiltEnabled: false,
@@ -67,13 +68,26 @@ class PieAnimationTheme {
   ///
   /// ```dart
   /// PieAnimationTheme(
-  ///   whileMenuOpenChildBuilder: (child, pressedOffset, animation) => BouncingWidget(
-  ///     animation: animation,
-  ///     pressedOffset: pressedOffset,
-  ///     bounceFactor: 0.5,
-  ///     tiltEnabled: false,
-  ///     child: child,
-  ///   ),
+  ///   whileMenuOpenChildBuilder: (child, size, pressedOffset, animation) {
+  ///     return AnimatedBuilder(
+  ///       animation: animation,
+  ///         child: child,
+  ///         builder: (context, child) {
+  ///           final transform = Matrix4.identity();
+  ///           final centerX = size.width / 2;
+  ///           final centerY = size.height / 2;
+  ///           transform
+  ///             ..setEntry(3, 2, 0.001)
+  ///             ..translate(centerX, centerY)
+  ///             ..rotateZ(-0.15 * animation.value)
+  ///             ..translate(-centerX, -centerY);
+  ///           return Transform(
+  ///             transform: transform,
+  ///             child: child,
+  ///           );
+  ///         },
+  ///       );
+  ///     },
   /// );
   /// ```
   final Widget Function(
