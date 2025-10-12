@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -76,12 +78,19 @@ class _HomePageState extends State<HomePage> {
           fontWeight: FontWeight.w600,
         ),
         animationTheme: PieAnimationTheme(
+          beforeOpenBuilder: (child, size, pressedOffset, animation) => child,
           beforeOpenCurve: Easing.linear,
           beforeOpenDuration: Durations.extralong4,
           beforeOpenReverseCurve: Curves.bounceOut,
-          beforeOpenBuilder: (child, size, pressedOffset, animation) => child,
+          pieMenuOpenBuilder: (actionIndex, pointerPos, size, angleInRadians, animation) {
+            return Matrix4.translationValues(
+              (pointerPos.dx - size.width / 2) + (72 * cos(angleInRadians) * animation.value),
+              (pointerPos.dy - size.height / 2) - (72 * sin(angleInRadians) * animation.value),
+              0,
+            );
+          },
           pieMenuOpenCurve: Curves.linear,
-          pieMenuOpenDuration: Durations.short1,
+          pieMenuOpenDuration: Durations.medium4,
           pieMenuOpenReverseCurve: Curves.linear,
           whileMenuOpenChildBuilder: (child, size, pressedOffset, animation) {
             return AnimatedBuilder(

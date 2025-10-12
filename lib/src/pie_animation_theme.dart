@@ -7,6 +7,7 @@ class PieAnimationTheme {
     this.beforeOpenDuration = const Duration(milliseconds: 150),
     this.beforeOpenCurve = Curves.easeOutCubic,
     this.beforeOpenReverseCurve = Curves.easeInCubic,
+    this.pieMenuOpenBuilder,
     this.pieMenuOpenDuration = const Duration(seconds: 1),
     this.pieMenuOpenCurve = Curves.elasticOut,
     this.pieMenuOpenReverseCurve = Curves.elasticOut,
@@ -51,6 +52,29 @@ class PieAnimationTheme {
 
   /// The reverse curve of the animation that starts and ends AFTER the pie menu opens.
   final Curve beforeOpenReverseCurve;
+
+  /// Use this builder to provide the location of each action and its [PieButton]
+  ///
+  /// If you pass null, the default locations will be used.
+  ///
+  /// ```dart
+  /// PieAnimationTheme(
+  ///   pieMenuOpenBuilder: (actionIndex, pointerPos, size, angleInRadians, animation) {
+  ///     return Matrix4.translationValues(
+  ///       (pointerPos.dx - size.width / 2) + (72 * cos(angleInRadians) * animation.value),
+  ///       (pointerPos.dy - size.height / 2) - (72 * sin(angleInRadians) * animation.value),
+  ///       0,
+  ///     );
+  ///   },
+  /// );
+  /// ```
+  final Matrix4 Function(
+    int actionIndex,
+    Offset pointerPosition,
+    Size size,
+    double angleInRadians,
+    Animation<double> animation,
+  )? pieMenuOpenBuilder;
 
   /// Duration of [PieButton] opening animation.
   final Duration pieMenuOpenDuration;

@@ -457,7 +457,7 @@ class PieCanvasCoreState extends State<PieCanvasCore> with TickerProviderStateMi
                         //* action buttons start *//
                         Flow(
                           delegate: PieDelegate(
-                            bounceAnimation: _pieMenuAnimation,
+                            pieMenuOpenAnimation: _pieMenuAnimation,
                             pointerOffset: _pointerOffset,
                             canvasOffset: _canvasOffset,
                             baseAngle: _baseAngle,
