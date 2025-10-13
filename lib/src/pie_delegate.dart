@@ -50,27 +50,39 @@ class PieDelegate extends FlowDelegate {
     for (var i = 0; i < count; ++i) {
       final size = context.getChildSize(i)!;
       final angleInRadians = radians(baseAngle - theme.angleOffset - angleDiff * (i - 1));
-      if (theme.animationTheme.pieMenuOpenBuilder != null) {
-        context.paintChild(
-          i,
-          transform: theme.animationTheme.pieMenuOpenBuilder!(
-            i,
-            Offset(dx, dy),
-            size,
-            angleInRadians,
-            pieMenuOpenAnimation,
-          ),
-        );
-      } else {
-        final nthMultiplier = i == 0 ? 0 : 1;
+      // No need to translate the pointer itself
+      final isPointer = i == 0;
+      if (isPointer) {
         context.paintChild(
           i,
           transform: Matrix4.translationValues(
-            (dx - size.width / 2) + (nthMultiplier * theme.radius * cos(angleInRadians) * pieMenuOpenAnimation.value),
-            (dy - size.height / 2) - (nthMultiplier * theme.radius * sin(angleInRadians) * pieMenuOpenAnimation.value),
+            dx - size.width / 2,
+            dy - size.height / 2,
             0,
           ),
         );
+      } else {
+        if (theme.animationTheme.pieMenuOpenBuilder != null) {
+          context.paintChild(
+            i,
+            transform: theme.animationTheme.pieMenuOpenBuilder!(
+              i,
+              Offset(dx, dy),
+              size,
+              angleInRadians,
+              pieMenuOpenAnimation,
+            ),
+          );
+        } else {
+          context.paintChild(
+            i,
+            transform: Matrix4.translationValues(
+              (dx - size.width / 2) + (theme.radius * cos(angleInRadians) * pieMenuOpenAnimation.value),
+              (dy - size.height / 2) - (theme.radius * sin(angleInRadians) * pieMenuOpenAnimation.value),
+              0,
+            ),
+          );
+        }
       }
     }
   }
