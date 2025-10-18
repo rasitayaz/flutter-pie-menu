@@ -1,3 +1,12 @@
+## 3.3.2
+
+* Fixed an issue related to box fitting. [#78](https://github.com/rasitayaz/flutter-pie-menu/issues/78)
+* Fixed menu offset calculation when the canvas is inside a scrollable widget like `TabBarView`. [#77](https://github.com/rasitayaz/flutter-pie-menu/issues/77)
+
+## 3.3.1
+
+* Fixed some issues related to event handling.
+
 ## 3.3.0
 
 * Deprecated `delayDuration` in `PieTheme` in favor of `regularPressShowsMenu`, `longPressShowsMenu` and `longPressDuration`. If you were previously using `delayDuration` to show the menu on regular press, you can now use `regularPressShowsMenu` instead.
