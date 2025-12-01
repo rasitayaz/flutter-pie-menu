@@ -32,7 +32,7 @@ A Flutter package providing a highly customizable circular/radial context menu, 
 
 ## Usage
 
-Wrap the widget that should respond to gestures with the `PieMenu` widget, and provide the menu with an array of `PieAction`s to display as circular buttons.
+Wrap the widget that should respond to gestures with the `PieMenu` widget, and provide the menu with a list of `PieAction`s to display as circular buttons.
 
 ```dart
 PieMenu(
@@ -48,11 +48,11 @@ PieMenu(
 ),
 ```
 
-> 💡 Don't forget that you can only use `PieMenu` as a descendant of a `PieCanvas` widget.
+> 💡 Note that `PieMenu` must be a descendant of a `PieCanvas` widget.
 
-Wrap your page, or any other desired widget for drawing the menu and the background overlay, with `PieCanvas` widget.
+Wrap your page, or any other desired widget for drawing the menu and the background overlay, with the `PieCanvas` widget.
 
-For instance, if you want the menu to be displayed at the forefront, wrap your `Scaffold` with a `PieCanvas` like following:
+For instance, if you want the menu to be displayed at the forefront, wrap your `Scaffold` with a `PieCanvas` as follows:
 
 ```dart
 PieCanvas(
@@ -66,13 +66,13 @@ PieCanvas(
 ),
 ```
 
-> 💡 You can utilize the `onPressed` callback defined in `PieMenu` to manage tap events without the need for an extra widget such as `GestureDetector`.
+> 💡 You can use the `onPressed` callback defined in `PieMenu` to handle tap events without needing an extra widget like `GestureDetector`.
 
 ## Customization
 
 You can customize the appearance and behavior of menus using `PieTheme`.
 
-Using the `theme` attribute of `PieCanvas` widget, you can specify a theme for all the descendant `PieMenu` widgets.
+Using the `theme` attribute of the `PieCanvas` widget, you can specify a theme for all descendant `PieMenu` widgets.
 
 ```dart
 PieCanvas(
@@ -85,7 +85,7 @@ PieCanvas(
 ),
 ```
 
-But if you want to specify menu specific themes, you can also use the `theme` attribute of `PieMenu` widget.
+If you want to specify menu-specific themes, you can use the `theme` attribute of the `PieMenu` widget.
 
 ```dart
 PieMenu(
@@ -93,7 +93,7 @@ PieMenu(
 ),
 ```
 
-It is also possible to copy the canvas theme with additional parameters, but make sure you are accessing it with the right `context`.
+It is also possible to copy the canvas theme with additional parameters, but ensure you are accessing it with the correct `context`.
 
 ```dart
 PieMenu(
@@ -105,7 +105,7 @@ PieMenu(
 
 ### Button themes
 
-Buttons' background and icon colors are defined by theme's `buttonTheme` and `buttonThemeHovered`. You can create a custom `PieButtonTheme` instances for your canvas and menu themes.
+Button background and icon colors are defined by the theme's `buttonTheme` and `buttonThemeHovered` properties. You can create custom `PieButtonTheme` instances for your canvas and menu themes.
 
 ```dart
 PieTheme(
@@ -114,7 +114,7 @@ PieTheme(
 ),
 ```
 
-You can even give the buttons custom styles using `decoration` property of `PieButtonTheme`.
+You can also style the buttons using the `decoration` property of `PieButtonTheme`.
 
 ```dart
 PieButtonTheme(
@@ -124,7 +124,7 @@ PieButtonTheme(
 
 ### Custom button widgets
 
-If you wish to use custom widgets inside buttons instead of just icons, it is recommended to use `PieAction.builder()` with a `builder` which provides whether the action is hovered or not as a parameter.
+If you wish to use custom widgets inside buttons instead of just icons, use `PieAction.builder()`. Its `builder` provides the hover state as a parameter.
 
 ```dart
 PieAction.builder(
@@ -143,7 +143,9 @@ PieAction.builder(
 
 ### Display angle of menu buttons
 
-If you don't want the dynamic angle calculation and have the menu appear at a fixed angle, set `customAngle` and `customAngleAnchor` attributes of `PieTheme`.
+### Display angle of menu buttons
+
+To disable dynamic angle calculation and have the menu appear at a fixed angle, set the `customAngle` and `customAngleAnchor` attributes of `PieTheme`.
 
 ```dart
 PieTheme(
@@ -156,7 +158,7 @@ You can also use `customAngleDiff` or `spacing` to adjust the angle between butt
 
 ### Specific menu position
 
-Use `menuAlignment` attribute of `PieTheme` to make the menu appear at a specific position regardless of the pressed point. Combine it with `menuDisplacement` to fine-tune the position.
+Use the `menuAlignment` attribute of `PieTheme` to make the menu appear at a specific position regardless of the press location. Combine it with `menuDisplacement` to fine-tune the position.
 
 ```dart
 PieTheme(
@@ -167,7 +169,7 @@ PieTheme(
 
 ### Regular press, long press or right click to open the menu
 
-Use `regularPressShowsMenu`, `longPressShowsMenu` and `longPressDuration` attributes of `PieTheme` to customize the menu opening behavior.
+Use the `regularPressShowsMenu`, `longPressShowsMenu`, and `longPressDuration` attributes of `PieTheme` to customize the menu opening behavior.
 
 ```dart
 PieTheme(
@@ -177,7 +179,7 @@ PieTheme(
 ),
 ```
 
-Using `rightClickShowsMenu` and `leftClickShowsMenu` attributes of `PieTheme`, you can customize the mouse button behavior.
+Use the `rightClickShowsMenu` and `leftClickShowsMenu` attributes of `PieTheme` to customize mouse button behavior.
 
 ```dart
 PieTheme(
@@ -188,7 +190,7 @@ PieTheme(
 
 ## Controllers and callbacks
 
-To open, close or toggle a menu programmatically, assign a `PieMenuController` to it.
+To open, close, or toggle a menu programmatically, assign a `PieMenuController` to it.
 
 ```dart
 // Create a controller inside a stateful widget.
@@ -206,7 +208,7 @@ _pieMenuController.open(
 );
 ```
 
-If you need to do something when the menu is toggled, use `onToggle` callback of `PieMenu`, or `onMenuToggle` callback of `PieCanvas`.
+If you need to perform actions when the menu is toggled, use the `onToggle` callback of `PieMenu` or the `onMenuToggle` callback of `PieCanvas`.
 
 ```dart
 PieMenu(
