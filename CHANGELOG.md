@@ -1,3 +1,8 @@
+## 3.3.3
+
+* Added `PieMenuPressNotification` to prevent parent `PieMenu` from handling press events when a child widget is pressed.
+* Fixed nested `PieMenu` gesture conflicts.
+
 ## 3.3.2
 
 * Fixed an issue related to box fitting. [#78](https://github.com/rasitayaz/flutter-pie-menu/issues/78)
