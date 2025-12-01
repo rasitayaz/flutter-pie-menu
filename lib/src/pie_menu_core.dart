@@ -9,6 +9,7 @@ import 'package:pie_menu/src/pie_canvas.dart';
 import 'package:pie_menu/src/pie_menu.dart';
 import 'package:pie_menu/src/pie_menu_controller.dart';
 import 'package:pie_menu/src/pie_menu_event.dart';
+import 'package:pie_menu/src/pie_menu_press_notification.dart';
 import 'package:pie_menu/src/pie_provider.dart';
 import 'package:pie_menu/src/pie_theme.dart';
 
@@ -127,6 +128,9 @@ class _PieMenuCoreState extends State<PieMenuCore>
     duration: _longPressDuration,
   );
 
+  /// Whether the child widget was pressed.
+  var _childPressed = false;
+
   /// Controls the shared state.
   PieNotifier get _notifier => PieNotifier.of(context);
 
@@ -215,31 +219,39 @@ class _PieMenuCoreState extends State<PieMenuCore>
           ),
         MouseRegion(
           cursor: SystemMouseCursors.click,
-          child: Listener(
-            onPointerDown: _pointerDown,
-            onPointerMove: _pointerMove,
-            child: GestureDetector(
-              onTapDown: _onTapDown,
-              onTapCancel: _onTapCancel,
-              onTapUp: _onTapUp,
-              dragStartBehavior: DragStartBehavior.down,
-              child: AnimatedOpacity(
-                opacity: _theme.overlayStyle == PieOverlayStyle.around &&
-                        _state.menuKey == _uniqueKey &&
-                        _state.menuOpen &&
-                        _state.hoveredAction != null
-                    ? _theme.childOpacityOnButtonHover
-                    : 1,
-                duration: _theme.hoverDuration,
-                curve: Curves.ease,
-                child: _theme.childBounceEnabled
-                    ? BouncingWidget(
-                        theme: _theme,
-                        animation: bounceAnimation,
-                        pressedOffset: _localPressedOffset,
-                        child: widget.child,
-                      )
-                    : widget.child,
+          child: NotificationListener<PieMenuPressNotification>(
+            onNotification: (_) {
+              _childPressed = true;
+              return false;
+            },
+            child: Listener(
+              onPointerDown: _pointerDown,
+              onPointerMove: _pointerMove,
+              onPointerUp: _pointerUp,
+              onPointerCancel: _pointerCancel,
+              child: GestureDetector(
+                onTapDown: _onTapDown,
+                onTapCancel: _onTapCancel,
+                onTapUp: _onTapUp,
+                dragStartBehavior: DragStartBehavior.down,
+                child: AnimatedOpacity(
+                  opacity: _theme.overlayStyle == PieOverlayStyle.around &&
+                          _state.menuKey == _uniqueKey &&
+                          _state.menuOpen &&
+                          _state.hoveredAction != null
+                      ? _theme.childOpacityOnButtonHover
+                      : 1,
+                  duration: _theme.hoverDuration,
+                  curve: Curves.ease,
+                  child: _theme.childBounceEnabled
+                      ? BouncingWidget(
+                          theme: _theme,
+                          animation: bounceAnimation,
+                          pressedOffset: _localPressedOffset,
+                          child: widget.child,
+                        )
+                      : widget.child,
+                ),
               ),
             ),
           ),
@@ -250,6 +262,9 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
   void _pointerDown(PointerDownEvent event) {
     if (!mounted) return;
+
+    PieMenuPressNotification().dispatch(context);
+    if (_childPressed) return;
 
     setState(() {
       _pressedOffset = event.position;
@@ -292,6 +307,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
   }
 
   void _onTapDown(TapDownDetails details) {
+    if (_childPressed) return;
     _bounce();
   }
 
@@ -302,6 +318,14 @@ class _PieMenuCoreState extends State<PieMenuCore>
       _pressCanceled = true;
       _debounce();
     }
+  }
+
+  void _pointerUp(PointerUpEvent event) {
+    _childPressed = false;
+  }
+
+  void _pointerCancel(PointerCancelEvent event) {
+    _childPressed = false;
   }
 
   void _onTapCancel() {
