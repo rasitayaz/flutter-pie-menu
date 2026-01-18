@@ -70,6 +70,7 @@ class PieTheme {
     this.longPressShowsMenu = true,
     this.leftClickShowsMenu = true,
     this.rightClickShowsMenu = false,
+    this.closeOnTapUp = false,
     this.overlayStyle = PieOverlayStyle.behind,
     this.childOpacityOnButtonHover = 0.5,
   }) : longPressDuration = delayDuration ?? longPressDuration;
@@ -180,6 +181,9 @@ class PieTheme {
   /// Whether to display the menu on right mouse click.
   final bool rightClickShowsMenu;
 
+  /// Whether to close the menu when user lifts their finger.
+  final bool closeOnTapUp;
+
   /// Decides how to display the translucent canvas overlay.
   ///
   /// [PieOverlayStyle.behind] is the recommended style
@@ -243,6 +247,7 @@ class PieTheme {
     Duration? longPressDuration,
     bool? leftClickShowsMenu,
     bool? rightClickShowsMenu,
+    bool? closeOnTapUp,
     PieOverlayStyle? overlayStyle,
     double? childOpacityOnButtonHover,
   }) {
@@ -276,6 +281,7 @@ class PieTheme {
       longPressShowsMenu: longPressShowsMenu ?? this.longPressShowsMenu,
       leftClickShowsMenu: leftClickShowsMenu ?? this.leftClickShowsMenu,
       rightClickShowsMenu: rightClickShowsMenu ?? this.rightClickShowsMenu,
+      closeOnTapUp: closeOnTapUp ?? this.closeOnTapUp,
       overlayStyle: overlayStyle ?? this.overlayStyle,
       childOpacityOnButtonHover: childOpacityOnButtonHover ?? this.childOpacityOnButtonHover,
     );

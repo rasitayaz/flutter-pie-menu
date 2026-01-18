@@ -487,9 +487,10 @@ class PinterestPage extends StatelessWidget {
         buttonSize: 56,
         pointerColor: Colors.transparent,
         regularPressShowsMenu: true,
-        longPressShowsMenu: false,
+        longPressShowsMenu: true,
         leftClickShowsMenu: false,
         rightClickShowsMenu: false,
+        closeOnTapUp: true,
         animationTheme: PieAnimationTheme(
           beforeOpenCurve: Easing.linear,
           beforeOpenDuration: Durations.extralong4,

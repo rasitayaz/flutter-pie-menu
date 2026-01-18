@@ -260,14 +260,14 @@ class _PieMenuCoreState extends State<PieMenuCore> with TickerProviderStateMixin
                       : 1,
                   duration: _theme.hoverDuration,
                   curve: Curves.ease,
-                  child: _theme.childBounceEnabled
-                      ? BouncingWidget(
-                          theme: _theme,
-                          animation: bounceAnimation,
-                          pressedOffset: _localPressedOffset,
-                          child: widget.child,
-                        )
-                      : widget.child,
+                  child: PieAnimatedChild(
+                    beforeOpenBuilder: _theme.animationTheme.beforeOpenBuilder,
+                    menuChild: widget.child,
+                    animation: beforeOpenAnimation,
+                    pressedOffset: _localPressedOffset,
+                    whileMenuOpenChildAnimation: _whileMenuOpenChildAnimation,
+                    whileMenuOpenChildBuilder: _theme.animationTheme.whileMenuOpenChildBuilder,
+                  ),
                 ),
               ),
             ),
@@ -279,7 +279,6 @@ class _PieMenuCoreState extends State<PieMenuCore> with TickerProviderStateMixin
 
   void _pointerDown(PointerDownEvent event) {
     if (!mounted) return;
-
     PieMenuPressNotification().dispatch(context);
     if (_childPressed) return;
 
@@ -323,7 +322,7 @@ class _PieMenuCoreState extends State<PieMenuCore> with TickerProviderStateMixin
 
   void _onTapDown(TapDownDetails details) {
     if (_childPressed) return;
-    _bounce();
+    _beforeOpenAnimationEnd();
   }
 
   void _pointerMove(PointerMoveEvent event) {
@@ -337,14 +336,9 @@ class _PieMenuCoreState extends State<PieMenuCore> with TickerProviderStateMixin
 
   void _pointerUp(PointerUpEvent event) {
     _childPressed = false;
-  }
-
-  void _pointerCancel(PointerCancelEvent event) {
-    _childPressed = false;
-  }
-
-  void _pointerUp(PointerUpEvent event) {
-    _childPressed = false;
+    if (_theme.closeOnTapUp && _state.menuKey == _uniqueKey && _state.menuOpen) {
+      _notifier.canvas.closeMenu(_uniqueKey);
+    }
   }
 
   void _pointerCancel(PointerCancelEvent event) {
