@@ -260,14 +260,14 @@ class _PieMenuCoreState extends State<PieMenuCore> with TickerProviderStateMixin
                       : 1,
                   duration: _theme.hoverDuration,
                   curve: Curves.ease,
-                  child: PieAnimatedChild(
-                    beforeOpenBuilder: _theme.animationTheme.beforeOpenBuilder,
-                    menuChild: widget.child,
-                    animation: beforeOpenAnimation,
-                    pressedOffset: _localPressedOffset,
-                    whileMenuOpenChildAnimation: _whileMenuOpenChildAnimation,
-                    whileMenuOpenChildBuilder: _theme.animationTheme.whileMenuOpenChildBuilder,
-                  ),
+                  child: _theme.childBounceEnabled
+                      ? BouncingWidget(
+                          theme: _theme,
+                          animation: bounceAnimation,
+                          pressedOffset: _localPressedOffset,
+                          child: widget.child,
+                        )
+                      : widget.child,
                 ),
               ),
             ),
@@ -279,6 +279,9 @@ class _PieMenuCoreState extends State<PieMenuCore> with TickerProviderStateMixin
 
   void _pointerDown(PointerDownEvent event) {
     if (!mounted) return;
+    PieMenuPressNotification().dispatch(context);
+    if (_childPressed) return;
+
     PieMenuPressNotification().dispatch(context);
     if (_childPressed) return;
 
