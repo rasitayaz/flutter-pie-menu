@@ -52,10 +52,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(menuOpen, isTrue);
 
-      // Close menu by tapping outside (center of canvas roughly, avoiding the menu items)
-      // Actually, tapping the canvas/child should close it if not on an action
-      // The menu is centered.
-      // Let's tap top left.
+      // Close menu by tapping outside.
       await tester.tapAt(const Offset(0, 0));
       await tester.pumpAndSettle();
       expect(menuOpen, isFalse);
