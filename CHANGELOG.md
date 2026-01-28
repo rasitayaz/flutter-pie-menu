@@ -1,3 +1,7 @@
+## 3.3.4
+
+* Added test coverage by [@lauweijie](https://github.com/lauweijie).
+
 ## 3.3.3
 
 * Added `PieMenuPressNotification` to prevent parent `PieMenu` from handling press events when a child widget is pressed.
