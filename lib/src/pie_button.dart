@@ -35,12 +35,11 @@ class PieButton extends StatefulWidget {
   State<PieButton> createState() => _PieButtonState();
 }
 
-class _PieButtonState extends State<PieButton>
-    with SingleTickerProviderStateMixin {
+class _PieButtonState extends State<PieButton> with SingleTickerProviderStateMixin {
   /// Controls [_scaleAnimation].
   late final _scaleController = AnimationController(
     duration: Duration(
-      milliseconds: _theme.pieBounceDuration.inMilliseconds ~/ 2,
+      milliseconds: _theme.animationTheme.pieMenuOpenDuration.inMilliseconds ~/ 2,
     ),
     vsync: this,
   );
@@ -52,7 +51,8 @@ class _PieButtonState extends State<PieButton>
   ).animate(
     CurvedAnimation(
       parent: _scaleController,
-      curve: Curves.ease,
+      curve: _theme.animationTheme.pieMenuOpenCurve,
+      reverseCurve: _theme.animationTheme.pieMenuOpenReverseCurve,
     ),
   );
 
@@ -115,35 +115,26 @@ class _PieButtonState extends State<PieButton>
                 duration: _theme.hoverDuration,
                 curve: Curves.ease,
                 top: widget.hovered
-                    ? _theme.buttonSize / 2 -
-                        sin(widget.angle) * _theme.hoverDisplacement
+                    ? _theme.buttonSize / 2 - sin(widget.angle) * _theme.hoverDisplacement
                     : _theme.buttonSize / 2,
                 right: widget.hovered
-                    ? _theme.buttonSize / 2 -
-                        cos(widget.angle) * _theme.hoverDisplacement
+                    ? _theme.buttonSize / 2 - cos(widget.angle) * _theme.hoverDisplacement
                     : _theme.buttonSize / 2,
                 child: Container(
                   height: _theme.buttonSize,
                   width: _theme.buttonSize,
-                  decoration: (widget.hovered
-                          ? _buttonThemeHovered.decoration
-                          : _buttonTheme.decoration) ??
+                  decoration: (widget.hovered ? _buttonThemeHovered.decoration : _buttonTheme.decoration) ??
                       BoxDecoration(
                         shape: BoxShape.circle,
-                        color: widget.hovered
-                            ? _buttonThemeHovered.backgroundColor
-                            : _buttonTheme.backgroundColor,
+                        color: widget.hovered ? _buttonThemeHovered.backgroundColor : _buttonTheme.backgroundColor,
                       ),
                   child: Center(
                     child: IconTheme(
                       data: IconThemeData(
-                        color: widget.hovered
-                            ? _buttonThemeHovered.iconColor
-                            : _buttonTheme.iconColor,
+                        color: widget.hovered ? _buttonThemeHovered.iconColor : _buttonTheme.iconColor,
                         size: _theme.iconSize,
                       ),
-                      child: _action.builder?.call(widget.hovered) ??
-                          _action.child!,
+                      child: _action.builder?.call(widget.hovered) ?? _action.child!,
                     ),
                   ),
                 ),

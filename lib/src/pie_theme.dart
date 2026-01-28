@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pie_menu/src/pie_animation_theme.dart';
 import 'package:pie_menu/src/pie_button.dart';
 import 'package:pie_menu/src/pie_button_theme.dart';
 import 'package:pie_menu/src/pie_canvas.dart';
@@ -41,6 +42,7 @@ class PieTheme {
       backgroundColor: Colors.green,
       iconColor: Colors.white,
     ),
+    this.animationTheme = const PieAnimationTheme(),
     this.iconSize,
     this.radius = 96,
     this.spacing = 6,
@@ -57,14 +59,6 @@ class PieTheme {
     this.tooltipTextAlign,
     this.tooltipCanvasAlignment,
     this.tooltipUseFittedBox = false,
-    this.pieBounceDuration = const Duration(seconds: 1),
-    this.childBounceEnabled = true,
-    this.childTiltEnabled = true,
-    this.childBounceDuration = const Duration(milliseconds: 150),
-    this.childBounceFactor = 0.95,
-    this.childBounceCurve = Curves.easeOutCubic,
-    this.childBounceReverseCurve = Curves.easeInCubic,
-    this.childBounceFilterQuality,
     this.fadeDuration = const Duration(milliseconds: 250),
     this.hoverDuration = const Duration(milliseconds: 250),
     @Deprecated(
@@ -76,6 +70,7 @@ class PieTheme {
     this.longPressShowsMenu = true,
     this.leftClickShowsMenu = true,
     this.rightClickShowsMenu = false,
+    this.closeOnTapUp = false,
     this.overlayStyle = PieOverlayStyle.behind,
     this.childOpacityOnButtonHover = 0.5,
   }) : longPressDuration = delayDuration ?? longPressDuration;
@@ -101,6 +96,9 @@ class PieTheme {
 
   /// Theme of [PieButton] when it is hovered.
   final PieButtonTheme buttonThemeHovered;
+
+  /// Theme of animation of [PieMenu] and its children.
+  final PieAnimationTheme animationTheme;
 
   /// Size of the icon to be displayed on the [PieButton].
   final double? iconSize;
@@ -162,32 +160,6 @@ class PieTheme {
   /// Can be used to display long tooltip texts in a single line.
   final bool tooltipUseFittedBox;
 
-  /// Duration of [PieButton] bounce animation.
-  final Duration pieBounceDuration;
-
-  /// Whether to bounce the [PieMenu] child on press.
-  final bool childBounceEnabled;
-
-  /// Whether to tilt the [PieMenu] child on press.
-  ///
-  /// Only works if [childBounceEnabled] is set to true.
-  final bool childTiltEnabled;
-
-  /// Duration of menu child bounce animation.
-  final Duration childBounceDuration;
-
-  /// Distance of menu child bounce animation.
-  final double childBounceFactor;
-
-  /// Curve for the menu child bounce animation.
-  final Curve childBounceCurve;
-
-  /// Reverse curve for the menu child bounce animation.
-  final Curve? childBounceReverseCurve;
-
-  /// Filter quality of the menu child bounce animation.
-  final FilterQuality? childBounceFilterQuality;
-
   /// Duration of [PieMenu] fade animation.
   final Duration fadeDuration;
 
@@ -209,6 +181,9 @@ class PieTheme {
   /// Whether to display the menu on right mouse click.
   final bool rightClickShowsMenu;
 
+  /// Whether to close the menu when user lifts their finger.
+  final bool closeOnTapUp;
+
   /// Decides how to display the translucent canvas overlay.
   ///
   /// [PieOverlayStyle.behind] is the recommended style
@@ -227,9 +202,7 @@ class PieTheme {
 
   Color get effectiveOverlayColor {
     return overlayColor ??
-        (brightness == Brightness.light
-            ? Colors.white.withValues(alpha: 0.8)
-            : Colors.black.withValues(alpha: 0.8));
+        (brightness == Brightness.light ? Colors.white.withValues(alpha: 0.8) : Colors.black.withValues(alpha: 0.8));
   }
 
   /// Returns the [PieTheme] defined in the closest [PieCanvas] instance
@@ -263,14 +236,6 @@ class PieTheme {
     TextAlign? tooltipTextAlign,
     Alignment? tooltipCanvasAlignment,
     bool? tooltipUseFittedBox,
-    Duration? pieBounceDuration,
-    bool? childBounceEnabled,
-    bool? childTiltEnabled,
-    Duration? childBounceDuration,
-    double? childBounceDistance,
-    Curve? childBounceCurve,
-    Curve? childBounceReverseCurve,
-    FilterQuality? childBounceFilterQuality,
     Duration? fadeDuration,
     Duration? hoverDuration,
     @Deprecated(
@@ -282,6 +247,7 @@ class PieTheme {
     Duration? longPressDuration,
     bool? leftClickShowsMenu,
     bool? rightClickShowsMenu,
+    bool? closeOnTapUp,
     PieOverlayStyle? overlayStyle,
     double? childOpacityOnButtonHover,
   }) {
@@ -306,31 +272,18 @@ class PieTheme {
       tooltipPadding: tooltipPadding ?? this.tooltipPadding,
       tooltipTextStyle: tooltipTextStyle ?? this.tooltipTextStyle,
       tooltipTextAlign: tooltipTextAlign ?? this.tooltipTextAlign,
-      tooltipCanvasAlignment:
-          tooltipCanvasAlignment ?? this.tooltipCanvasAlignment,
+      tooltipCanvasAlignment: tooltipCanvasAlignment ?? this.tooltipCanvasAlignment,
       tooltipUseFittedBox: tooltipUseFittedBox ?? this.tooltipUseFittedBox,
-      pieBounceDuration: pieBounceDuration ?? this.pieBounceDuration,
-      childBounceEnabled: childBounceEnabled ?? this.childBounceEnabled,
-      childTiltEnabled: childTiltEnabled ?? this.childTiltEnabled,
-      childBounceDuration: childBounceDuration ?? this.childBounceDuration,
-      childBounceFactor: childBounceDistance ?? childBounceFactor,
-      childBounceCurve: childBounceCurve ?? this.childBounceCurve,
-      childBounceReverseCurve:
-          childBounceReverseCurve ?? this.childBounceReverseCurve,
-      childBounceFilterQuality:
-          childBounceFilterQuality ?? this.childBounceFilterQuality,
       fadeDuration: fadeDuration ?? this.fadeDuration,
       hoverDuration: hoverDuration ?? this.hoverDuration,
-      longPressDuration:
-          longPressDuration ?? delayDuration ?? this.longPressDuration,
-      regularPressShowsMenu:
-          regularPressShowsMenu ?? this.regularPressShowsMenu,
+      longPressDuration: longPressDuration ?? delayDuration ?? this.longPressDuration,
+      regularPressShowsMenu: regularPressShowsMenu ?? this.regularPressShowsMenu,
       longPressShowsMenu: longPressShowsMenu ?? this.longPressShowsMenu,
       leftClickShowsMenu: leftClickShowsMenu ?? this.leftClickShowsMenu,
       rightClickShowsMenu: rightClickShowsMenu ?? this.rightClickShowsMenu,
+      closeOnTapUp: closeOnTapUp ?? this.closeOnTapUp,
       overlayStyle: overlayStyle ?? this.overlayStyle,
-      childOpacityOnButtonHover:
-          childOpacityOnButtonHover ?? this.childOpacityOnButtonHover,
+      childOpacityOnButtonHover: childOpacityOnButtonHover ?? this.childOpacityOnButtonHover,
     );
   }
 }
