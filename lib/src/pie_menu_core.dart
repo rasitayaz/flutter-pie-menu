@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:pie_menu/src/bouncing_widget.dart';
 import 'package:pie_menu/src/pie_action.dart';
+import 'package:pie_menu/src/pie_animated_child.dart';
 import 'package:pie_menu/src/pie_button.dart';
 import 'package:pie_menu/src/pie_canvas.dart';
 import 'package:pie_menu/src/pie_menu.dart';
@@ -56,10 +56,27 @@ class PieMenuCore extends StatefulWidget {
   State<PieMenuCore> createState() => _PieMenuCoreState();
 }
 
-class _PieMenuCoreState extends State<PieMenuCore>
-    with TickerProviderStateMixin {
+class _PieMenuCoreState extends State<PieMenuCore> with TickerProviderStateMixin {
   /// Unique key for this menu. Used to control animations.
   final _uniqueKey = UniqueKey();
+
+  /// Controls [_whileMenuOpenChildAnimation].
+  late final _whileMenuOpenChildAnimationController = AnimationController(
+    duration: _theme.animationTheme.whileMenuOpenChildDuration,
+    vsync: this,
+  );
+
+  /// Animation for the child while the menu is open.
+  late final _whileMenuOpenChildAnimation = Tween(
+    begin: 0.0,
+    end: 1.0,
+  ).animate(
+    CurvedAnimation(
+      parent: _whileMenuOpenChildAnimationController,
+      curve: _theme.animationTheme.whileMenuOpenChildCurve,
+      reverseCurve: _theme.animationTheme.whileMenuOpenChildReverseCurve,
+    ),
+  );
 
   /// Controls [_overlayFadeAnimation].
   late final _overlayFadeController = AnimationController(
@@ -78,21 +95,21 @@ class _PieMenuCoreState extends State<PieMenuCore>
     ),
   );
 
-  /// Controls [_bounceAnimation].
-  late final _bounceController = AnimationController(
-    duration: _theme.childBounceDuration,
+  /// Controls [_beforeOpenAnimation].
+  late final _beforeOpenAnimationController = AnimationController(
+    duration: _theme.animationTheme.beforeOpenDuration,
     vsync: this,
   );
 
-  /// Bounce animation for the child widget.
-  late final _bounceAnimation = Tween(
+  /// Animation for the child widget.
+  late final _beforeOpenAnimation = Tween(
     begin: 0.0,
     end: 1.0,
   ).animate(
     CurvedAnimation(
-      parent: _bounceController,
-      curve: _theme.childBounceCurve,
-      reverseCurve: _theme.childBounceReverseCurve,
+      parent: _beforeOpenAnimationController,
+      curve: _theme.animationTheme.beforeOpenCurve,
+      reverseCurve: _theme.animationTheme.beforeOpenReverseCurve,
     ),
   );
 
@@ -115,7 +132,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
   Timer? _debounceTimer;
 
   /// Used to measure the time between bounce and debounce.
-  final _bounceStopwatch = Stopwatch();
+  final _beforeOpenAnimationStopwatch = Stopwatch();
 
   /// Whether the press was canceled by a pointer move event or menu toggle.
   var _pressCanceled = false;
@@ -172,9 +189,9 @@ class _PieMenuCoreState extends State<PieMenuCore>
   @override
   void dispose() {
     _overlayFadeController.dispose();
-    _bounceController.dispose();
+    _beforeOpenAnimationController.dispose();
     _debounceTimer?.cancel();
-    _bounceStopwatch.stop();
+    _beforeOpenAnimationStopwatch.stop();
     widget.controller?.removeListener(_handleControllerEvent);
     _longPressRecognizer.dispose();
 
@@ -183,12 +200,12 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
   @override
   Widget build(BuildContext context) {
-    final bounceAnimation = _bounceAnimation;
+    final beforeOpenAnimation = _beforeOpenAnimation;
 
     if (_state.menuKey == _uniqueKey) {
       if (!_previouslyOpen && _state.menuOpen) {
         _overlayFadeController.forward(from: 0);
-        _debounce();
+        _beforeOpenAnimationEnd();
         _pressCanceled = true;
       } else if (_previouslyOpen && !_state.menuOpen) {
         _overlayFadeController.reverse();
@@ -243,14 +260,14 @@ class _PieMenuCoreState extends State<PieMenuCore>
                       : 1,
                   duration: _theme.hoverDuration,
                   curve: Curves.ease,
-                  child: _theme.childBounceEnabled
-                      ? BouncingWidget(
-                          theme: _theme,
-                          animation: bounceAnimation,
-                          pressedOffset: _localPressedOffset,
-                          child: widget.child,
-                        )
-                      : widget.child,
+                  child: PieAnimatedChild(
+                    beforeOpenBuilder: _theme.animationTheme.beforeOpenBuilder,
+                    menuChild: widget.child,
+                    animation: beforeOpenAnimation,
+                    pressedOffset: _localPressedOffset,
+                    whileMenuOpenChildAnimation: _whileMenuOpenChildAnimation,
+                    whileMenuOpenChildBuilder: _theme.animationTheme.whileMenuOpenChildBuilder,
+                  ),
                 ),
               ),
             ),
@@ -262,6 +279,8 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
   void _pointerDown(PointerDownEvent event) {
     if (!mounted) return;
+    PieMenuPressNotification().dispatch(context);
+    if (_childPressed) return;
 
     PieMenuPressNotification().dispatch(context);
     if (_childPressed) return;
@@ -279,16 +298,14 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     final isMouseEvent = _pressedDeviceKind == PointerDeviceKind.mouse;
     final leftClicked = isMouseEvent && _pressedButton == kPrimaryMouseButton;
-    final rightClicked =
-        isMouseEvent && _pressedButton == kSecondaryMouseButton;
+    final rightClicked = isMouseEvent && _pressedButton == kSecondaryMouseButton;
 
     if (isMouseEvent && !leftClicked && !rightClicked) return;
 
     if (rightClicked && !_theme.rightClickShowsMenu) return;
 
-    if (_theme.longPressDuration < Duration(milliseconds: 100) ||
-        rightClicked) {
-      _bounce();
+    if (_theme.longPressDuration < Duration(milliseconds: 100) || rightClicked) {
+      _beforeOpenAnimationStart();
     }
 
     if (leftClicked && !_theme.leftClickShowsMenu) return;
@@ -308,7 +325,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
   void _onTapDown(TapDownDetails details) {
     if (_childPressed) return;
-    _bounce();
+    _beforeOpenAnimationEnd();
   }
 
   void _pointerMove(PointerMoveEvent event) {
@@ -316,12 +333,15 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     if ((_pressedOffset - event.position).distance > 8) {
       _pressCanceled = true;
-      _debounce();
+      _beforeOpenAnimationEnd();
     }
   }
 
   void _pointerUp(PointerUpEvent event) {
     _childPressed = false;
+    if (_theme.closeOnTapUp && _state.menuKey == _uniqueKey && _state.menuOpen) {
+      _notifier.canvas.closeMenu(_uniqueKey);
+    }
   }
 
   void _pointerCancel(PointerCancelEvent event) {
@@ -329,13 +349,13 @@ class _PieMenuCoreState extends State<PieMenuCore>
   }
 
   void _onTapCancel() {
-    _debounce();
+    _beforeOpenAnimationEnd();
   }
 
   void _onTapUp(TapUpDetails details) {
     if (!mounted) return;
 
-    _debounce();
+    _beforeOpenAnimationEnd();
 
     if (_pressCanceled || _state.menuOpen) return;
 
@@ -343,8 +363,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     final isMouseEvent = deviceKind == PointerDeviceKind.mouse;
     final leftClicked = isMouseEvent && _pressedButton == kPrimaryMouseButton;
-    final rightClicked =
-        isMouseEvent && _pressedButton == kSecondaryMouseButton;
+    final rightClicked = isMouseEvent && _pressedButton == kSecondaryMouseButton;
 
     if (!rightClicked) {
       widget.onPressed?.call();
@@ -360,33 +379,33 @@ class _PieMenuCoreState extends State<PieMenuCore>
     _attachMenu(offset: _pressedOffset);
   }
 
-  void _bounce() {
-    if (!mounted || !_theme.childBounceEnabled || _bounceStopwatch.isRunning) {
+  void _beforeOpenAnimationStart() {
+    if (!mounted || _beforeOpenAnimationStopwatch.isRunning) {
       return;
     }
 
     _debounceTimer?.cancel();
-    _bounceStopwatch.reset();
-    _bounceStopwatch.start();
+    _beforeOpenAnimationStopwatch.reset();
+    _beforeOpenAnimationStopwatch.start();
 
-    _bounceController.forward();
+    _beforeOpenAnimationController.forward();
   }
 
-  void _debounce() {
-    if (!mounted || !_theme.childBounceEnabled || !_bounceStopwatch.isRunning) {
+  void _beforeOpenAnimationEnd() {
+    if (!mounted || !_beforeOpenAnimationStopwatch.isRunning) {
       return;
     }
 
-    _bounceStopwatch.stop();
+    _beforeOpenAnimationStopwatch.stop();
 
     final minDelayMS = 100;
 
-    final debounceDelay = _bounceStopwatch.elapsedMilliseconds > minDelayMS
+    final beforeOpenAnimationEndDelay = _beforeOpenAnimationStopwatch.elapsedMilliseconds > minDelayMS
         ? Duration.zero
         : Duration(milliseconds: minDelayMS);
 
-    _debounceTimer = Timer(debounceDelay, () {
-      _bounceController.reverse();
+    _debounceTimer = Timer(beforeOpenAnimationEndDelay, () {
+      _beforeOpenAnimationController.reverse();
     });
   }
 
@@ -406,7 +425,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
       offset: offset,
       renderBox: _renderBox!,
       child: widget.child,
-      bounceAnimation: _bounceAnimation,
+      beforeOpenAnimation: _beforeOpenAnimation,
       menuKey: _uniqueKey,
       actions: widget.actions,
       theme: _theme,

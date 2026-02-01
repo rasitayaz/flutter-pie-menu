@@ -10,16 +10,16 @@ import 'package:vector_math/vector_math.dart' hide Matrix4;
 /// Customized [FlowDelegate] to size and position pie actions efficiently.
 class PieDelegate extends FlowDelegate {
   PieDelegate({
-    required this.bounceAnimation,
+    required this.pieMenuOpenAnimation,
     required this.pointerOffset,
     required this.canvasOffset,
     required this.baseAngle,
     required this.angleDiff,
     required this.theme,
-  }) : super(repaint: bounceAnimation);
+  }) : super(repaint: pieMenuOpenAnimation);
 
   /// Bouncing animation for the buttons.
-  final Animation bounceAnimation;
+  final Animation<double> pieMenuOpenAnimation;
 
   /// Offset of the widget displayed in the center of the [PieMenu].
   final Offset pointerOffset;
@@ -38,7 +38,7 @@ class PieDelegate extends FlowDelegate {
 
   @override
   bool shouldRepaint(PieDelegate oldDelegate) {
-    return bounceAnimation != oldDelegate.bounceAnimation;
+    return pieMenuOpenAnimation != oldDelegate.pieMenuOpenAnimation;
   }
 
   @override
@@ -49,9 +49,10 @@ class PieDelegate extends FlowDelegate {
 
     for (var i = 0; i < count; ++i) {
       final size = context.getChildSize(i)!;
-      final angleInRadians =
-          radians(baseAngle - theme.angleOffset - angleDiff * (i - 1));
-      if (i == 0) {
+      final angleInRadians = radians(baseAngle - theme.angleOffset - angleDiff * (i - 1));
+      // No need to translate the pointer itself
+      final isPointer = i == 0;
+      if (isPointer) {
         context.paintChild(
           i,
           transform: Matrix4.translationValues(
@@ -61,18 +62,27 @@ class PieDelegate extends FlowDelegate {
           ),
         );
       } else {
-        context.paintChild(
-          i,
-          transform: Matrix4.translationValues(
-            dx -
-                size.width / 2 +
-                theme.radius * cos(angleInRadians) * bounceAnimation.value,
-            dy -
-                size.height / 2 -
-                theme.radius * sin(angleInRadians) * bounceAnimation.value,
-            0,
-          ),
-        );
+        if (theme.animationTheme.pieMenuOpenBuilder != null) {
+          context.paintChild(
+            i,
+            transform: theme.animationTheme.pieMenuOpenBuilder!(
+              i,
+              Offset(dx, dy),
+              size,
+              angleInRadians,
+              pieMenuOpenAnimation,
+            ),
+          );
+        } else {
+          context.paintChild(
+            i,
+            transform: Matrix4.translationValues(
+              (dx - size.width / 2) + (theme.radius * cos(angleInRadians) * pieMenuOpenAnimation.value),
+              (dy - size.height / 2) - (theme.radius * sin(angleInRadians) * pieMenuOpenAnimation.value),
+              0,
+            ),
+          );
+        }
       }
     }
   }
