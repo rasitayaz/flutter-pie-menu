@@ -202,7 +202,9 @@ class PieTheme {
 
   Color get effectiveOverlayColor {
     return overlayColor ??
-        (brightness == Brightness.light ? Colors.white.withValues(alpha: 0.8) : Colors.black.withValues(alpha: 0.8));
+        (brightness == Brightness.light
+            ? Colors.white.withValues(alpha: 0.8)
+            : Colors.black.withValues(alpha: 0.8));
   }
 
   /// Returns the [PieTheme] defined in the closest [PieCanvas] instance
@@ -250,6 +252,7 @@ class PieTheme {
     bool? closeOnTapUp,
     PieOverlayStyle? overlayStyle,
     double? childOpacityOnButtonHover,
+    PieAnimationTheme? animationTheme,
   }) {
     return PieTheme(
       brightness: brightness ?? this.brightness,
@@ -272,18 +275,23 @@ class PieTheme {
       tooltipPadding: tooltipPadding ?? this.tooltipPadding,
       tooltipTextStyle: tooltipTextStyle ?? this.tooltipTextStyle,
       tooltipTextAlign: tooltipTextAlign ?? this.tooltipTextAlign,
-      tooltipCanvasAlignment: tooltipCanvasAlignment ?? this.tooltipCanvasAlignment,
+      tooltipCanvasAlignment:
+          tooltipCanvasAlignment ?? this.tooltipCanvasAlignment,
       tooltipUseFittedBox: tooltipUseFittedBox ?? this.tooltipUseFittedBox,
       fadeDuration: fadeDuration ?? this.fadeDuration,
       hoverDuration: hoverDuration ?? this.hoverDuration,
-      longPressDuration: longPressDuration ?? delayDuration ?? this.longPressDuration,
-      regularPressShowsMenu: regularPressShowsMenu ?? this.regularPressShowsMenu,
+      longPressDuration:
+          longPressDuration ?? delayDuration ?? this.longPressDuration,
+      regularPressShowsMenu:
+          regularPressShowsMenu ?? this.regularPressShowsMenu,
       longPressShowsMenu: longPressShowsMenu ?? this.longPressShowsMenu,
       leftClickShowsMenu: leftClickShowsMenu ?? this.leftClickShowsMenu,
       rightClickShowsMenu: rightClickShowsMenu ?? this.rightClickShowsMenu,
       closeOnTapUp: closeOnTapUp ?? this.closeOnTapUp,
       overlayStyle: overlayStyle ?? this.overlayStyle,
-      childOpacityOnButtonHover: childOpacityOnButtonHover ?? this.childOpacityOnButtonHover,
+      childOpacityOnButtonHover:
+          childOpacityOnButtonHover ?? this.childOpacityOnButtonHover,
+      animationTheme: animationTheme ?? this.animationTheme,
     );
   }
 }

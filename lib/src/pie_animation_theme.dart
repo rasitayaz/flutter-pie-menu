@@ -129,4 +129,56 @@ class PieAnimationTheme {
 
   /// The reverse curve of the animation of the child that runs while the menu is open.
   final Curve whileMenuOpenChildReverseCurve;
+
+  PieAnimationTheme copyWith({
+    Widget Function(
+      Widget child,
+      Size size,
+      Offset? pressedOffset,
+      Animation<double> animation,
+    )? beforeOpenBuilder,
+    Duration? beforeOpenDuration,
+    Curve? beforeOpenCurve,
+    Curve? beforeOpenReverseCurve,
+    Matrix4 Function(
+      int actionIndex,
+      Offset pointerPosition,
+      Size size,
+      double angleInRadians,
+      Animation<double> animation,
+    )? pieMenuOpenBuilder,
+    Duration? pieMenuOpenDuration,
+    Curve? pieMenuOpenCurve,
+    Curve? pieMenuOpenReverseCurve,
+    Widget Function(
+      Widget child,
+      Size size,
+      Offset? pressedOffset,
+      Animation<double> animation,
+    )? whileMenuOpenChildBuilder,
+    Duration? whileMenuOpenChildDuration,
+    Curve? whileMenuOpenChildCurve,
+    Curve? whileMenuOpenChildReverseCurve,
+  }) {
+    return PieAnimationTheme(
+      beforeOpenBuilder: beforeOpenBuilder ?? this.beforeOpenBuilder,
+      beforeOpenDuration: beforeOpenDuration ?? this.beforeOpenDuration,
+      beforeOpenCurve: beforeOpenCurve ?? this.beforeOpenCurve,
+      beforeOpenReverseCurve:
+          beforeOpenReverseCurve ?? this.beforeOpenReverseCurve,
+      pieMenuOpenBuilder: pieMenuOpenBuilder ?? this.pieMenuOpenBuilder,
+      pieMenuOpenDuration: pieMenuOpenDuration ?? this.pieMenuOpenDuration,
+      pieMenuOpenCurve: pieMenuOpenCurve ?? this.pieMenuOpenCurve,
+      pieMenuOpenReverseCurve:
+          pieMenuOpenReverseCurve ?? this.pieMenuOpenReverseCurve,
+      whileMenuOpenChildBuilder:
+          whileMenuOpenChildBuilder ?? this.whileMenuOpenChildBuilder,
+      whileMenuOpenChildDuration:
+          whileMenuOpenChildDuration ?? this.whileMenuOpenChildDuration,
+      whileMenuOpenChildCurve:
+          whileMenuOpenChildCurve ?? this.whileMenuOpenChildCurve,
+      whileMenuOpenChildReverseCurve:
+          whileMenuOpenChildReverseCurve ?? this.whileMenuOpenChildReverseCurve,
+    );
+  }
 }
