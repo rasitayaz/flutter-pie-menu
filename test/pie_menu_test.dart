@@ -157,9 +157,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: PieCanvas(
-            theme: const PieTheme(
-              rightClickShowsMenu: true,
-            ),
+            theme: const PieTheme(rightClickShowsMenu: true),
             child: Scaffold(
               body: Center(
                 child: PieMenu(

@@ -27,15 +27,15 @@ class PieProvider extends InheritedWidget {
     required this.notifier,
     required Widget Function(BuildContext context) builder,
   }) : super(
-          child: Builder(
-            builder: (context) {
-              return ListenableBuilder(
-                listenable: notifier,
-                builder: (context, child) => builder(context),
-              );
-            },
-          ),
-        );
+         child: Builder(
+           builder: (context) {
+             return ListenableBuilder(
+               listenable: notifier,
+               builder: (context, child) => builder(context),
+             );
+           },
+         ),
+       );
 
   /// Notifier that controls the shared state.
   final PieNotifier notifier;
@@ -48,20 +48,15 @@ class PieProvider extends InheritedWidget {
 ///
 /// Can be accessed by canvas and menu using [PieNotifier.of].
 class PieNotifier extends ChangeNotifier {
-  PieNotifier({
-    required GlobalKey<PieCanvasCoreState> canvasCoreKey,
-  }) : _canvasCoreKey = canvasCoreKey;
+  PieNotifier({required GlobalKey<PieCanvasCoreState> canvasCoreKey})
+    : _canvasCoreKey = canvasCoreKey;
 
   /// Key for the [PieCanvasCore] widget, [PieMenuCore] needs this
   /// to attach itself to the canvas.
   final GlobalKey<PieCanvasCoreState> _canvasCoreKey;
 
   /// Current state shared between [PieCanvasCore] and [PieMenuCore].
-  var state = PieState(
-    menuKey: null,
-    menuOpen: false,
-    hoveredAction: null,
-  );
+  var state = PieState(menuKey: null, menuOpen: false, hoveredAction: null);
 
   /// Current state of the [PieCanvasCore].
   PieCanvasCoreState get canvas => _canvasCoreKey.currentState!;

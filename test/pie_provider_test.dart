@@ -40,10 +40,7 @@ void main() {
 
       final exception = tester.takeException();
       expect(exception, isInstanceOf<Exception>());
-      expect(
-        exception.toString(),
-        contains('Could not find any PieCanvas'),
-      );
+      expect(exception.toString(), contains('Could not find any PieCanvas'));
     });
 
     testWidgets('updateShouldNotify returns true', (tester) async {

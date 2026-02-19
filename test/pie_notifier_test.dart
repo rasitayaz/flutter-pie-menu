@@ -52,10 +52,7 @@ void main() {
                 expect(notifier.state.hoveredAction, 1);
                 expect(listenerCalled, isTrue);
 
-                notifier.update(
-                  clearMenuKey: true,
-                  clearHoveredAction: true,
-                );
+                notifier.update(clearMenuKey: true, clearHoveredAction: true);
 
                 expect(notifier.state.menuKey, isNull);
                 expect(notifier.state.hoveredAction, isNull);

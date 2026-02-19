@@ -8,11 +8,7 @@ void main() {
   group(PieCanvas, () {
     testWidgets('builds PieProvider and PieCanvasCore', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: PieCanvas(
-            child: const Text('Canvas Child'),
-          ),
-        ),
+        MaterialApp(home: PieCanvas(child: const Text('Canvas Child'))),
       );
 
       expect(find.text('Canvas Child'), findsOneWidget);

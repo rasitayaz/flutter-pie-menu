@@ -34,7 +34,9 @@ void main() {
       const displacement = Offset(10, 10);
 
       controller.openMenu(
-          menuAlignment: alignment, menuDisplacement: displacement);
+        menuAlignment: alignment,
+        menuDisplacement: displacement,
+      );
 
       final event = controller.value as PieMenuOpenEvent;
       expect(event.menuAlignment, alignment);

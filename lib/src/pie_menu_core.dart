@@ -68,14 +68,8 @@ class _PieMenuCoreState extends State<PieMenuCore>
   );
 
   /// Fade animation for the menu overlay.
-  late final _overlayFadeAnimation = Tween(
-    begin: 0.0,
-    end: 1.0,
-  ).animate(
-    CurvedAnimation(
-      parent: _overlayFadeController,
-      curve: Curves.ease,
-    ),
+  late final _overlayFadeAnimation = Tween(begin: 0.0, end: 1.0).animate(
+    CurvedAnimation(parent: _overlayFadeController, curve: Curves.ease),
   );
 
   /// Controls [_bounceAnimation].
@@ -85,10 +79,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
   );
 
   /// Bounce animation for the child widget.
-  late final _bounceAnimation = Tween(
-    begin: 0.0,
-    end: 1.0,
-  ).animate(
+  late final _bounceAnimation = Tween(begin: 0.0, end: 1.0).animate(
     CurvedAnimation(
       parent: _bounceController,
       curve: _theme.childBounceCurve,
@@ -235,22 +226,24 @@ class _PieMenuCoreState extends State<PieMenuCore>
                 onTapUp: _onTapUp,
                 dragStartBehavior: DragStartBehavior.down,
                 child: AnimatedOpacity(
-                  opacity: _theme.overlayStyle == PieOverlayStyle.around &&
-                          _state.menuKey == _uniqueKey &&
-                          _state.menuOpen &&
-                          _state.hoveredAction != null
-                      ? _theme.childOpacityOnButtonHover
-                      : 1,
+                  opacity:
+                      _theme.overlayStyle == PieOverlayStyle.around &&
+                              _state.menuKey == _uniqueKey &&
+                              _state.menuOpen &&
+                              _state.hoveredAction != null
+                          ? _theme.childOpacityOnButtonHover
+                          : 1,
                   duration: _theme.hoverDuration,
                   curve: Curves.ease,
-                  child: _theme.childBounceEnabled
-                      ? BouncingWidget(
-                          theme: _theme,
-                          animation: bounceAnimation,
-                          pressedOffset: _localPressedOffset,
-                          child: widget.child,
-                        )
-                      : widget.child,
+                  child:
+                      _theme.childBounceEnabled
+                          ? BouncingWidget(
+                            theme: _theme,
+                            animation: bounceAnimation,
+                            pressedOffset: _localPressedOffset,
+                            child: widget.child,
+                          )
+                          : widget.child,
                 ),
               ),
             ),
@@ -381,9 +374,10 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     final minDelayMS = 100;
 
-    final debounceDelay = _bounceStopwatch.elapsedMilliseconds > minDelayMS
-        ? Duration.zero
-        : Duration(milliseconds: minDelayMS);
+    final debounceDelay =
+        _bounceStopwatch.elapsedMilliseconds > minDelayMS
+            ? Duration.zero
+            : Duration(milliseconds: minDelayMS);
 
     _debounceTimer = Timer(debounceDelay, () {
       _bounceController.reverse();

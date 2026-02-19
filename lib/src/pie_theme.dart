@@ -21,7 +21,7 @@ enum PieOverlayStyle {
   /// Use this style if you want to preserve the state of your menu child.
   /// You might experience some rendering issues when the menu is partially
   /// obscured by other widgets.
-  around;
+  around,
 }
 
 /// Defines the behavior and the appearance

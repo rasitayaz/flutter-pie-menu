@@ -35,9 +35,7 @@ class _PieCanvasState extends State<PieCanvas> {
   final _canvasCoreKey = GlobalKey<PieCanvasCoreState>();
 
   /// Notifies both [PieCanvasCore] and [PieMenuCore] for shared state changes.
-  late final _notifier = PieNotifier(
-    canvasCoreKey: _canvasCoreKey,
-  );
+  late final _notifier = PieNotifier(canvasCoreKey: _canvasCoreKey);
 
   @override
   Widget build(BuildContext context) {

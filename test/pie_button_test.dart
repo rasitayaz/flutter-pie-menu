@@ -59,10 +59,12 @@ void main() {
 
       expect(find.byIcon(Icons.add), findsOneWidget);
 
-      final container = tester.widget<Container>(find.descendant(
-        of: find.byType(PieButton),
-        matching: find.byType(Container),
-      ));
+      final container = tester.widget<Container>(
+        find.descendant(
+          of: find.byType(PieButton),
+          matching: find.byType(Container),
+        ),
+      );
 
       final decoration = container.decoration as BoxDecoration;
       expect(decoration.color, Colors.red);

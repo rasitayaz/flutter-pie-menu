@@ -49,8 +49,9 @@ class PieDelegate extends FlowDelegate {
 
     for (var i = 0; i < count; ++i) {
       final size = context.getChildSize(i)!;
-      final angleInRadians =
-          radians(baseAngle - theme.angleOffset - angleDiff * (i - 1));
+      final angleInRadians = radians(
+        baseAngle - theme.angleOffset - angleDiff * (i - 1),
+      );
       if (i == 0) {
         context.paintChild(
           i,
