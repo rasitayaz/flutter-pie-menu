@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pie_menu/src/pie_canvas_controller.dart';
 import 'package:pie_menu/src/pie_canvas_core.dart';
 import 'package:pie_menu/src/pie_menu.dart';
 import 'package:pie_menu/src/pie_menu_core.dart';
@@ -11,8 +12,12 @@ class PieCanvas extends StatefulWidget {
     super.key,
     this.theme = const PieTheme(),
     this.onMenuToggle,
+    this.controller,
     required this.child,
   });
+
+  /// Controller for a [PieCanvas] to perform actions programmatically.
+  final PieCanvasController? controller;
 
   /// Widget to display behind the canvas.
   final Widget child;
@@ -46,6 +51,7 @@ class _PieCanvasState extends State<PieCanvas> {
           key: _canvasCoreKey,
           onMenuToggle: widget.onMenuToggle,
           theme: widget.theme,
+          controller: widget.controller,
           child: widget.child,
         );
       },

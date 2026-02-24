@@ -5,7 +5,7 @@ import 'package:pie_menu/src/pie_menu_event.dart';
 
 /// Controller for programmatically emitting [PieMenu] events.
 class PieMenuController extends ValueNotifier<PieMenuEvent> {
-  PieMenuController() : super(PieMenuCloseEvent());
+  PieMenuController() : super(PieMenuIdleEvent());
 
   void openMenu({
     Alignment menuAlignment = Alignment.center,
@@ -17,8 +17,8 @@ class PieMenuController extends ValueNotifier<PieMenuEvent> {
     );
   }
 
-  void closeMenu() {
-    value = PieMenuCloseEvent();
+  void closeMenu({bool animate = true}) {
+    value = PieMenuCloseEvent(animate: animate);
   }
 
   void toggleMenu({
