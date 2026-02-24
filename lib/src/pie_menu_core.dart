@@ -432,12 +432,12 @@ class _PieMenuCoreState extends State<PieMenuCore>
   }
 
   void _onCloseMenu(PieMenuCloseEvent event) {
-    _notifier.canvas.closeMenu(_uniqueKey);
+    _notifier.canvas.closeMenu(_uniqueKey, animate: event.animate);
   }
 
   void _onToggleMenu(PieMenuToggleEvent event) {
     if (_state.menuKey == _uniqueKey) {
-      _notifier.canvas.closeMenu(_uniqueKey);
+      _notifier.canvas.closeMenu(_uniqueKey, animate: true);
     } else {
       _attachMenu(
         menuAlignment: event.menuAlignment,

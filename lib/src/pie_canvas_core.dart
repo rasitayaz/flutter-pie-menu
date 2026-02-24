@@ -7,8 +7,10 @@ import 'package:pie_menu/src/bouncing_widget.dart';
 import 'package:pie_menu/src/pie_action.dart';
 import 'package:pie_menu/src/pie_button.dart';
 import 'package:pie_menu/src/pie_canvas.dart';
+import 'package:pie_menu/src/pie_canvas_controller.dart';
 import 'package:pie_menu/src/pie_delegate.dart';
 import 'package:pie_menu/src/pie_menu.dart';
+import 'package:pie_menu/src/pie_menu_event.dart';
 import 'package:pie_menu/src/pie_provider.dart';
 import 'package:pie_menu/src/pie_theme.dart';
 import 'package:pie_menu/src/platform/base.dart';
@@ -20,11 +22,13 @@ class PieCanvasCore extends StatefulWidget {
     super.key,
     required this.onMenuToggle,
     required this.theme,
+    this.controller,
     required this.child,
   });
 
   final Function(bool menuOpen)? onMenuToggle;
   final PieTheme theme;
+  final PieCanvasController? controller;
   final Widget child;
 
   @override
@@ -222,6 +226,16 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    widget.controller?.addListener(_handleControllerEvent);
+  }
+
+  @override
+  void didUpdateWidget(PieCanvasCore oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.controller != oldWidget.controller) {
+      oldWidget.controller?.removeListener(_handleControllerEvent);
+      widget.controller?.addListener(_handleControllerEvent);
+    }
   }
 
   @override
@@ -230,8 +244,21 @@ class PieCanvasCoreState extends State<PieCanvasCore>
     _fadeController.dispose();
     _attachTimer?.cancel();
     _detachTimer?.cancel();
+    widget.controller?.removeListener(_handleControllerEvent);
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  void _handleControllerEvent() {
+    final controller = widget.controller;
+    if (controller == null) return;
+
+    final event = controller.value;
+    if (event is PieMenuCloseEvent && _state.menuOpen) {
+      _notifier.update(menuOpen: false);
+      _notifyToggleListeners(menuOpen: false);
+      _detachMenu(animate: event.animate);
+    }
   }
 
   @override
@@ -624,9 +651,9 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   }
 
   /// Closes the currently attached menu if the given [menuKey] matches.
-  void closeMenu(Key menuKey) {
+  void closeMenu(Key menuKey, {bool animate = true}) {
     if (menuKey == _notifier.state.menuKey) {
-      _detachMenu();
+      _detachMenu(animate: animate);
     }
   }
 

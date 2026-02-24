@@ -1,3 +1,8 @@
+## 3.5.0
+
+* Added `PieCanvasController` to programmatically control open menus from anywhere within the canvas.
+* Added optional `animate` parameter to `closeMenu` method in `PieCanvasController` and `PieMenuController` to allow force closing menus.
+
 ## 3.4.0
 
 * Wrapped canvas with `PopScope` to dismiss the menu using system back gestures.
