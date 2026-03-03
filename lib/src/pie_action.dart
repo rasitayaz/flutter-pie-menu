@@ -12,6 +12,7 @@ class PieAction {
   /// a custom widget instead of an icon.
   PieAction({
     required this.tooltip,
+    this.semanticsLabel,
     required this.onSelect,
     this.buttonTheme,
     this.buttonThemeHovered,
@@ -22,6 +23,7 @@ class PieAction {
   /// whether the action is hovered or not as a parameter.
   PieAction.builder({
     required this.tooltip,
+    this.semanticsLabel,
     required this.onSelect,
     this.buttonTheme,
     this.buttonThemeHovered,
@@ -30,6 +32,9 @@ class PieAction {
 
   /// Widget to display on [PieCanvas] when this action is hovered.
   final Widget tooltip;
+
+  /// Semantics label for the action.
+  final String? semanticsLabel;
 
   /// Function to trigger when [PieButton] is selected.
   ///

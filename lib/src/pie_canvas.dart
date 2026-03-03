@@ -44,6 +44,8 @@ class _PieCanvasState extends State<PieCanvas> {
 
   @override
   Widget build(BuildContext context) {
+    if (MediaQuery.accessibleNavigationOf(context)) return widget.child;
+
     return PieProvider(
       notifier: _notifier,
       builder: (context) {
