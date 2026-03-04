@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:pie_menu/src/pie_action.dart';
 import 'package:pie_menu/src/pie_button.dart';
 import 'package:pie_menu/src/pie_canvas.dart';
@@ -54,6 +55,17 @@ class PieMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (MediaQuery.accessibleNavigationOf(context)) {
+      return Semantics(
+        customSemanticsActions: {
+          for (final action in actions)
+            if (action.semanticsLabel case String label)
+              CustomSemanticsAction(label: label): action.onSelect,
+        },
+        child: child,
+      );
+    }
+
     return ListenableBuilder(
       listenable: PieNotifier.of(context),
       builder: (context, _) {

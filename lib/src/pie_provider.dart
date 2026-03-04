@@ -72,8 +72,9 @@ class PieNotifier extends ChangeNotifier {
     state = PieState(
       menuKey: clearMenuKey ? null : menuKey ?? state.menuKey,
       menuOpen: menuOpen ?? state.menuOpen,
-      hoveredAction:
-          clearHoveredAction ? null : hoveredAction ?? state.hoveredAction,
+      hoveredAction: clearHoveredAction
+          ? null
+          : hoveredAction ?? state.hoveredAction,
     );
 
     notifyListeners();

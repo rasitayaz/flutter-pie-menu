@@ -1,3 +1,8 @@
+## 3.6.0
+
+* Added support accessible navigation.
+* Bumped minimum SDK version to 3.8.0.
+
 ## 3.5.0
 
 * Added `PieCanvasController` to programmatically control open menus from anywhere within the canvas.
