@@ -1,8 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pie_menu/pie_menu.dart';
 import 'package:pie_menu/src/pie_button.dart';
+import 'package:pie_menu/src/pie_menu_core.dart';
 
 void main() {
   group(PieMenu, () {
@@ -32,6 +34,62 @@ void main() {
       expect(find.byType(PieMenu), findsOneWidget);
       expect(find.byType(PieCanvas), findsOneWidget);
     });
+
+    testWidgets(
+      'renders semantics actions when accessible navigation is enabled for '
+      'actions with semanticsLabel',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: MediaQuery(
+              data: const MediaQueryData(accessibleNavigation: true),
+              child: PieCanvas(
+                child: Scaffold(
+                  body: Center(
+                    child: PieMenu(
+                      actions: [
+                        // With semanticsLabel.
+                        PieAction(
+                          tooltip: const Text('Action 1'),
+                          onSelect: () {},
+                          semanticsLabel: 'Label 1',
+                          child: const Icon(Icons.ac_unit),
+                        ),
+                        // No semanticsLabel.
+                        PieAction(
+                          tooltip: const Text('Action 2'),
+                          onSelect: () {},
+                          child: const Icon(Icons.ac_unit),
+                        ),
+                        // With semanticsLabel.
+                        PieAction(
+                          tooltip: const Text('Action 3'),
+                          onSelect: () {},
+                          semanticsLabel: 'Label 3',
+                          child: const Icon(Icons.ac_unit),
+                        ),
+                      ],
+                      child: const Text('Tap Me'),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        expect(find.byType(PieMenuCore), findsNothing);
+        expect(
+          tester.getSemantics(find.text('Tap Me')),
+          matchesSemantics(
+            customActions: [
+              const CustomSemanticsAction(label: 'Label 1'),
+              const CustomSemanticsAction(label: 'Label 3'),
+            ],
+          ),
+        );
+      },
+    );
 
     testWidgets('long press opens the menu', (tester) async {
       await tester.pumpWidget(

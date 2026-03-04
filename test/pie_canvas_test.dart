@@ -16,6 +16,25 @@ void main() {
       expect(find.byType(PieCanvasCore), findsOneWidget);
     });
 
+    testWidgets(
+      'does not render PieProvider or PieCanvasCore when accessible navigation '
+      'is enabled',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: MediaQuery(
+              data: const MediaQueryData(accessibleNavigation: true),
+              child: PieCanvas(child: const Text('Canvas Child')),
+            ),
+          ),
+        );
+
+        expect(find.text('Canvas Child'), findsOneWidget);
+        expect(find.byType(PieProvider), findsNothing);
+        expect(find.byType(PieCanvasCore), findsNothing);
+      },
+    );
+
     testWidgets('onMenuToggle is called when menu toggles', (tester) async {
       bool menuOpen = false;
 
