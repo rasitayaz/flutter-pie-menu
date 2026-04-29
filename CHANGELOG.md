@@ -1,3 +1,7 @@
+## 3.7.0
+
+* Added `hitTestBehavior` to `PieTheme` to allow customizing hit test behavior of the menu.
+
 ## 3.6.0
 
 * Added support accessible navigation.

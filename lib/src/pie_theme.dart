@@ -78,6 +78,7 @@ class PieTheme {
     this.rightClickShowsMenu = false,
     this.overlayStyle = PieOverlayStyle.behind,
     this.childOpacityOnButtonHover = 0.5,
+    this.hitTestBehavior = HitTestBehavior.deferToChild,
   }) : longPressDuration = delayDuration ?? longPressDuration;
 
   /// How the background and tooltip widgets should be displayed
@@ -222,6 +223,11 @@ class PieTheme {
   /// Opacity of the menu child when a button is hovered.
   final double childOpacityOnButtonHover;
 
+  /// How to behave during hit testing.
+  ///
+  /// This is applied to the [GestureDetector] and [Listener] in the [PieMenu].
+  final HitTestBehavior hitTestBehavior;
+
   /// Displacement distance of [PieButton]s when hovered.
   double get hoverDisplacement => buttonSize / 8;
 
@@ -284,6 +290,7 @@ class PieTheme {
     bool? rightClickShowsMenu,
     PieOverlayStyle? overlayStyle,
     double? childOpacityOnButtonHover,
+    HitTestBehavior? hitTestBehavior,
   }) {
     return PieTheme(
       brightness: brightness ?? this.brightness,
@@ -331,6 +338,7 @@ class PieTheme {
       overlayStyle: overlayStyle ?? this.overlayStyle,
       childOpacityOnButtonHover:
           childOpacityOnButtonHover ?? this.childOpacityOnButtonHover,
+      hitTestBehavior: hitTestBehavior ?? this.hitTestBehavior,
     );
   }
 }
