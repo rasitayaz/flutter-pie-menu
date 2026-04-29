@@ -216,11 +216,13 @@ class _PieMenuCoreState extends State<PieMenuCore>
               return false;
             },
             child: Listener(
+              behavior: _theme.hitTestBehavior,
               onPointerDown: _pointerDown,
               onPointerMove: _pointerMove,
               onPointerUp: _pointerUp,
               onPointerCancel: _pointerCancel,
               child: GestureDetector(
+                behavior: _theme.hitTestBehavior,
                 onTapDown: _onTapDown,
                 onTapCancel: _onTapCancel,
                 onTapUp: _onTapUp,
