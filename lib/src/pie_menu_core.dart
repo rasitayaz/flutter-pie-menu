@@ -308,7 +308,8 @@ class _PieMenuCoreState extends State<PieMenuCore>
   void _pointerMove(PointerMoveEvent event) {
     if (!mounted || _state.menuOpen) return;
 
-    if ((_pressedOffset - event.position).distance > 8) {
+    if ((_pressedOffset - event.position).distance >
+        _theme.pressCancelThreshold) {
       _pressCanceled = true;
       _debounce();
     }

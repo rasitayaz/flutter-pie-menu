@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:pie_menu/src/pie_button.dart';
 import 'package:pie_menu/src/pie_button_theme.dart';
@@ -79,6 +80,7 @@ class PieTheme {
     this.overlayStyle = PieOverlayStyle.behind,
     this.childOpacityOnButtonHover = 0.5,
     this.hitTestBehavior = HitTestBehavior.deferToChild,
+    this.pressCancelThreshold = kTouchSlop,
   }) : longPressDuration = delayDuration ?? longPressDuration;
 
   /// How the background and tooltip widgets should be displayed
@@ -228,6 +230,15 @@ class PieTheme {
   /// This is applied to the [GestureDetector] and [Listener] in the [PieMenu].
   final HitTestBehavior hitTestBehavior;
 
+  /// Distance in logical pixels the pointer can travel after pressing down
+  /// before the press is treated as a drag and the tap is canceled.
+  ///
+  /// Defaults to [kTouchSlop] (18). Increase this if taps are unexpectedly
+  /// canceled on devices with noisy touch digitizers (common on some older
+  /// or budget Android phones), where a stationary finger can report jitter
+  /// that exceeds the threshold.
+  final double pressCancelThreshold;
+
   /// Displacement distance of [PieButton]s when hovered.
   double get hoverDisplacement => buttonSize / 8;
 
@@ -291,6 +302,7 @@ class PieTheme {
     PieOverlayStyle? overlayStyle,
     double? childOpacityOnButtonHover,
     HitTestBehavior? hitTestBehavior,
+    double? pressCancelThreshold,
   }) {
     return PieTheme(
       brightness: brightness ?? this.brightness,
@@ -339,6 +351,7 @@ class PieTheme {
       childOpacityOnButtonHover:
           childOpacityOnButtonHover ?? this.childOpacityOnButtonHover,
       hitTestBehavior: hitTestBehavior ?? this.hitTestBehavior,
+      pressCancelThreshold: pressCancelThreshold ?? this.pressCancelThreshold,
     );
   }
 }
