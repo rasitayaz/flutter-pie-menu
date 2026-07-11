@@ -314,7 +314,7 @@ class StylingPage extends StatelessWidget {
     );
   }
 
-  Widget _buildCard({Color? color, required IconData iconData}) {
+  Widget _buildCard({Color? color, required FaIconData iconData}) {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: color,
