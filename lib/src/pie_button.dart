@@ -128,7 +128,7 @@ class _PieButtonState extends State<PieButton>
                             : _buttonTheme.backgroundColor,
                       ),
                   child: Center(
-                    child: IconTheme(
+                    child: IconTheme.merge(
                       data: IconThemeData(
                         color: widget.hovered
                             ? _buttonThemeHovered.iconColor
