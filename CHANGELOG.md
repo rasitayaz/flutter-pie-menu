@@ -2,6 +2,7 @@
 
 * Added `pressCancelThreshold` to `PieTheme` to configure the pointer travel distance that cancels a tap.
 * Fixed taps being unexpectedly canceled on devices with noisy touch digitizers by raising the default press cancel threshold from `8` to `kTouchSlop` (`18`).
+* Parent icon theme is now respected by using `IconTheme.merge`.
 
 ## 3.7.0
 
