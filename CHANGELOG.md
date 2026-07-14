@@ -1,3 +1,8 @@
+## 3.8.1
+
+* Fixed valid taps being suppressed by a redundant pointer movement check.
+* Deprecated `PieTheme.pressCancelThreshold`; tap cancellation now relies on Flutter gesture recognition.
+
 ## 3.8.0
 
 * Added `pressCancelThreshold` to `PieTheme` to configure the pointer travel distance that cancels a tap.
