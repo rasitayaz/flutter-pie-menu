@@ -80,6 +80,10 @@ class PieTheme {
     this.overlayStyle = PieOverlayStyle.behind,
     this.childOpacityOnButtonHover = 0.5,
     this.hitTestBehavior = HitTestBehavior.deferToChild,
+    @Deprecated(
+      'Tap cancellation is handled by Flutter gesture recognition. '
+      'This property has no effect.',
+    )
     this.pressCancelThreshold = kTouchSlop,
   }) : longPressDuration = delayDuration ?? longPressDuration;
 
@@ -230,13 +234,11 @@ class PieTheme {
   /// This is applied to the [GestureDetector] and [Listener] in the [PieMenu].
   final HitTestBehavior hitTestBehavior;
 
-  /// Distance in logical pixels the pointer can travel after pressing down
-  /// before the press is treated as a drag and the tap is canceled.
-  ///
-  /// Defaults to [kTouchSlop] (18). Increase this if taps are unexpectedly
-  /// canceled on devices with noisy touch digitizers (common on some older
-  /// or budget Android phones), where a stationary finger can report jitter
-  /// that exceeds the threshold.
+  /// Deprecated. Tap cancellation is handled by Flutter gesture recognition.
+  @Deprecated(
+    'Tap cancellation is handled by Flutter gesture recognition. '
+    'This property has no effect.',
+  )
   final double pressCancelThreshold;
 
   /// Displacement distance of [PieButton]s when hovered.
@@ -302,6 +304,10 @@ class PieTheme {
     PieOverlayStyle? overlayStyle,
     double? childOpacityOnButtonHover,
     HitTestBehavior? hitTestBehavior,
+    @Deprecated(
+      'Tap cancellation is handled by Flutter gesture recognition. '
+      'This property has no effect.',
+    )
     double? pressCancelThreshold,
   }) {
     return PieTheme(

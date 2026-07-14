@@ -99,8 +99,8 @@ class _PieMenuCoreState extends State<PieMenuCore>
   /// Device kind used for the press event.
   PointerDeviceKind? _pressedDeviceKind;
 
-  /// Whether the menu was open in the previous rebuild.
-  var _previouslyOpen = false;
+  /// Whether this menu was open in the previous rebuild.
+  var _previouslyOwnMenuOpen = false;
 
   /// Used to cancel the delayed debounce animation on bounce.
   Timer? _debounceTimer;
@@ -108,8 +108,8 @@ class _PieMenuCoreState extends State<PieMenuCore>
   /// Used to measure the time between bounce and debounce.
   final _bounceStopwatch = Stopwatch();
 
-  /// Whether the press was canceled by a pointer move event or menu toggle.
-  var _pressCanceled = false;
+  /// Whether this menu was opened during the current press.
+  var _menuOpenedDuringPress = false;
 
   /// Used to control the long press recognizer.
   late var _longPressDuration = _theme.longPressDuration;
@@ -177,11 +177,11 @@ class _PieMenuCoreState extends State<PieMenuCore>
     final bounceAnimation = _bounceAnimation;
 
     if (_state.menuKey == _uniqueKey) {
-      if (!_previouslyOpen && _state.menuOpen) {
+      if (!_previouslyOwnMenuOpen && _state.menuOpen) {
         _overlayFadeController.forward(from: 0);
         _debounce();
-        _pressCanceled = true;
-      } else if (_previouslyOpen && !_state.menuOpen) {
+        _menuOpenedDuringPress = true;
+      } else if (_previouslyOwnMenuOpen && !_state.menuOpen) {
         _overlayFadeController.reverse();
       }
     } else {
@@ -190,7 +190,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
       }
     }
 
-    _previouslyOpen = _state.menuOpen;
+    _previouslyOwnMenuOpen = _state.menuKey == _uniqueKey && _state.menuOpen;
 
     return Stack(
       fit: StackFit.passthrough,
@@ -218,7 +218,6 @@ class _PieMenuCoreState extends State<PieMenuCore>
             child: Listener(
               behavior: _theme.hitTestBehavior,
               onPointerDown: _pointerDown,
-              onPointerMove: _pointerMove,
               onPointerUp: _pointerUp,
               onPointerCancel: _pointerCancel,
               child: GestureDetector(
@@ -269,7 +268,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     if (_state.menuOpen) return;
 
-    _pressCanceled = false;
+    _menuOpenedDuringPress = false;
 
     final isMouseEvent = _pressedDeviceKind == PointerDeviceKind.mouse;
     final leftClicked = isMouseEvent && _pressedButton == kPrimaryMouseButton;
@@ -305,16 +304,6 @@ class _PieMenuCoreState extends State<PieMenuCore>
     _bounce();
   }
 
-  void _pointerMove(PointerMoveEvent event) {
-    if (!mounted || _state.menuOpen) return;
-
-    if ((_pressedOffset - event.position).distance >
-        _theme.pressCancelThreshold) {
-      _pressCanceled = true;
-      _debounce();
-    }
-  }
-
   void _pointerUp(PointerUpEvent event) {
     _childPressed = false;
   }
@@ -332,7 +321,7 @@ class _PieMenuCoreState extends State<PieMenuCore>
 
     _debounce();
 
-    if (_pressCanceled || _state.menuOpen) return;
+    if (_menuOpenedDuringPress || _state.menuOpen) return;
 
     final deviceKind = _pressedDeviceKind;
 
