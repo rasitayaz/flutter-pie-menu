@@ -91,6 +91,56 @@ void main() {
       },
     );
 
+    testWidgets(
+      'onPressed fires on tap when accessible navigation is enabled',
+      (tester) async {
+        var pressed = false;
+        PointerDeviceKind? pressedKind;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: MediaQuery(
+              data: const MediaQueryData(accessibleNavigation: true),
+              child: PieCanvas(
+                child: Scaffold(
+                  body: Center(
+                    child: PieMenu(
+                      onPressed: () => pressed = true,
+                      onPressedWithDevice: (kind) => pressedKind = kind,
+                      actions: [
+                        PieAction(
+                          tooltip: const Text('Action 1'),
+                          onSelect: () {},
+                          child: const Icon(Icons.ac_unit),
+                        ),
+                      ],
+                      child: const Text('Tap Me'),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        // The radial menu is disabled in accessible mode, but the primary
+        // press must still work through a plain tap target.
+        expect(find.byType(PieMenuCore), findsNothing);
+
+        await tester.tap(find.text('Tap Me'));
+        await tester.pump();
+
+        expect(pressed, isTrue);
+        expect(pressedKind, PointerDeviceKind.touch);
+
+        // The press is also exposed as a semantic tap action.
+        expect(
+          tester.getSemantics(find.text('Tap Me')),
+          matchesSemantics(hasTapAction: true),
+        );
+      },
+    );
+
     testWidgets('long press opens the menu', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
