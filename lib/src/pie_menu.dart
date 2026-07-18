@@ -56,13 +56,26 @@ class PieMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (MediaQuery.accessibleNavigationOf(context)) {
+      // Long press recognition conflicts with accessibility services, so the
+      // radial menu is disabled here. The primary press must still work, though,
+      // otherwise the child becomes completely unresponsive. Expose it both as a
+      // real tap target and as a semantic action, alongside the pie actions.
+      final onTap = onPressed == null && onPressedWithDevice == null
+          ? null
+          : () {
+              onPressed?.call();
+              onPressedWithDevice?.call(PointerDeviceKind.touch);
+            };
+
       return Semantics(
+        button: onTap != null,
+        onTap: onTap,
         customSemanticsActions: {
           for (final action in actions)
             if (action.semanticsLabel case String label)
               CustomSemanticsAction(label: label): action.onSelect,
         },
-        child: child,
+        child: GestureDetector(onTap: onTap, child: child),
       );
     }
 
