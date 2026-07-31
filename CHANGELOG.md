@@ -1,3 +1,7 @@
+## 3.8.3
+
+* Fixed a crash caused by a null check operator on a null value when pointer events were handled after the canvas was disposed.
+
 ## 3.8.2
 
 * Fixed `onPressed` and `onPressedWithDevice` never firing when accessible navigation is enabled (e.g. TalkBack, Switch Access or Voice Access on Android), which left the menu child completely unresponsive. The primary press is now exposed as both a tap target and a semantic action.
