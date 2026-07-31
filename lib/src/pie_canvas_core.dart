@@ -100,7 +100,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   /// Theme of the current [PieMenu].
   ///
   /// If the [PieMenu] does not have a theme, [PieCanvas] theme is used.
-  late var _theme = widget.theme;
+  late PieTheme _theme;
 
   /// Stream subscription for right-clicks.
   dynamic _contextMenuSubscription;
@@ -223,6 +223,7 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   @override
   void initState() {
     super.initState();
+    _theme = widget.theme;
     WidgetsBinding.instance.addObserver(this);
     widget.controller?.addListener(_handleControllerEvent);
   }
@@ -663,6 +664,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
       _pressed = false;
       _pressedAgain = false;
 
+      if (!mounted) return;
+
       _notifier.update(
         clearMenuKey: true,
         menuOpen: false,
@@ -672,6 +675,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   }
 
   void _pointerDown(Offset offset) {
+    if (!mounted) return;
+
     if (_state.menuOpen) {
       _pressedAgain = true;
       _pointerMove(offset);
@@ -679,6 +684,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   }
 
   void _pointerUp(Offset offset) {
+    if (!mounted) return;
+
     if (_state.menuOpen) {
       if (_pressedAgain || _isBeyondPointerBounds(offset)) {
         final hoveredAction = _state.hoveredAction;
@@ -702,6 +709,8 @@ class PieCanvasCoreState extends State<PieCanvasCore>
   }
 
   void _pointerMove(Offset offset) {
+    if (!mounted) return;
+
     if (_state.menuOpen) {
       void hover(int? action) {
         if (_state.hoveredAction != action) {
